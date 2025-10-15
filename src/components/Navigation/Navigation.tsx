@@ -1,7 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Zap,
+  Server,
+  Shield,
+  Layers,
+  Wrench,
+  BarChart3,
+  Globe,
+  CreditCard,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
 
@@ -10,6 +22,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DemoForm } from "./NavigationForms/ScheduleDemoForm";
 import { PartnerForm } from "./NavigationForms/BecomePartnerForm";
+
+// shadcn/ui popover
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 const NAV_LINKS = [
   { id: "home", label: "Home" },
@@ -41,6 +60,24 @@ async function sendLead(payload: LeadForm & { type: "demo" | "partner" }) {
   }
   return res.json().catch(() => ({}));
 }
+
+type SolutionItem = {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+};
+
+const SOLUTIONS: SolutionItem[] = [
+  { icon: Server, label: "Cloud Hosting", href: "#cloud" },
+  { icon: Shield, label: "Security Suite", href: "#security" },
+  { icon: Layers, label: "Integrations", href: "#integrations" },
+  { icon: Wrench, label: "Developer Tools", href: "#devtools" },
+  { icon: BarChart3, label: "Analytics", href: "#analytics" },
+  { icon: Globe, label: "Global CDN", href: "#cdn" },
+  { icon: CreditCard, label: "Payments", href: "#payments" },
+  { icon: Users, label: "Team Workspaces", href: "#workspaces" },
+];
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false); // mobile menu
@@ -96,7 +133,7 @@ const Navigation = () => {
           </button>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map(({ id, label }) => (
               <button
                 key={id}
@@ -106,6 +143,67 @@ const Navigation = () => {
                 {label}
               </button>
             ))}
+
+            {/* ===== NEW: Solutions dropdown (2 items per row) ===== */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="text-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                  aria-haspopup="dialog"
+                  aria-expanded="false"
+                >
+                  Solutions
+                  <svg
+                    className="h-4 w-4 opacity-70"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-[440px] p-4"
+                sideOffset={12}
+              >
+                <div className="grid grid-cols-2 gap-3">
+                  {SOLUTIONS.map(({ icon: Icon, label, href, onClick }) => {
+                    const content = (
+                      <div className="flex items-center gap-3 p-3 rounded-xl border hover:border-primary/40 hover:bg-muted/50 transition-colors">
+                        <div className="rounded-lg bg-primary/10 p-2">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-sm font-medium">{label}</span>
+                      </div>
+                    );
+
+                    return href ? (
+                      <a key={label} href={href} onClick={() => setIsOpen(false)}>
+                        {content}
+                      </a>
+                    ) : (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => {
+                          onClick?.();
+                          setIsOpen(false);
+                        }}
+                        className="text-left"
+                      >
+                        {content}
+                      </button>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* CTAs (desktop) */}
@@ -140,6 +238,45 @@ const Navigation = () => {
                 {label}
               </button>
             ))}
+
+            {/* ===== NEW (Mobile): Solutions grid ===== */}
+            <div className="px-4 pt-1">
+              <div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
+                Solutions
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {SOLUTIONS.map(({ icon: Icon, label, href, onClick }) => {
+                  const cell = (
+                    <div className="flex items-center gap-3 p-3 rounded-xl border hover:border-primary/40 hover:bg-muted/50 transition-colors">
+                      <div className="rounded-lg bg-primary/10 p-2">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="text-sm font-medium">{label}</span>
+                    </div>
+                  );
+
+                  return href ? (
+                    <a key={label} href={href} onClick={() => setIsOpen(false)}>
+                      {cell}
+                    </a>
+                  ) : (
+                    <button
+                      key={label}
+                      type="button"
+                      className="text-left"
+                      onClick={() => {
+                        onClick?.();
+                        setIsOpen(false);
+                      }}
+                    >
+                      {cell}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Existing mobile CTAs */}
             <div className="flex gap-3 px-4 pt-3">
               <Button
                 variant="ghost"
@@ -176,8 +313,7 @@ const Navigation = () => {
         onSave={onSubmitDemo}
         onSend={onSubmitDemo}
       >
-       <DemoForm demoForm={demoForm} onSubmitDemo={onSubmitDemo} />
-
+        <DemoForm demoForm={demoForm} onSubmitDemo={onSubmitDemo} />
       </PageModal>
 
       {/* Become a partner modal */}
@@ -191,8 +327,10 @@ const Navigation = () => {
         onSave={onSubmitPartner}
         onSend={onSubmitPartner}
       >
-      <PartnerForm partnerForm={partnerForm} onSubmitPartner={onSubmitPartner} />
-
+        <PartnerForm
+          partnerForm={partnerForm}
+          onSubmitPartner={onSubmitPartner}
+        />
       </PageModal>
     </nav>
   );
