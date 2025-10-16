@@ -12,11 +12,11 @@ import {
   Users,
   ChevronDown,
   ChevronRight,
-  X,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function useMediaQuery(query: string) {
   const get = () =>
@@ -34,8 +34,8 @@ function useMediaQuery(query: string) {
 export type SolutionItem = {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  href?: string;
-  onClick?: () => void;
+  href?: string;          // "#id", "/route", or "https://external"
+  onClick?: () => void;   // optional extra action before navigation
   meta?: string;
 };
 
@@ -46,8 +46,8 @@ export const DEFAULT_SOLUTIONS: SolutionItem[] = [
   { icon: Wrench, label: "Developer Tools", href: "#devtools" },
   { icon: BarChart3, label: "Analytics", href: "#analytics" },
   { icon: Globe, label: "Global CDN", href: "#cdn" },
-  { icon: CreditCard, label: "Payments", href: "#payments" },
-  { icon: Users, label: "Team Workspaces", href: "#workspaces" },
+
+  { icon: Users, label: "about", href: "/about" },
 ];
 
 type SolutionsMenuProps = {
@@ -89,12 +89,52 @@ export function SolutionsMenu({
     else setOpenDesktop(false);
   }, [resolvedVariant]);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToHash = (hash: string) => {
+    const id = hash.replace("#", "");
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const ItemCell = ({ icon: Icon, label, href, meta, onClick }: SolutionItem) => {
-    const handleClick = () => {
+    const handleClick = (e?: React.MouseEvent) => {
+      e?.preventDefault();
+
+      // user-provided handler first
       onClick?.();
       onNavigate?.();
+
+      // close menus
       setOpenDesktop(false);
       setOpenMobile(false);
+
+      if (!href) return;
+
+      // External link → open new tab
+      if (/^https?:\/\//i.test(href)) {
+        window.open(href, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      // In-page hash (e.g. "#features")
+      if (href.startsWith("#")) {
+        if (location.pathname !== "/") {
+          // go home then scroll after render
+          navigate("/");
+          setTimeout(() => scrollToHash(href), 50);
+        } else {
+          scrollToHash(href);
+        }
+        return;
+      }
+
+      // Internal route (e.g. "/about")
+      if (href.startsWith("/")) {
+        navigate(href);
+        return;
+      }
     };
 
     const inner = (
@@ -116,11 +156,8 @@ export function SolutionsMenu({
       </div>
     );
 
-    return href ? (
-      <a key={label} href={href} onClick={handleClick}>
-        {inner}
-      </a>
-    ) : (
+    // Always a button: we handle navigation ourselves
+    return (
       <button key={label} type="button" onClick={handleClick} className="w-full text-left">
         {inner}
       </button>
@@ -189,7 +226,6 @@ export function SolutionsMenu({
         <SheetHeader className="px-4 py-3 border-b bg-background/80 backdrop-blur-md">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-base font-semibold">Our Solutions</SheetTitle>
-           
           </div>
         </SheetHeader>
 
