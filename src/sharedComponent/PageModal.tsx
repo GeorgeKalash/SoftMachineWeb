@@ -1,4 +1,6 @@
 // src/components/shared/PageModal.tsx
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -9,6 +11,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -17,6 +25,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Save, Send, X } from "lucide-react";
+
+/* ---------------- utils ---------------- */
+function useMediaQuery(query: string) {
+  const get = () =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false;
+  const [matches, setMatches] = React.useState(get);
+  React.useEffect(() => {
+    const m = window.matchMedia(query);
+    const listener = () => setMatches(m.matches);
+    m.addEventListener?.("change", listener);
+    return () => m.removeEventListener?.("change", listener);
+  }, [query]);
+  return matches;
+}
 
 type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
 
@@ -33,15 +55,14 @@ interface PageModalProps {
   scrollBody?: boolean;
 
   size?: ModalSize;
-  widthClassName?: string;   // override width
-  heightClassName?: string;  // override height (e.g., "max-h-[90vh]")
+  widthClassName?: string;   // override width (desktop)
+  heightClassName?: string;  // override height (desktop) e.g. "max-h-[90vh]"
   contentClassName?: string;
   bodyClassName?: string;
 
   showFooter?: boolean;
   showSend?: boolean;
   showSave?: boolean;
-  showClose?: boolean;
 
   onSend?: () => void;
   onSave?: () => void;
@@ -51,6 +72,11 @@ interface PageModalProps {
   isSaving?: boolean;
 
   footerExtra?: React.ReactNode;
+
+  /** Mobile only: render as bottom sheet instead of centered dialog */
+  mobileAsSheet?: boolean; // default true
+  /** Mobile sheet height (fallback 85svh) */
+  mobileHeightClassName?: string;
 }
 
 const sizeMap: Record<ModalSize, string> = {
@@ -58,28 +84,23 @@ const sizeMap: Record<ModalSize, string> = {
   md:  "sm:max-w-lg",
   lg:  "sm:max-w-2xl",
   xl:  "sm:max-w-4xl",
-  // new big bois:
   "2xl": "sm:max-w-6xl",
   "3xl": "sm:max-w-7xl",
-  // take almost the full viewport width on larger screens
   full: "sm:max-w-none w-[96vw] lg:w-[90vw]",
 };
 
-/** Force-colored icon buttons (default colored, darker on hover, disabled = gray) */
-const colorBtn = (color: "green" | "blue" | "red", disabled?: boolean) =>
+const colorBtn = (color: "green" | "blue", disabled?: boolean) =>
   cn(
-    "inline-flex items-center justify-center rounded-md h-10 w-10",
+    "inline-flex items-center justify-center rounded-md h-10 w-10 !text-white",
     "transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
-    disabled ? "!text-white" : "!text-white",
     disabled
       ? "!bg-gray-400 hover:!bg-gray-400 focus:!ring-gray-300"
       : color === "green"
       ? "!bg-green-500 hover:!bg-green-600 focus:!ring-green-500"
-      : color === "blue"
-      ? "!bg-blue-500 hover:!bg-blue-600 focus:!ring-blue-500"
-      : "!bg-red-500 hover:!bg-red-600 focus:!ring-red-500"
+      : "!bg-blue-500 hover:!bg-blue-600 focus:!ring-blue-500"
   );
 
+/* ---------------- component ---------------- */
 export function PageModal({
   open,
   onOpenChange,
@@ -102,16 +123,111 @@ export function PageModal({
   isSending = false,
   isSaving = false,
   footerExtra,
+  mobileAsSheet = true,
+  mobileHeightClassName, // e.g. "h-[85svh]" or "max-h-[85svh]"
 }: PageModalProps) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
   const width = widthClassName ?? sizeMap[size];
-  // Cap overall modal height; body will scroll within
   const height = heightClassName ?? "max-h-[80vh]";
+  const mobileHeight = mobileHeightClassName ?? "h-[85svh]"; // safe viewport height for mobile browsers
 
   const handleClose = () => {
     onClose?.();
     onOpenChange(false);
   };
 
+  /* --------- MOBILE: bottom sheet --------- */
+  if (!isDesktop && mobileAsSheet) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="bottom"
+          className={cn(
+            "p-0 flex flex-col rounded-t-2xl overflow-hidden",
+            mobileHeight,
+            contentClassName
+          )}
+        >
+          {/* drag handle (subtle) */}
+          <div className="mx-auto mt-2 mb-1 h-1.5 w-10 rounded-full bg-muted" />
+
+          <SheetHeader className="px-5 py-3 border-b bg-background/80 backdrop-blur">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                {title && <SheetTitle className="truncate text-base">{title}</SheetTitle>}
+                {description && (
+                  <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+                )}
+              </div>
+             
+            </div>
+          </SheetHeader>
+
+          <div
+            className={cn(
+              "px-5 py-4 flex-1 min-h-0",
+              scrollBody && "overflow-y-auto",
+              bodyClassName
+            )}
+          >
+            {children}
+          </div>
+
+          {showFooter && (
+            <div className="border-t px-4 py-3">
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-2" />
+                <div className="flex items-center gap-2">
+                  {footerExtra}
+                  {showSave && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            size="icon"
+                            onClick={onSave}
+                            disabled={isSaving}
+                            className={colorBtn("green", isSaving)}
+                            aria-label="Save"
+                          >
+                            <Save className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{isSaving ? "Saving..." : "Save"}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  {showSend && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            size="icon"
+                            onClick={onSend}
+                            disabled={isSending}
+                            className={colorBtn("blue", isSending)}
+                            aria-label="Send"
+                          >
+                            <Send className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{isSending ? "Sending..." : "Send"}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  /* --------- DESKTOP: centered dialog --------- */
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -119,36 +235,36 @@ export function PageModal({
           "w-[calc(100vw-2rem)] p-0",
           width,
           height,
-          "overflow-hidden",
-          "flex flex-col", // critical: stack header/body/footer and allow body to grow
+          "overflow-hidden flex flex-col",
           contentClassName
         )}
       >
-        {(title || description || headerExtra ) && (
+        {(title || description || headerExtra) && (
           <DialogHeader className="border-b px-6 py-4 shrink-0">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 {title && <DialogTitle className="truncate">{title}</DialogTitle>}
                 {description && (
-                  <DialogDescription className="mt-1">
-                    {description}
-                  </DialogDescription>
+                  <DialogDescription className="mt-1">{description}</DialogDescription>
                 )}
               </div>
-
               <div className="flex items-center gap-2 shrink-0">
                 {headerExtra}
-              
+                <button
+                  onClick={handleClose}
+                  className="p-2 rounded-md hover:bg-muted transition"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </DialogHeader>
         )}
 
-        {/* Body: grows to fill remaining space and becomes scroll container (if enabled) */}
         <div
           className={cn(
-            "px-6 py-5",
-            "flex-1 min-h-0",              // allow internal overflow within flex parent
+            "px-6 py-5 flex-1 min-h-0",
             scrollBody && "overflow-y-auto",
             bodyClassName
           )}
@@ -156,25 +272,17 @@ export function PageModal({
           {children}
         </div>
 
-        {/* Footer */}
         {showFooter && (
           <DialogFooter className="border-t px-4 py-3 shrink-0">
             <div className="flex w-full items-center justify-between">
-              {/* Left: nothing now, reserved for future (e.g., cancel) */}
-              <div className="flex items-center gap-2">
-                {/* Placeholder / add left-side actions here if needed */}
-              </div>
-
-              {/* Right: Extra + Save + Send */}
+              <div className="flex items-center gap-2" />
               <div className="flex items-center gap-2">
                 {footerExtra}
-
-                <TooltipProvider>
-                  {showSave && (
+                {showSave && (
+                  <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="default"
                           type="button"
                           size="icon"
                           onClick={onSave}
@@ -185,17 +293,15 @@ export function PageModal({
                           <Save className="h-5 w-5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        {isSaving ? "Saving..." : "Save"}
-                      </TooltipContent>
+                      <TooltipContent>{isSaving ? "Saving..." : "Save"}</TooltipContent>
                     </Tooltip>
-                  )}
-
-                  {showSend && (
+                  </TooltipProvider>
+                )}
+                {showSend && (
+                  <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="default"
                           type="button"
                           size="icon"
                           onClick={onSend}
@@ -206,12 +312,10 @@ export function PageModal({
                           <Send className="h-5 w-5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        {isSending ? "Sending..." : "Send"}
-                      </TooltipContent>
+                      <TooltipContent>{isSending ? "Sending..." : "Send"}</TooltipContent>
                     </Tooltip>
-                  )}
-                </TooltipProvider>
+                  </TooltipProvider>
+                )}
               </div>
             </div>
           </DialogFooter>
