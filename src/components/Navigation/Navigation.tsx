@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Menu, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { DemoForm } from "./NavigationForms/ScheduleDemoForm";
 import { PartnerForm } from "./NavigationForms/BecomePartnerForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const NAV_LINKS = [
   { id: "home", label: "Home" },
@@ -26,7 +27,6 @@ const leadSchema = z.object({
   company: z.string().min(2, "Please enter your company"),
   message: z.string().min(5, "Please add a short message"),
 });
-
 type LeadForm = z.infer<typeof leadSchema>;
 
 async function sendLead(payload: LeadForm & { type: "demo" | "partner" }) {
@@ -47,12 +47,25 @@ const Navigation = () => {
   const [demoOpen, setDemoOpen] = useState(false);
   const [partnerOpen, setPartnerOpen] = useState(false);
 
-  const handleScroll = (id: string) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     const yOffset = -70;
     const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
     window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
+  // NEW: navigation that works from any route
+  const handleNav = (id: string) => {
+    if (location.pathname === "/") {
+      scrollToId(id);
+      setIsOpen(false);
+      return;
+    }
+    navigate({ pathname: "/", hash: `#${id}` });
     setIsOpen(false);
   };
 
@@ -83,9 +96,9 @@ const Navigation = () => {
     <nav className="fixed top-0 w-full backdrop-blur-sm z-50 bg-background/70">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo (scrolls to Home) */}
+          {/* Logo (scrolls to Home; works cross-route) */}
           <button
-            onClick={() => handleScroll("home")}
+            onClick={() => handleNav("home")}
             className="flex items-center gap-2"
             aria-label="Go to Home"
           >
@@ -100,14 +113,13 @@ const Navigation = () => {
             {NAV_LINKS.map(({ id, label }) => (
               <button
                 key={id}
-                onClick={() => handleScroll(id)}
+                onClick={() => handleNav(id)}
                 className="text-foreground hover:text-primary transition-colors"
               >
                 {label}
               </button>
             ))}
             <SolutionsMenu variant="desktop" />
-            
           </div>
 
           {/* CTAs (desktop) */}
@@ -136,19 +148,19 @@ const Navigation = () => {
             {NAV_LINKS.map(({ id, label }) => (
               <button
                 key={id}
-                onClick={() => handleScroll(id)}
+                onClick={() => handleNav(id)}
                 className="block w-full text-left px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
               >
                 {label}
               </button>
             ))}
 
-            {/* Imported solutions (mobile) */}
+            {/* Solutions dropdown (mobile) */}
             <div className="px-4">
               <SolutionsMenu variant="mobile" onNavigate={() => setIsOpen(false)} />
             </div>
 
-            {/* Existing mobile CTAs */}
+            {/* Mobile CTAs */}
             <div className="flex gap-3 px-4 pt-3">
               <Button
                 variant="ghost"
