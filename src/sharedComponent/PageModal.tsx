@@ -17,14 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Save, Send, X } from "lucide-react";
+import { SharedButton } from "@/sharedComponent/Button";
 
 /* ---------------- utils ---------------- */
 function useMediaQuery(query: string) {
@@ -62,14 +55,11 @@ interface PageModalProps {
 
   showFooter?: boolean;
   showSend?: boolean;
-  showSave?: boolean;
 
   onSend?: () => void;
-  onSave?: () => void;
   onClose?: () => void;
 
   isSending?: boolean;
-  isSaving?: boolean;
 
   footerExtra?: React.ReactNode;
 
@@ -116,12 +106,9 @@ export function PageModal({
   bodyClassName,
   showFooter = true,
   showSend = true,
-  showSave = true,
   onSend,
-  onSave,
   onClose,
   isSending = false,
-  isSaving = false,
   footerExtra,
   mobileAsSheet = true,
   mobileHeightClassName, // e.g. "h-[85svh]" or "max-h-[85svh]"
@@ -180,44 +167,17 @@ export function PageModal({
                 <div className="flex items-center gap-2" />
                 <div className="flex items-center gap-2">
                   {footerExtra}
-                  {showSave && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            size="icon"
-                            onClick={onSave}
-                            disabled={isSaving}
-                            className={colorBtn("green", isSaving)}
-                            aria-label="Save"
-                          >
-                            <Save className="h-5 w-5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{isSaving ? "Saving..." : "Save"}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+             
                   {showSend && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            size="icon"
-                            onClick={onSend}
-                            disabled={isSending}
-                            className={colorBtn("blue", isSending)}
-                            aria-label="Send"
-                          >
-                            <Send className="h-5 w-5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{isSending ? "Sending..." : "Send"}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+          <SharedButton
+            title={ "Send" } 
+            type="button"
+            onClick={onSend}
+            color="primary"
+            size="sm"
+            disabled={isSending}
+          />
+        )}
                 </div>
               </div>
             </div>
@@ -250,13 +210,7 @@ export function PageModal({
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {headerExtra}
-                <button
-                  onClick={handleClose}
-                  className="p-2 rounded-md hover:bg-muted transition"
-                  aria-label="Close"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+               
               </div>
             </div>
           </DialogHeader>
@@ -278,44 +232,17 @@ export function PageModal({
               <div className="flex items-center gap-2" />
               <div className="flex items-center gap-2">
                 {footerExtra}
-                {showSave && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon"
-                          onClick={onSave}
-                          disabled={isSaving}
-                          className={colorBtn("green", isSaving)}
-                          aria-label="Save"
-                        >
-                          <Save className="h-5 w-5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{isSaving ? "Saving..." : "Save"}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+             
                 {showSend && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon"
-                          onClick={onSend}
-                          disabled={isSending}
-                          className={colorBtn("blue", isSending)}
-                          aria-label="Send"
-                        >
-                          <Send className="h-5 w-5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{isSending ? "Sending..." : "Send"}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+      <SharedButton
+      title={ "Send" } 
+      type="button"
+      onClick={onSend}
+      color="primary"
+      size="sm"
+      disabled={isSending}
+    />
+        )}
               </div>
             </div>
           </DialogFooter>

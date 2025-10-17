@@ -15,7 +15,7 @@ import Team from "@/pages/MainPage/Sections/Team";
 
 const Main = () => {
   return (
-    <div className="min-h-screen">
+    <div >
       <Navigation />
       <main className="pt-16"> 
         <section id="home" className="scroll-mt-24"><Hero /></section>

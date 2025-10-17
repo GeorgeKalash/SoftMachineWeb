@@ -1,8 +1,6 @@
-// src/components/shared/ActionIconButton.tsx
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,101 +8,145 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Save, Send, X, type LucideIcon } from "lucide-react";
 
-type Intent = "save" | "send" | "close" | "primary" | "secondary";
-type Size = "icon" | "default" | "sm" | "lg";
-
-function isCoarsePointer() {
-  return typeof window !== "undefined" &&
-    window.matchMedia?.("(pointer: coarse)").matches;
-}
-
-const intentClasses = (intent: Intent, disabled?: boolean) =>
-  cn(
-    // base
-    "inline-flex items-center justify-center rounded-md !text-white transition-colors",
-    "focus:outline-none focus:ring-2 focus:ring-offset-2",
-    // size will be controlled by Button size prop; here only colors
-    disabled
-      ? "!bg-gray-400 hover:!bg-gray-400 focus:!ring-gray-300"
-      : intent === "save"
-      ? "!bg-green-500 hover:!bg-green-600 focus:!ring-green-500"
-      : intent === "send"
-      ? "!bg-blue-500 hover:!bg-blue-600 focus:!ring-blue-500"
-      : intent === "close"
-      ? "!bg-muted-foreground/70 hover:!bg-muted-foreground focus:!ring-muted-foreground"
-      : intent === "primary"
-      ? "!bg-primary hover:!bg-primary/90 focus:!ring-primary"
-      : "!bg-secondary-foreground hover:!bg-secondary-foreground/90 focus:!ring-secondary-foreground"
-  );
-
-const defaultIconByIntent: Record<Intent, LucideIcon | null> = {
-  save: Save,
-  send: Send,
-  close: X,
-  primary: null,
-  secondary: null,
+type SharedButtonProps = {
+  title?: string;
+  color?: "primary" | "secondary" | "danger" | "ghost" | "link" | "outline";
+  size?: "sm" | "lg" | "default" | "icon";
+  outline?: boolean;
+  disabled?: boolean;
+  active?: boolean;
+  className?: string;
+  id?: string;
+  tooltip?: string;
+  onClick?: () => void;
+  logo?: string;
+  type?: "button" | "submit" | "reset";
 };
 
-export interface ActionIconButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  intent?: Intent;
-  loading?: boolean;
-  tooltip?: string;
-  icon?: LucideIcon;            // override icon (optional)
-  size?: Size;                  // default "icon"
-  tooltipOnDesktopOnly?: boolean; // default true (no tooltips on touch)
+function mapVariant(
+  color?: SharedButtonProps["color"],
+  forceOutline?: boolean
+): "default" | "destructive" | "secondary" | "ghost" | "link" | "outline" {
+  if (forceOutline || color === "outline") return "outline";
+  switch (color) {
+    case "ghost":
+      return "ghost";
+    case "link":
+      return "link";
+    case "danger":
+      return "destructive";
+    case "secondary":
+      return "secondary";
+    case "primary":
+    default:
+      return "default";
+  }
 }
 
-export const ActionIconButton: React.FC<ActionIconButtonProps> = ({
-  intent = "primary",
-  loading = false,
-  tooltip,
-  icon,
-  size = "icon",
-  className,
-  disabled,
-  tooltipOnDesktopOnly = true,
-  "aria-label": ariaLabel,
-  children, // if you want text instead of icon
-  ...rest
-}) => {
-  const Coarse = isCoarsePointer();
-  const Icon = icon ?? defaultIconByIntent[intent];
+/** Use `!` to beat shadcn hover styles; repeat same color on hover/active */
+function lockedColorClasses(color?: SharedButtonProps["color"], forceOutline?: boolean) {
+  if (forceOutline || color === "outline") {
+    return [
+      "!border-blue-600 !text-blue-700",
+      "hover:!bg-transparent hover:!text-blue-700",
+      "active:!bg-transparent focus-visible:!ring-blue-600",
+    ].join(" ");
+  }
 
-  const btn = (
+  switch (color) {
+    case "secondary":
+      return [
+        "!bg-gray-600 !text-white",
+        "hover:!bg-gray-600 active:!bg-gray-600",
+        "focus-visible:!ring-gray-600",
+      ].join(" ");
+    case "danger":
+      return [
+        "!bg-red-600 !text-white",
+        "hover:!bg-red-600 active:!bg-red-600",
+        "focus-visible:!ring-red-600",
+      ].join(" ");
+    case "ghost":
+      return [
+        "!text-gray-700 !bg-transparent",
+        "hover:!bg-transparent hover:!text-gray-700",
+        "active:!bg-transparent focus-visible:!ring-gray-300",
+      ].join(" ");
+    case "link":
+      return [
+        "!text-blue-600",
+        "hover:!text-blue-600 hover:!no-underline",
+        "active:!text-blue-600",
+      ].join(" ");
+    case "primary":
+    default:
+      return [
+        "!bg-blue-600 !text-white",
+        "hover:!bg-blue-600 active:!bg-blue-600",
+        "focus-visible:!ring-blue-600",
+      ].join(" ");
+  }
+}
+
+export const SharedButton: React.FC<SharedButtonProps> = ({
+  title,
+  color = "primary",
+  size = "default",
+  outline = false,
+  disabled = false,
+  active = false,
+  className = "",
+  id,
+  onClick,
+  tooltip,
+  logo,
+  type = "button",
+}) => {
+  const variant = mapVariant(color, outline);
+  const hardLock = lockedColorClasses(color, outline);
+
+  const content = (
     <Button
-      type="button"
-      size={size}
-      className={cn(
-        intentClasses(intent, disabled || loading),
-        size === "icon" && "h-10 w-10",
-        className
-      )}
-      disabled={disabled || loading}
-      aria-label={ariaLabel ?? tooltip ?? intent}
-      {...rest}
+      id={id}
+      type={type}
+      variant={variant}
+      size={logo ? "icon" : size}
+      disabled={disabled}
+      onClick={onClick}
+      className={[
+        // disable color shifts on hover/active; keep motion minimal
+        "transition-colors",
+        hardLock,
+        // optional ring when "active" prop is true (keep hue identical)
+        active ? "!ring-2 !ring-offset-2 !ring-blue-600" : "",
+        logo ? "p-0 w-10 h-10" : "",
+        className || "",
+      ].join(" ")}
     >
-      {loading && (
-        <span
-          className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent"
-          aria-hidden
+      {logo ? (
+        <img
+          src={logo}
+          alt="logo"
+          className="w-[22px] h-[22px] object-contain"
         />
+      ) : (
+        title
       )}
-      {Icon && size === "icon" ? <Icon className="h-5 w-5" /> : children}
     </Button>
   );
 
-  // Skip tooltips on touch devices by default
-  if (!tooltip || (tooltipOnDesktopOnly && Coarse)) return btn;
+  if (!tooltip) return content;
 
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{btn}</TooltipTrigger>
-        <TooltipContent>{loading ? `${tooltip}...` : tooltip}</TooltipContent>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent side="top">{tooltip}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 };
+
+export default SharedButton;
+
