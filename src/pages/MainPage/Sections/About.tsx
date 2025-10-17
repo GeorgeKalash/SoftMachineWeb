@@ -45,7 +45,8 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="py-24 bg-muted/30">
+    <section id="about"      className="relative isolate overflow-hidden py-20 bg-gradient-to-br from-background via-background to-primary/5"
+>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Section */}
         <div ref={statsRef} className="grid md:grid-cols-3 gap-8 mb-20">

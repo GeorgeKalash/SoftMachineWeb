@@ -1,16 +1,13 @@
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Menu, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DemoForm } from "./NavigationForms/ScheduleDemoForm";
-import { PartnerForm } from "./NavigationForms/BecomePartnerForm";
+import { NavgationForm, type LeadForm } from "./NavigationForms/NavigationForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NAV_LINKS = [
   { id: "home", label: "Home" },
@@ -20,45 +17,43 @@ const NAV_LINKS = [
   { id: "faq", label: "Support" },
 ];
 
-const leadSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
-  phone: z.string().min(5, "Please enter a valid phone").max(30),
-  email: z.string().email("Please enter a valid email"),
-  company: z.string().min(2, "Please enter your company"),
-  message: z.string().min(5, "Please add a short message"),
-});
-type LeadForm = z.infer<typeof leadSchema>;
-
-async function sendLead(payload: LeadForm & { type: "demo" | "partner" }) {
-  const res = await fetch("/api/send-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(txt || "Failed to send email");
-  }
-  return res.json().catch(() => ({}));
-}
+const FORM_ID = "lead-modal-form";
 
 const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false); // mobile menu
-  const [demoOpen, setDemoOpen] = useState(false);
-  const [partnerOpen, setPartnerOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState<null | "demo" | "partner">(null);
+  const [isSending, setIsSending] = useState(false); // controlled by the form via callback
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isModalOpen = modalType !== null;
+
+  const modalCopy = useMemo(() => {
+    if (modalType === "partner") {
+      return {
+        title: "Become a partner",
+        description: "Share your details and we'll reach out about partnership options.",
+        submitLabel: "Request partnership",
+      };
+    }
+    return {
+      title: "Schedule a demo",
+      description: "Fill in your details and we'll email our team.",
+      submitLabel: "Schedule demo",
+    };
+  }, [modalType]);
+
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const yOffset = -70;
-    const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
-    window.scrollTo({ top: y, behavior: "smooth" });
+    const y = el.getBoundingClientRect().top + window.scrollY - 70;
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: y, behavior: prefersReduced ? "auto" : "smooth" });
   };
 
-  // NEW: navigation that works from any route
   const handleNav = (id: string) => {
     if (location.pathname === "/") {
       scrollToId(id);
@@ -69,34 +64,24 @@ const Navigation = () => {
     setIsOpen(false);
   };
 
-  // Forms
-  const demoForm = useForm<LeadForm>({
-    resolver: zodResolver(leadSchema),
-    defaultValues: { name: "", phone: "", email: "", company: "", message: "" },
-  });
+  // Let PageModal's built-in Send button submit the form
+  const handleModalSend = () => {
+    const form = document.getElementById(FORM_ID) as HTMLFormElement | null;
+    if (!form) return;
+    if (typeof form.requestSubmit === "function") form.requestSubmit();
+    else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  };
 
-  const partnerForm = useForm<LeadForm>({
-    resolver: zodResolver(leadSchema),
-    defaultValues: { name: "", phone: "", email: "", company: "", message: "" },
-  });
-
-  const onSubmitDemo = demoForm.handleSubmit(async (data) => {
-    await sendLead({ ...data, type: "demo" });
-    demoForm.reset();
-    setDemoOpen(false);
-  });
-
-  const onSubmitPartner = partnerForm.handleSubmit(async (data) => {
-    await sendLead({ ...data, type: "partner" });
-    partnerForm.reset();
-    setPartnerOpen(false);
-  });
+  // Called by the form on successful API submission
+  const handleFormSuccess = (_result: unknown) => {
+    setModalType(null); // close modal on success
+  };
 
   return (
-    <nav className="fixed top-0 w-full backdrop-blur-sm z-50 bg-background/70">
+    <nav className="fixed top-0 w-full backdrop-blur-sm z-50 bg-background/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* header */}
         <div className="flex items-center justify-between h-16">
-          {/* Logo (scrolls to Home; works cross-route) */}
           <button
             onClick={() => handleNav("home")}
             className="flex items-center gap-2"
@@ -105,10 +90,9 @@ const Navigation = () => {
             <div className="bg-primary rounded-lg p-2">
               <Zap className="h-5 w-5 text-primary-foreground" />
             </div>
-
           </button>
 
-          {/* Desktop nav */}
+          {/* desktop nav */}
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map(({ id, label }) => (
               <button
@@ -122,29 +106,31 @@ const Navigation = () => {
             <SolutionsMenu variant="desktop" />
           </div>
 
-          {/* CTAs (desktop) */}
+          {/* desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setDemoOpen(true)}>
+            <Button variant="ghost" size="sm" onClick={() => setModalType("demo")}>
               Schedule a demo
             </Button>
-            <Button size="sm" onClick={() => setPartnerOpen(true)}>
+            <Button size="sm" onClick={() => setModalType("partner")}>
               Become a partner
             </Button>
           </div>
 
-          {/* Mobile toggle */}
+          {/* mobile toggle */}
           <button
-            onClick={() => setIsOpen((v) => !v)}
+            onClick={() => setIsOpen(v => !v)}
             className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-nav"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile menu */}
+        {/* mobile menu */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-3 animate-in slide-in-from-top">
+          <div id="mobile-nav" className="md:hidden py-4 space-y-3 animate-in slide-in-from-top">
             {NAV_LINKS.map(({ id, label }) => (
               <button
                 key={id}
@@ -154,20 +140,16 @@ const Navigation = () => {
                 {label}
               </button>
             ))}
-
-            {/* Solutions dropdown (mobile) */}
             <div className="px-4">
               <SolutionsMenu variant="mobile" onNavigate={() => setIsOpen(false)} />
             </div>
-
-            {/* Mobile CTAs */}
             <div className="flex gap-3 px-4 pt-3">
               <Button
                 variant="ghost"
                 className="flex-1"
                 onClick={() => {
                   setIsOpen(false);
-                  setDemoOpen(true);
+                  setModalType("demo");
                 }}
               >
                 Schedule a demo
@@ -176,7 +158,7 @@ const Navigation = () => {
                 className="flex-1"
                 onClick={() => {
                   setIsOpen(false);
-                  setPartnerOpen(true);
+                  setModalType("partner");
                 }}
               >
                 Become a partner
@@ -186,32 +168,26 @@ const Navigation = () => {
         )}
       </div>
 
-      {/* Schedule a demo modal */}
+      {/* Modal: Send button submits the form; form handles API + success */}
       <PageModal
-        open={demoOpen}
-        onOpenChange={setDemoOpen}
-        title="Schedule a demo"
-        description="Fill in your details and we’ll email our team."
+        open={isModalOpen}
+        onOpenChange={(open) => setModalType(open ? (modalType ?? "demo") : null)}
+        title={modalCopy.title}
+        description={modalCopy.description}
         size="lg"
         scrollBody
-        onSave={onSubmitDemo}
-        onSend={onSubmitDemo}
+        showSend
+        onSend={handleModalSend}
+        isSending={isSending}
       >
-        <DemoForm demoForm={demoForm} onSubmitDemo={onSubmitDemo} />
-      </PageModal>
-
-      {/* Become a partner modal */}
-      <PageModal
-        open={partnerOpen}
-        onOpenChange={setPartnerOpen}
-        title="Become a partner"
-        description="Share your details and we’ll contact you."
-        size="lg"
-        scrollBody
-        onSave={onSubmitPartner}
-        onSend={onSubmitPartner}
-      >
-        <PartnerForm partnerForm={partnerForm} onSubmitPartner={onSubmitPartner} />
+        {modalType && (
+          <NavgationForm
+            formId={FORM_ID}
+            type={modalType}                     // tell the form which flow it is
+            onSuccess={handleFormSuccess}        // form calls this on success
+            onSubmittingChange={setIsSending}    // form reports submitting state to disable modal button
+          />
+        )}
       </PageModal>
     </nav>
   );

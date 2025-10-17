@@ -1,4 +1,3 @@
-// src/components/shared/PageModal.tsx
 "use client";
 
 import * as React from "react";
@@ -19,7 +18,6 @@ import {
 } from "@/components/ui/sheet";
 import { SharedButton } from "@/sharedComponent/Button";
 
-/* ---------------- utils ---------------- */
 function useMediaQuery(query: string) {
   const get = () =>
     typeof window !== "undefined" ? window.matchMedia(query).matches : false;
@@ -44,12 +42,11 @@ interface PageModalProps {
   headerExtra?: React.ReactNode;
 
   children?: React.ReactNode;
-  /** If true, the modal body becomes the scroll container */
   scrollBody?: boolean;
 
   size?: ModalSize;
-  widthClassName?: string;   // override width (desktop)
-  heightClassName?: string;  // override height (desktop) e.g. "max-h-[90vh]"
+  widthClassName?: string;
+  heightClassName?: string;
   contentClassName?: string;
   bodyClassName?: string;
 
@@ -63,34 +60,20 @@ interface PageModalProps {
 
   footerExtra?: React.ReactNode;
 
-  /** Mobile only: render as bottom sheet instead of centered dialog */
-  mobileAsSheet?: boolean; // default true
-  /** Mobile sheet height (fallback 85svh) */
+  mobileAsSheet?: boolean;
   mobileHeightClassName?: string;
 }
 
 const sizeMap: Record<ModalSize, string> = {
-  sm:  "sm:max-w-md",
-  md:  "sm:max-w-lg",
-  lg:  "sm:max-w-2xl",
-  xl:  "sm:max-w-4xl",
+  sm: "sm:max-w-md",
+  md: "sm:max-w-lg",
+  lg: "sm:max-w-2xl",
+  xl: "sm:max-w-4xl",
   "2xl": "sm:max-w-6xl",
   "3xl": "sm:max-w-7xl",
   full: "sm:max-w-none w-[96vw] lg:w-[90vw]",
 };
 
-const colorBtn = (color: "green" | "blue", disabled?: boolean) =>
-  cn(
-    "inline-flex items-center justify-center rounded-md h-10 w-10 !text-white",
-    "transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
-    disabled
-      ? "!bg-gray-400 hover:!bg-gray-400 focus:!ring-gray-300"
-      : color === "green"
-      ? "!bg-green-500 hover:!bg-green-600 focus:!ring-green-500"
-      : "!bg-blue-500 hover:!bg-blue-600 focus:!ring-blue-500"
-  );
-
-/* ---------------- component ---------------- */
 export function PageModal({
   open,
   onOpenChange,
@@ -111,20 +94,19 @@ export function PageModal({
   isSending = false,
   footerExtra,
   mobileAsSheet = true,
-  mobileHeightClassName, // e.g. "h-[85svh]" or "max-h-[85svh]"
+  mobileHeightClassName,
 }: PageModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const width = widthClassName ?? sizeMap[size];
   const height = heightClassName ?? "max-h-[80vh]";
-  const mobileHeight = mobileHeightClassName ?? "h-[85svh]"; // safe viewport height for mobile browsers
+  const mobileHeight = mobileHeightClassName ?? "h-[85svh]";
 
   const handleClose = () => {
     onClose?.();
     onOpenChange(false);
   };
 
-  /* --------- MOBILE: bottom sheet --------- */
   if (!isDesktop && mobileAsSheet) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -136,9 +118,7 @@ export function PageModal({
             contentClassName
           )}
         >
-          {/* drag handle (subtle) */}
           <div className="mx-auto mt-2 mb-1 h-1.5 w-10 rounded-full bg-muted" />
-
           <SheetHeader className="px-5 py-3 border-b bg-background/80 backdrop-blur">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -147,7 +127,7 @@ export function PageModal({
                   <p className="mt-1 text-sm text-muted-foreground">{description}</p>
                 )}
               </div>
-             
+              {headerExtra}
             </div>
           </SheetHeader>
 
@@ -167,17 +147,16 @@ export function PageModal({
                 <div className="flex items-center gap-2" />
                 <div className="flex items-center gap-2">
                   {footerExtra}
-             
                   {showSend && (
-          <SharedButton
-            title={ "Send" } 
-            type="button"
-            onClick={onSend}
-            color="primary"
-            size="sm"
-            disabled={isSending}
-          />
-        )}
+                    <SharedButton
+                      title="Send"
+                      type="button"
+                      onClick={onSend}
+                      color="primary"
+                      size="sm"
+                      disabled={isSending}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -187,7 +166,6 @@ export function PageModal({
     );
   }
 
-  /* --------- DESKTOP: centered dialog --------- */
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -198,6 +176,11 @@ export function PageModal({
           "overflow-hidden flex flex-col",
           contentClassName
         )}
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={(e) => {
+          // keep outside-click close behavior aligned with handleClose if desired
+          // (shadcn already closes via onOpenChange)
+        }}
       >
         {(title || description || headerExtra) && (
           <DialogHeader className="border-b px-6 py-4 shrink-0">
@@ -208,10 +191,7 @@ export function PageModal({
                   <DialogDescription className="mt-1">{description}</DialogDescription>
                 )}
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {headerExtra}
-               
-              </div>
+              <div className="flex items-center gap-2 shrink-0">{headerExtra}</div>
             </div>
           </DialogHeader>
         )}
@@ -232,17 +212,16 @@ export function PageModal({
               <div className="flex items-center gap-2" />
               <div className="flex items-center gap-2">
                 {footerExtra}
-             
                 {showSend && (
-      <SharedButton
-      title={ "Send" } 
-      type="button"
-      onClick={onSend}
-      color="primary"
-      size="sm"
-      disabled={isSending}
-    />
-        )}
+                  <SharedButton
+                    title="Send"
+                    type="button"
+                    onClick={onSend}
+                    color="primary"
+                    size="sm"
+                    disabled={isSending}
+                  />
+                )}
               </div>
             </div>
           </DialogFooter>
