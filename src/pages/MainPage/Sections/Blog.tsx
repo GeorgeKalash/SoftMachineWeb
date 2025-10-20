@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { motion, Variants, useReducedMotion } from "framer-motion";
+import Decoration from "@/sharedComponent/Decoration";
 
 // —— transitions (matching your Hero) ——
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -60,152 +61,6 @@ const Blog: React.FC = () => {
   const { ref: rightRef, isVisible: rightVisible } = useScrollAnimation();
   const [imgReady, setImgReady] = useState(false);
 
-  // Build shapes once (positions stable)
-  const shapes = useMemo<ShapeConfig[]>(() => {
-    const rnd = prand(84);
-    const kinds: ShapeKind[] = ["circle", "square", "triangle", "ring", "diamond"];
-    const items: ShapeConfig[] = [];
-    const COUNT = 14;
-    for (let i = 0; i < COUNT; i++) {
-      const kind = kinds[i % kinds.length];
-      const size = 26 + Math.floor(rnd() * 54); // 26..80
-      const opacity = 0.12 + rnd() * 0.18; // 0.12..0.30
-      const hueVar =
-        kind === "circle"
-          ? "--primary"
-          : kind === "triangle"
-          ? "--accent"
-          : kind === "ring"
-          ? "--foreground"
-          : "--muted-foreground";
-      // keep shapes biased to the left side a bit to complement the collage
-      const topPct = 6 + rnd() * 86; // 6..92
-      const leftPct = rnd() < 0.66 ? 2 + rnd() * 46 : 50 + rnd() * 46; // more on left
-      const driftX = 10 + rnd() * 30;
-      const driftY = 10 + rnd() * 30;
-      const rotate = Math.floor(rnd() * 360);
-      const duration = 6 + rnd() * 6;
-      const delay = rnd() * 2.5;
-      items.push({
-        id: `bshape-${i}`,
-        kind,
-        size,
-        opacity,
-        hueVar,
-        topPct,
-        leftPct,
-        driftX,
-        driftY,
-        rotate,
-        duration,
-        delay,
-        z: 10,
-      });
-    }
-    return items;
-  }, []);
-
-  const renderShape = (s: ShapeConfig) => {
-    const baseStyle: React.CSSProperties = {
-      top: `${s.topPct}%`,
-      left: `${s.leftPct}%`,
-      width: s.kind === "triangle" ? 0 : s.size,
-      height: s.kind === "triangle" ? 0 : s.size,
-      opacity: s.opacity,
-      zIndex: s.z ?? 10,
-    };
-
-    const animate = prefersReducedMotion
-      ? {}
-      : {
-          x: [0, s.driftX, -s.driftX * 0.6, 0],
-          y: [0, -s.driftY, s.driftY * 0.5, 0],
-          rotate: [s.rotate, s.rotate + 8, s.rotate - 6, s.rotate],
-          transition: {
-            duration: s.duration,
-
-            ease: "easeInOut" as const,
-            delay: s.delay,
-          },
-        };
-
-    switch (s.kind) {
-      case "circle":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute rounded-full"
-            style={{
-              ...baseStyle,
-              background: `hsl(var(${s.hueVar}))`,
-              filter: "blur(0.2px)",
-            }}
-            animate={animate}
-          />
-        );
-      case "square":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              background: `hsl(var(${s.hueVar}))`,
-              borderRadius: 10,
-            }}
-            animate={animate}
-          />
-        );
-      case "diamond":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              width: s.size * 0.9,
-              height: s.size * 0.9,
-              background: `hsl(var(${s.hueVar}))`,
-              transform: `rotate(45deg)`,
-              borderRadius: 8,
-            }}
-            animate={animate}
-          />
-        );
-      case "ring":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute rounded-full"
-            style={{
-              ...baseStyle,
-              background: "transparent",
-              border: `${Math.max(2, Math.floor(s.size / 12))}px solid hsl(var(--primary)/0.25)`,
-              boxShadow: "0 0 0 1px hsl(var(--background)/0.6) inset",
-            }}
-            animate={animate}
-          />
-        );
-      case "triangle":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              borderLeft: `${s.size * 0.45}px solid transparent`,
-              borderRight: `${s.size * 0.45}px solid transparent`,
-              borderBottom: `${s.size * 0.75}px solid hsl(var(${s.hueVar}))`,
-              filter: "blur(0.2px)",
-              width: 0,
-              height: 0,
-            }}
-            animate={animate}
-          />
-        );
-    }
-  };
-
   const img1 = pick(0);
   const img2 = pick(1);
   const img3 = pick(2);
@@ -220,19 +75,16 @@ const Blog: React.FC = () => {
       viewport={{ once: true, margin: "-80px" }}
       variants={container}
     >
-      {/* Decorative wandering shapes (masked so edges don’t look clipped) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{
-          maskImage:
-            "radial-gradient(120% 120% at 30% 45%, black 60%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(120% 120% at 30% 45%, black 60%, transparent 100%)",
-        }}
-      >
-        {shapes.map(renderShape)}
-      </div>
+     <Decoration
+           minCount={5}
+           maxCount={15}
+           masked
+           zIndex={0}
+   
+           className="z-10"
+           avoidCenter={{ xPct: 50, yPct: 40, radiusPct: 22 }}
+           // palette overrides are optional; using your original mapping by default
+         />
 
       {/* subtle static background blobs */}
       <div className="pointer-events-none absolute -left-10 top-24 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />

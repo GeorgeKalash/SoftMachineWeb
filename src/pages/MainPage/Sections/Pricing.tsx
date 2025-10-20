@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
 import { motion, Variants, useReducedMotion } from "framer-motion";
+import Decoration from "@/sharedComponent/decoration";
 
 // ——— motion presets (match your blog/hero feel) ———
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -17,33 +18,7 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.58, ease: EASE } },
 };
 
-// ——— tiny deterministic PRNG so shape positions stay stable ———
-const prand = (seed: number) => {
-  let t = seed + 1;
-  return () => {
-    t ^= t << 13;
-    t ^= t >> 17;
-    t ^= t << 5;
-    return ((t >>> 0) % 1000) / 1000; // [0,1)
-  };
-};
 
-type ShapeKind = "circle" | "square" | "triangle" | "ring" | "diamond";
-type ShapeConfig = {
-  id: string;
-  kind: ShapeKind;
-  size: number;
-  opacity: number;
-  hueVar: string; // css var name like --primary / --accent / --muted-foreground
-  topPct: number;
-  leftPct: number;
-  driftX: number;
-  driftY: number;
-  rotate: number;
-  duration: number;
-  delay: number;
-  z?: number;
-};
 
 type Plan = {
   name: string;
@@ -103,162 +78,12 @@ const PLANS: Plan[] = [
 ];
 
 // ——— decorative shapes builder (biased around header & left side) ———
-function usePricingShapes() {
-  const prefersReducedMotion = useReducedMotion();
-  const shapes = useMemo<ShapeConfig[]>(() => {
-    const rnd = prand(137); // change seed to shift layout deterministically
-    const kinds: ShapeKind[] = ["circle", "square", "triangle", "ring", "diamond"];
-    const items: ShapeConfig[] = [];
-    const COUNT = 16;
-    for (let i = 0; i < COUNT; i++) {
-      const kind = kinds[i % kinds.length];
-      const size = 22 + Math.floor(rnd() * 54); // 22..76
-      const opacity = 0.10 + rnd() * 0.18; // 0.10..0.28
-      const hueVar =
-        kind === "circle"
-          ? "--primary"
-          : kind === "triangle"
-          ? "--accent"
-          : kind === "ring"
-          ? "--foreground"
-          : "--muted-foreground";
-      // bias top-half + slightly left to live behind header + first card
-      const topPct = 4 + rnd() * 70; // 4..74
-      const leftPct = rnd() < 0.65 ? 4 + rnd() * 46 : 50 + rnd() * 46;
-      const driftX = 10 + rnd() * 26;
-      const driftY = 10 + rnd() * 26;
-      const rotate = Math.floor(rnd() * 360);
-      const duration = 6 + rnd() * 6;
-      const delay = rnd() * 2.2;
-      items.push({
-        id: `pshape-${i}`,
-        kind,
-        size,
-        opacity,
-        hueVar,
-        topPct,
-        leftPct,
-        driftX,
-        driftY,
-        rotate,
-        duration,
-        delay,
-        z: 10,
-      });
-    }
-    return items;
-  }, []);
-
-  const renderShape = (s: ShapeConfig) => {
-    const baseStyle: React.CSSProperties = {
-      top: `${s.topPct}%`,
-      left: `${s.leftPct}%`,
-      width: s.kind === "triangle" ? 0 : s.size,
-      height: s.kind === "triangle" ? 0 : s.size,
-      opacity: s.opacity,
-      zIndex: s.z ?? 10,
-    };
-
-    const animate = prefersReducedMotion
-      ? {}
-      : {
-          x: [0, s.driftX, -s.driftX * 0.6, 0],
-          y: [0, -s.driftY, s.driftY * 0.5, 0],
-          rotate: [s.rotate, s.rotate + 8, s.rotate - 6, s.rotate],
-          transition: {
-            duration: s.duration,
-            ease: "easeInOut" as const,
-            delay: s.delay,
-            repeat: Infinity,
-          },
-        };
-
-    switch (s.kind) {
-      case "circle":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute rounded-full"
-            style={{
-              ...baseStyle,
-              background: `hsl(var(${s.hueVar}))`,
-              filter: "blur(0.2px)",
-            }}
-            animate={animate}
-          />
-        );
-      case "square":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              background: `hsl(var(${s.hueVar}))`,
-              borderRadius: 10,
-            }}
-            animate={animate}
-          />
-        );
-      case "diamond":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              width: s.size * 0.9,
-              height: s.size * 0.9,
-              background: `hsl(var(${s.hueVar}))`,
-              transform: `rotate(45deg)`,
-              borderRadius: 8,
-            }}
-            animate={animate}
-          />
-        );
-      case "ring":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute rounded-full"
-            style={{
-              ...baseStyle,
-              background: "transparent",
-              border: `${Math.max(2, Math.floor(s.size / 12))}px solid hsl(var(--primary)/0.25)`,
-              boxShadow: "0 0 0 1px hsl(var(--background)/0.6) inset",
-            }}
-            animate={animate}
-          />
-        );
-      case "triangle":
-        return (
-          <motion.div
-            key={s.id}
-            className="absolute"
-            style={{
-              ...baseStyle,
-              borderLeft: `${s.size * 0.45}px solid transparent`,
-              borderRight: `${s.size * 0.45}px solid transparent`,
-              borderBottom: `${s.size * 0.75}px solid hsl(var(${s.hueVar}))`,
-              filter: "blur(0.2px)",
-              width: 0,
-              height: 0,
-            }}
-            animate={animate}
-          />
-        );
-    }
-  };
-
-  return { shapes, renderShape };
-}
 
 export default function PricingWithToggleDecor() {
   const [billPlan, setBillPlan] = useState<"monthly" | "annually">("monthly");
   const isAnnual = billPlan === "annually";
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();
   const { ref: footerRef, isVisible: footerVisible } = useScrollAnimation();
-  const { shapes, renderShape } = usePricingShapes();
 
   return (
     <motion.section
@@ -268,19 +93,16 @@ export default function PricingWithToggleDecor() {
       viewport={{ once: true, margin: "-80px" }}
       variants={container}
     >
-      {/* decorative wandering shapes (masked so edges don’t clip) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{
-          maskImage:
-            "radial-gradient(120% 120% at 36% 32%, black 62%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(120% 120% at 36% 32%, black 62%, transparent 100%)",
-        }}
-      >
-        {shapes.map(renderShape)}
-      </div>
+     <Decoration
+           minCount={5}
+           maxCount={15}
+           masked
+           zIndex={0}
+   
+           className="z-10"
+           avoidCenter={{ xPct: 50, yPct: 40, radiusPct: 22 }}
+           // palette overrides are optional; using your original mapping by default
+         />
 
       {/* subtle static blobs */}
       <div className="pointer-events-none absolute -left-14 top-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
