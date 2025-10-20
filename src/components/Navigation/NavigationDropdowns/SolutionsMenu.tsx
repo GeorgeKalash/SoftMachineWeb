@@ -1,23 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Server,
-  Shield,
-  Layers,
-  Wrench,
-  BarChart3,
-  Globe,
-  CreditCard,
-  Users,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { useLocation, useNavigate } from "react-router-dom";
 
+/* media query helper */
 function useMediaQuery(query: string) {
   const get = () =>
     typeof window !== "undefined" ? window.matchMedia(query).matches : false;
@@ -31,24 +21,36 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
+/* images … (same imports you already have) */
+import HR from "@/assets/modules/HumanResources.png";
+import HRRed from "@/assets/modules/HumanResourcesRed.png";
+import Financials from "@/assets/modules/Financials.png";
+import FinancialsRed from "@/assets/modules/FinancialsRed.png";
+import RepairAndService from "@/assets/modules/RepairAndService.png";
+import RepairAndServiceRed from "@/assets/modules/RepairAndServiceRed.png";
+import SalesOrderProcessing from "@/assets/modules/SalesOrderProcessing.png";
+import SalesOrderProcessingRed from "@/assets/modules/SalesOrderProcessingRed.png";
+import FixedAssets from "@/assets/modules/FixedAssets.png";
+import FixedAssetsRed from "@/assets/modules/FixedAssetsRed.png";
+import Manufacturing from "@/assets/modules/Manufacturing.png";
+import ManufacturingRed from "@/assets/modules/ManufacturingRed.png";
+import PurchaseOrderProcessing from "@/assets/modules/PurchaseOrderProcessing.png";
+import PurchaseOrderProcessingRed from "@/assets/modules/PurchaseOrderProcessingRed.png";
+import Delivery from "@/assets/modules/Delivery.png";
+import DeliveryRed from "@/assets/modules/DeliveryRed.png";
+import InventoryManagement from "@/assets/modules/InventoryManagement.png";
+import InventoryManagementRed from "@/assets/modules/InventoryManagementRed.png";
+
+/* types */
 export type SolutionItem = {
-  icon: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }>;
+  imgSrc?: string;
+  imgHoverSrc?: string;
   label: string;
-  href?: string;          // "#id", "/route", or "https://external"
-  onClick?: () => void;   // optional extra action before navigation
+  href?: string;
+  onClick?: () => void;
   meta?: string;
 };
-
-export const DEFAULT_SOLUTIONS: SolutionItem[] = [
-  { icon: Server, label: "Cloud Hosting", href: "#cloud", meta: "New" },
-  { icon: Shield, label: "Security Suite", href: "#security" },
-  { icon: Layers, label: "Integrations", href: "#integrations" },
-  { icon: Wrench, label: "Developer Tools", href: "#devtools" },
-  { icon: BarChart3, label: "Analytics", href: "#analytics" },
-  { icon: Globe, label: "Global CDN", href: "#cdn" },
-
-  { icon: Users, label: "about", href: "/about" },
-];
 
 type SolutionsMenuProps = {
   items?: SolutionItem[];
@@ -59,11 +61,23 @@ type SolutionsMenuProps = {
   className?: string;
 };
 
+export const DEFAULT_SOLUTIONS: SolutionItem[] = [
+  { imgSrc: HR, imgHoverSrc: HRRed, label: "Human Resources", href: "#hr" },
+  { imgSrc: Financials, imgHoverSrc: FinancialsRed, label: "Financials", href: "#financials" },
+  { imgSrc: RepairAndService, imgHoverSrc: RepairAndServiceRed, label: "Repair And Service", href: "#repair-service" },
+  { imgSrc: SalesOrderProcessing, imgHoverSrc: SalesOrderProcessingRed, label: "Sales Order Processing", href: "#sales-order-processing" },
+  { imgSrc: FixedAssets, imgHoverSrc: FixedAssetsRed, label: "Fixed Assets", href: "#fixed-assets" },
+  { imgSrc: Manufacturing, imgHoverSrc: ManufacturingRed, label: "Manufacturing", href: "#manufacturing" },
+  { imgSrc: PurchaseOrderProcessing, imgHoverSrc: PurchaseOrderProcessingRed, label: "Purchase Order Processing", href: "#purchase-order-processing" },
+  { imgSrc: Delivery, imgHoverSrc: DeliveryRed, label: "Delivery", href: "#delivery" },
+  { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/about" },
+];
+
 export function SolutionsMenu({
   items = DEFAULT_SOLUTIONS,
   onNavigate,
   variant = "auto",
-  triggerLabel = "Solutions",
+  triggerLabel = "Modules",
   triggerClassName = "",
   className = "",
 }: SolutionsMenuProps) {
@@ -72,7 +86,6 @@ export function SolutionsMenu({
 
   const [openDesktop, setOpenDesktop] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
-
   const hoverTimer = useRef<number | null>(null);
 
   const openWithDelay = (ms = 60) => {
@@ -98,73 +111,79 @@ export function SolutionsMenu({
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const ItemCell = ({ icon: Icon, label, href, meta, onClick }: SolutionItem) => {
+  /* ——— size presets ——— */
+  const ICON_BOX = "p-2 md:p-2 rounded-xl bg-primary/10 shrink-0";
+  const ICON_IMG_WRAPPER = "relative h-8 w-8 md:h-9 md:w-9";           // was h-5 w-5
+  const ICON_SIZE = "h-8 w-8 md:h-9 md:w-9";                            // was h-5 w-5
+  const LABEL_CLASS = "text-[15px] md:text-base font-medium leading-6"; // was text-sm
+  const CELL_CLASS =
+  "group flex items-start gap-3 p-2 md:p-2 rounded-lg border hover:border-primary/40 hover:bg-muted/50 transition active:scale-[0.98]";
+
+
+  const ItemCell = ({ icon: Icon, imgSrc, imgHoverSrc, label, href, meta, onClick }: SolutionItem) => {
     const handleClick = (e?: React.MouseEvent) => {
       e?.preventDefault();
-
-      // user-provided handler first
       onClick?.();
       onNavigate?.();
-
-      // close menus
       setOpenDesktop(false);
       setOpenMobile(false);
 
       if (!href) return;
+      if (/^https?:\/\//i.test(href)) return window.open(href, "_blank", "noopener,noreferrer");
 
-      // External link → open new tab
-      if (/^https?:\/\//i.test(href)) {
-        window.open(href, "_blank", "noopener,noreferrer");
-        return;
-      }
-
-      // In-page hash (e.g. "#features")
       if (href.startsWith("#")) {
         if (location.pathname !== "/") {
-          // go home then scroll after render
           navigate("/");
           setTimeout(() => scrollToHash(href), 50);
-        } else {
-          scrollToHash(href);
-        }
+        } else scrollToHash(href);
         return;
       }
 
-      // Internal route (e.g. "/about")
-      if (href.startsWith("/")) {
-        navigate(href);
-        return;
-      }
+      if (href.startsWith("/")) navigate(href);
     };
 
-    const inner = (
-      <div className="flex items-center gap-3 p-3 rounded-xl border hover:border-primary/40 hover:bg-muted/50 transition active:scale-[0.98]">
-        <div className="rounded-xl bg-primary/10 p-2 shrink-0">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          <span className="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-            {label}
-          </span>
-          {meta && (
-            <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
-              {meta}
-            </Badge>
-          )}
-        </div>
-        <ChevronRight className="h-4 w-4 opacity-60 shrink-0" />
-      </div>
-    );
-
-    // Always a button: we handle navigation ourselves
     return (
       <button key={label} type="button" onClick={handleClick} className="w-full text-left">
-        {inner}
+        <div className={CELL_CLASS}>
+          <div className={ICON_BOX}>
+            {imgSrc ? (
+              <div className={ICON_IMG_WRAPPER}>
+                <img
+                  src={imgSrc}
+                  alt=""
+                  className={`absolute inset-0 ${ICON_SIZE} object-contain opacity-100 transition-opacity duration-200 group-hover:opacity-0`}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {imgHoverSrc ? (
+                  <img
+                    src={imgHoverSrc}
+                    alt=""
+                    className={`absolute inset-0 ${ICON_SIZE} object-contain opacity-0 transition-opacity duration-200 group-hover:opacity-100`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : null}
+              </div>
+            ) : Icon ? (
+              <Icon className={`${ICON_SIZE}`} />
+            ) : null}
+          </div>
+
+          <div className="flex-1 flex gap-2">
+            <span className={LABEL_CLASS}>{label}</span>
+            {meta && (
+              <Badge variant="secondary" className="h-5 px-1.5 text-[10px] self-start">
+                {meta}
+              </Badge>
+            )}
+          </div>
+        </div>
       </button>
     );
   };
 
-  /** Desktop: open on hover */
+  /* ---------- Desktop (Popover) ---------- */
   if (resolvedVariant === "desktop") {
     return (
       <Popover open={openDesktop}>
@@ -179,7 +198,7 @@ export function SolutionsMenu({
               className={`inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors ${triggerClassName}`}
               aria-haspopup="dialog"
               aria-expanded={openDesktop}
-              onClick={(e) => e.preventDefault()} // disable click toggle
+              onClick={(e) => e.preventDefault()}
             >
               {triggerLabel}
               <ChevronDown
@@ -190,12 +209,12 @@ export function SolutionsMenu({
 
           <PopoverContent
             align="start"
-            sideOffset={12}
-            className={`w-[440px] p-4 z-[60] ${className}`}
+            sideOffset={14}
+            className={`w-[480px] md:w-[620px] lg:w-[680px] p-2 z-[60] ${className}`}  /* wider panel */
             onMouseEnter={() => openWithDelay(0)}
             onMouseLeave={() => closeWithDelay()}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-1">  
               {items.map((it) => (
                 <ItemCell key={it.label} {...it} />
               ))}
@@ -206,7 +225,7 @@ export function SolutionsMenu({
     );
   }
 
-  /** Mobile: scrollable bottom sheet */
+  /* ---------- Mobile (Bottom Sheet) ---------- */
   return (
     <Sheet open={openMobile} onOpenChange={setOpenMobile}>
       <SheetTrigger asChild>
@@ -216,20 +235,18 @@ export function SolutionsMenu({
           aria-expanded={openMobile}
         >
           <span className="text-foreground font-medium">{triggerLabel}</span>
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${openMobile ? "rotate-180" : ""}`}
-          />
+          <ChevronDown className={`h-4 w-4 transition-transform ${openMobile ? "rotate-180" : ""}`} />
         </button>
       </SheetTrigger>
 
       <SheetContent side="bottom" className="h-[85vh] p-0 flex flex-col rounded-t-2xl overflow-hidden">
         <SheetHeader className="px-4 py-3 border-b bg-background/80 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-base font-semibold">Our Solutions</SheetTitle>
+            <SheetTitle className="text-base font-semibold">MODULES OF ARGUS</SheetTitle>
           </div>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           <div className="space-y-2 pb-10">
             {items.map((it) => (
               <ItemCell key={it.label} {...it} />
@@ -240,3 +257,5 @@ export function SolutionsMenu({
     </Sheet>
   );
 }
+
+export default SolutionsMenu;

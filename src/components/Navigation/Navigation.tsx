@@ -8,7 +8,7 @@ import { PageModal } from "@/sharedComponent/PageModal";
 import { NavgationForm, type LeadForm } from "./NavigationForms/NavigationForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import logo from "../../../src/assets/logo.png"
 const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -78,7 +78,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full backdrop-blur-sm z-50 bg-background/10">
+    <nav className="fixed top-0 w-full  backdrop-blur-sm z-50 bg-background/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* header */}
         <div className="flex items-center justify-between h-16">
@@ -87,9 +87,15 @@ const Navigation = () => {
             className="flex items-center gap-2"
             aria-label="Go to Home"
           >
-            <div className="bg-primary rounded-lg p-2">
-              <Zap className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <div className=" bg-secondary  rounded-lg p-1">
+            <img
+              src={logo}
+              alt="Company logo"
+              className="h-10 w-auto"
+              loading="eager"
+              decoding="async"
+            />          
+           </div>
           </button>
 
           {/* desktop nav */}

@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
 import { motion, Variants, useReducedMotion } from "framer-motion";
-import Decoration from "@/sharedComponent/decoration";
+import Decoration from "@/sharedComponent/Decoration";
 
 // ——— motion presets (match your blog/hero feel) ———
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

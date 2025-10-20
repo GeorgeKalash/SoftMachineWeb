@@ -1,40 +1,35 @@
-import { type LucideIcon, Sparkles, Globe, Palette } from "lucide-react";
-import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+"use client";
+
 import React from "react";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import {
+  type LucideIcon,
+  Code2,
+  MonitorSmartphone,
+  Workflow,
+  PlugZap,
+  ShieldCheck,
+  LifeBuoy,
+} from "lucide-react";
+
+/* ----------------------------- types & tokens ---------------------------- */
 
 type FeatureColor =
   | "feature-pink"
   | "feature-green"
   | "feature-orange"
+  | "feature-blue"
+  | "feature-purple"
   | string; // allow custom tokens too
 
 export type FeatureItem = {
   icon: LucideIcon;
   title: string;
   description: string;
-  color: FeatureColor; // maps to CSS var --{color}
+  color?: FeatureColor;      // optional: will be auto-assigned if missing
+  href?: string;             // optional: makes the card clickable
+  ariaLabel?: string;        // optional: accessible label for link target
 };
-
-const DEFAULT_ITEMS: FeatureItem[] = [
-  {
-    icon: Sparkles,
-    title: "Cutting-edge Features",
-    description: "Powerful building blocks to ship faster with confidence.",
-    color: "feature-pink",
-  },
-  {
-    icon: Globe,
-    title: "10+ Useful Integrations",
-    description: "Plug into auth, billing, analytics, and more in minutes.",
-    color: "feature-green",
-  },
-  {
-    icon: Palette,
-    title: "High-quality Modern Design",
-    description: "Clean, accessible UI that feels premium out of the box.",
-    color: "feature-orange",
-  },
-];
 
 type FeaturesProps = {
   items?: FeatureItem[];
@@ -43,6 +38,58 @@ type FeaturesProps = {
   className?: string;
 };
 
+/* Auto color cycle so you don’t have to specify a color for every item */
+const COLOR_CYCLE: FeatureColor[] = [
+  "feature-pink",
+  "feature-green",
+  "feature-orange",
+  "feature-blue",
+  "feature-purple",
+];
+
+/* ------------------------------- defaults -------------------------------- */
+
+const DEFAULT_ITEMS: FeatureItem[] = [
+  {
+    icon: Code2,
+    title: "Custom Software",
+    description:
+      "Tailored web & backend solutions designed around your business logic and workflows.",
+  },
+  {
+    icon: MonitorSmartphone,
+    title: "Web & Mobile Apps",
+    description:
+      "Modern, performant apps with clean UX that scale from MVP to thousands of users.",
+  },
+  {
+    icon: Workflow,
+    title: "ERP & Business Systems",
+    description:
+      "Process-aware implementations, data flows, and UI for finance, operations, and beyond.",
+  },
+  {
+    icon: PlugZap,
+    title: "Integrations & APIs",
+    description:
+      "Connect billing, auth, analytics, and third-party platforms with robust, well-tested APIs.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Secure & Reliable",
+    description:
+      "Best practices for auth, data protection, and observability baked into every delivery.",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Ongoing Support",
+    description:
+      "Roadmapping, enhancements, and SLA support to keep your product healthy and evolving.",
+  },
+];
+
+/* ------------------------------- components ------------------------------ */
+
 const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
   feature,
   index,
@@ -50,31 +97,16 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
   const { ref, isVisible } = useScrollAnimation();
   const Icon = feature.icon;
 
-  // Inline HSL variables so tokens like --feature-pink work in both light/dark.
-  const bg = `hsl(var(--${feature.color}) / 0.12)`;
-  const fg = `hsl(var(--${feature.color}))`;
+  // assign color if not provided
+  const colorToken =
+    feature.color ?? COLOR_CYCLE[index % COLOR_CYCLE.length];
 
-  return (
-    <article
-      ref={ref}
-      role="listitem"
-      aria-label={feature.title}
-      className={[
-        "group relative flex flex-col items-center text-center",
-        "rounded-2xl p-8",
-        "bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/40",
-        "border border-border/50",
-        "transition-all duration-500",
-        "hover:shadow-xl hover:-translate-y-1",
-        "focus-within:shadow-xl focus-within:-translate-y-1",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
-      ].join(" ")}
-      style={{
-        transitionDelay: `${index * 120}ms`,
-        willChange: "transform, opacity",
-      }}
-      data-visible={isVisible}
-    >
+  // Inline HSL variables so tokens like --feature-pink work in both light/dark.
+  const bg = `hsl(var(--${colorToken}) / 0.12)`;
+  const fg = `hsl(var(--${colorToken}))`;
+
+  const CardInner = (
+    <>
       {/* subtle gradient ring */}
       <div
         aria-hidden="true"
@@ -100,7 +132,6 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
           backgroundColor: bg,
           color: fg,
           boxShadow: `0 10px 30px -10px ${fg}22`,
-
         }}
       >
         <Icon className="size-10" />
@@ -115,32 +146,73 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
         />
       </div>
 
-      <h3 className="text-xl font-semibold tracking-tight mb-2">{feature.title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+      <h3 className="text-xl font-semibold tracking-tight mb-2">
+        {feature.title}
+      </h3>
+      <p className="text-muted-foreground leading-relaxed">
+        {feature.description}
+      </p>
+    </>
+  );
 
-      {/* focus target for keyboard users */}
-      <button
-        className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        style={{ color: fg }}
-        aria-hidden="true"
-        tabIndex={-1}
-      />
+  const baseClasses = [
+    "group relative flex flex-col items-center text-center",
+    "rounded-2xl p-8",
+    "bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/40",
+    "border border-border/50",
+    "transition-all duration-500",
+    "hover:shadow-xl hover:-translate-y-1",
+    "focus-within:shadow-xl focus-within:-translate-y-1",
+    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+  ].join(" ");
+
+  return (
+    <article
+      ref={ref}
+      role="listitem"
+      aria-label={feature.title}
+      className={baseClasses}
+      style={{
+        transitionDelay: `${index * 120}ms`,
+        willChange: "transform, opacity",
+      }}
+      data-visible={isVisible}
+    >
+      {feature.href ? (
+        <a
+          href={feature.href}
+          className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          aria-label={feature.ariaLabel ?? feature.title}
+        />
+      ) : (
+        // focus target for keyboard users (keeps same layout when no link)
+        <span
+          className="absolute inset-0 rounded-2xl"
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+      )}
+      {CardInner}
     </article>
   );
 };
 
 const Features: React.FC<FeaturesProps> = ({
   items = DEFAULT_ITEMS,
-  heading = "Everything you need to launch",
-  subheading = "A thoughtfully curated kit of features, integrations, and patterns.",
+  heading = "What we do",
+  subheading = "Design & build custom software with the right architecture, integrations, and support.",
   className,
 }) => {
   return (
-    <section className={["py-20 bg-background", className].filter(Boolean).join(" ")}>
+    <section
+      className={["py-20 bg-background", className].filter(Boolean).join(" ")}
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{heading}</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            {heading}
+          </h2>
           <p className="mt-3 text-muted-foreground">{subheading}</p>
         </div>
 

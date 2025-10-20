@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, Variants } from "framer-motion";
+import { GoBackButton } from "@/sharedComponent/GoBackButton";
 
 // Reuse your easing/variants
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -49,8 +50,12 @@ export default function ReferencesPage() {
 
   return (
     <section className="relative">
+     
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Title */}
+        <div className="mb-6">
+        <GoBackButton fallbackTo="/" />
+      </div>
         <motion.h2
           initial="hidden"
           whileInView="visible"
@@ -108,10 +113,6 @@ export default function ReferencesPage() {
           ))}
         </motion.div>
 
-        {/* Optional: small partner footer badge row (if you want like the bottom logo strip) */}
-        {/* <div className="mt-12 opacity-80">
-          <img src="/logos/adgi-solutions.png" alt="Adgi Solutions" className="h-6" />
-        </div> */}
       </div>
     </section>
   );

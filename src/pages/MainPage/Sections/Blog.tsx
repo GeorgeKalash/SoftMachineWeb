@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -6,7 +8,7 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import Decoration from "@/sharedComponent/Decoration";
 
-// —— transitions (matching your Hero) ——
+/* ---------------------------- animation tokens --------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const container: Variants = {
   hidden: {},
@@ -17,35 +19,8 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.58, ease: EASE } },
 };
 
-// —— tiny deterministic PRNG so shapes don’t jump between renders ——
-const prand = (seed: number) => {
-  let t = seed + 1;
-  return () => {
-    t ^= t << 13;
-    t ^= t >> 17;
-    t ^= t << 5;
-    return ((t >>> 0) % 1000) / 1000; // [0,1)
-  };
-};
-
-type ShapeKind = "circle" | "square" | "triangle" | "ring" | "diamond";
-type ShapeConfig = {
-  id: string;
-  kind: ShapeKind;
-  size: number;
-  opacity: number;
-  hueVar: string;
-  topPct: number;
-  leftPct: number;
-  driftX: number;
-  driftY: number;
-  rotate: number;
-  duration: number;
-  delay: number;
-  z?: number;
-};
-
-// Eagerly collect any images in /assets (jpg/png/jpeg/webp). We’ll take the first 3.
+/* ------------------------------- img utils ------------------------------- */
+// Eagerly collect any images in /assets (jpg/png/jpeg/webp). Fallback to 3 picks.
 const allImages = Object.values(
   import.meta.glob("@/assets/*.{jpg,png,jpeg,webp}", {
     eager: true,
@@ -55,36 +30,111 @@ const allImages = Object.values(
 
 const pick = (i: number) => allImages[i % Math.max(allImages.length, 1)] ?? "";
 
-const Blog: React.FC = () => {
+/* ---------------------------------- types -------------------------------- */
+type Story = {
+  title: string;
+  date?: string;
+  href?: string;
+  // optional: small descriptor or tag later
+};
+
+type StoriesProps = {
+  id?: string;
+  mode?: "blog" | "work"; // purely for copy defaults
+  title?: string;
+  subtitle?: string;
+  posts?: Story[];
+  images?: [string?, string?, string?]; // override collage images
+  primaryCtaText?: string;
+  onPrimaryCta?: () => void;
+  primaryCtaHref?: string;
+  secondaryCtaText?: string;
+  onSecondaryCta?: () => void;
+  secondaryCtaHref?: string;
+};
+
+/* -------------------------------- defaults ------------------------------- */
+const DEFAULT_POSTS: Story[] = [
+  { title: "Design tokens that scale your UI", date: "Oct 10, 2025", href: "/blog/design-tokens" },
+  { title: "Animating on scroll with zero jank", date: "Oct 03, 2025", href: "/blog/scroll-animations" },
+  { title: "Shipping faster with shadcn primitives", date: "Sep 25, 2025", href: "/blog/shadcn-speed" },
+];
+
+const MODE_COPY = {
+  blog: {
+    title: "Insights, tutorials, and updates",
+    subtitle:
+      "Short reads, actionable code, and behind-the-scenes notes from our team.",
+    primary: "Read the blog",
+    secondary: "See how we work",
+  },
+  work: {
+    title: "Recent work & case studies",
+    subtitle:
+      "Selected engagements—problems solved, architecture choices, and measurable outcomes.",
+    primary: "Explore our work",
+    secondary: "Our delivery process",
+  },
+} as const;
+
+/* -------------------------------- component ------------------------------ */
+const Stories: React.FC<StoriesProps> = ({
+  id = "stories",
+  mode = "blog",
+  title,
+  subtitle,
+  posts = DEFAULT_POSTS,
+  images,
+  primaryCtaText,
+  onPrimaryCta,
+  primaryCtaHref = mode === "blog" ? "/blog" : "/work",
+  secondaryCtaText,
+  onSecondaryCta,
+  secondaryCtaHref = mode === "blog" ? "/process" : "/process",
+}) => {
   const prefersReducedMotion = useReducedMotion();
   const { ref: leftRef, isVisible: leftVisible } = useScrollAnimation();
   const { ref: rightRef, isVisible: rightVisible } = useScrollAnimation();
   const [imgReady, setImgReady] = useState(false);
 
-  const img1 = pick(0);
-  const img2 = pick(1);
-  const img3 = pick(2);
+  const img1 = images?.[0] ?? pick(0);
+  const img2 = images?.[1] ?? pick(1);
+  const img3 = images?.[2] ?? pick(2);
+
+  const copy = MODE_COPY[mode];
+  const headerTitle = title ?? copy.title;
+  const headerSubtitle = subtitle ?? copy.subtitle;
+  const primaryText = primaryCtaText ?? copy.primary;
+  const secondaryText = secondaryCtaText ?? copy.secondary;
+
+  const handlePrimary = () => {
+    if (onPrimaryCta) return onPrimaryCta();
+    if (primaryCtaHref) window.location.assign(primaryCtaHref);
+  };
+  const handleSecondary = () => {
+    if (onSecondaryCta) return onSecondaryCta();
+    if (secondaryCtaHref) window.location.assign(secondaryCtaHref);
+  };
 
   return (
     <motion.section
+      id={id}
       role="region"
-      aria-label="Blog"
+      aria-label={mode === "blog" ? "Blog" : "Case studies"}
       className="relative isolate overflow-hidden py-20 bg-gradient-to-br from-background via-background to-primary/5"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
       variants={container}
     >
-     <Decoration
-           minCount={5}
-           maxCount={15}
-           masked
-           zIndex={0}
-   
-           className="z-10"
-           avoidCenter={{ xPct: 50, yPct: 40, radiusPct: 22 }}
-           // palette overrides are optional; using your original mapping by default
-         />
+      <Decoration
+        minCount={5}
+        maxCount={15}
+        masked
+        zIndex={0}
+        className="z-10"
+        avoidCenter={{ xPct: 50, yPct: 40, radiusPct: 22 }}
+      />
 
       {/* subtle static background blobs */}
       <div className="pointer-events-none absolute -left-10 top-24 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
@@ -103,33 +153,39 @@ const Blog: React.FC = () => {
             variants={fadeUp}
           >
             <div className="flex flex-col gap-6">
-              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
+              <figure className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
                 <img
                   src={img1}
-                  alt="Blog visual 1"
+                  alt="Collage image 1"
                   className="h-56 w-full object-cover"
                   onLoad={() => setImgReady(true)}
+                  loading="lazy"
+                  decoding="async"
                 />
-              </div>
+              </figure>
 
-              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
+              <figure className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
                 <img
                   src={img2}
-                  alt="Blog visual 2"
+                  alt="Collage image 2"
                   className="h-64 w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
-              </div>
+              </figure>
             </div>
 
             <div className="relative -mt-10 lg:-mt-16">
               <span className="absolute -left-6 top-16 hidden h-16 w-8 rounded-r-full bg-primary/20 lg:block" />
-              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
+              <figure className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5">
                 <img
                   src={img3}
-                  alt="Blog visual 3"
+                  alt="Collage image 3"
                   className="h-[420px] w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
-              </div>
+              </figure>
               <div className="pointer-events-none absolute -bottom-10 left-12 h-20 w-40 rounded-t-full bg-primary/20 blur-2xl" />
             </div>
           </motion.div>
@@ -144,41 +200,47 @@ const Blog: React.FC = () => {
             )}
             variants={fadeUp}
           >
-            <p className="text-sm font-semibold text-primary">From the Blog</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Insights, tutorials, and product updates
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Stay up to date with best practices, deep dives, and behind-the-scenes
-              notes from our team. Short reads, actionable code, and real examples.
+            <p className="text-sm font-semibold text-primary">
+              {mode === "blog" ? "From the Blog" : "From our Clients"}
             </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              {headerTitle}
+            </h2>
+            <p className="mt-4 text-muted-foreground">{headerSubtitle}</p>
 
             <div className="mt-8 space-y-6">
-              {[
-                { title: "Design tokens that scale your UI", date: "Oct 10, 2025" },
-                { title: "Animating on scroll with zero jank", date: "Oct 03, 2025" },
-                { title: "Shipping faster with shadcn primitives", date: "Sep 25, 2025" },
-              ].map((post, i) => (
-                <div
-                  key={i}
+              {posts.map((post, i) => (
+                <a
+                  key={`${post.title}-${i}`}
                   className="group flex items-start gap-4 rounded-xl border border-border p-4 transition hover:bg-muted/40"
+                  href={post.href ?? "#"}
+                  aria-label={post.title}
                 >
                   <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary/70" />
                   <div>
                     <h3 className="font-medium leading-snug group-hover:underline">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">{post.date}</p>
+                    {post.date && (
+                      <p className="text-sm text-muted-foreground">{post.date}</p>
+                    )}
                   </div>
-                </div>
+                </a>
               ))}
             </div>
 
-            <div className="mt-8 flex items-center gap-4">
-              <Button size="lg">Read the blog</Button>
-              <Button variant="outline" size="lg">
-                <Play className="mr-2 h-4 w-4" />
-                See how we work
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Button size="lg" onClick={handlePrimary} aria-label={primaryText}>
+                {primaryText}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleSecondary}
+                aria-label={secondaryText}
+              >
+                <Play className="mr-2 h-4 w-4" aria-hidden />
+                {secondaryText}
               </Button>
             </div>
           </motion.div>
@@ -188,4 +250,4 @@ const Blog: React.FC = () => {
   );
 };
 
-export default Blog;
+export default Stories;

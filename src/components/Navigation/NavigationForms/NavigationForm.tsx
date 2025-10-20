@@ -1,9 +1,11 @@
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import emailjs from "@emailjs/browser"; 
 import { FormField } from "@/sharedComponent/FormField";
 
 const leadSchema = z.object({
@@ -16,114 +18,93 @@ const leadSchema = z.object({
 
 export type LeadForm = z.infer<typeof leadSchema>;
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 type SubmitType = "demo" | "partner";
-type SimulateMode = "success" | "fail" | "random";
-
-
-async function sendLead(
-  payload: LeadForm & { type: SubmitType },
-  opts?: {
-    mock?: boolean;
-    simulate?: SimulateMode;   
-    delayMs?: number;          
-  }
-) {
-  const { mock = false, simulate = "success", delayMs = 900 } = opts || {};
-
-  if (mock) {
-    await sleep(delayMs);
-    const shouldSucceed =
-      simulate === "success" || (simulate === "random" && Math.random() >= 0.5);
-
-    if (shouldSucceed) {
-      return {
-        ok: true,
-        message: "Mock submission succeeded",
-        echo: payload,
-      };
-    }
-    throw new Error("Mock submission failed");
-  }
-
-  // Real request path (plug your API here later)
-  const res = await fetch("/api/send-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok)
-    throw new Error((await res.text().catch(() => "")) || "Failed to send email");
-  return res.json().catch(() => ({}));
-}
 
 interface NavgationFormProps {
   formId?: string;
-
   type: SubmitType;
 
   onSuccess?: (result: unknown) => void;
-
   onSubmittingChange?: (submitting: boolean) => void;
 
-  mock?: boolean;               
-  simulate?: SimulateMode;       
-  mockDelayMs?: number;         
-
+  /** keep your modal’s external submit button behavior */
   showSubmitButton?: boolean;
   submitLabel?: string;
 }
+
+/** Use env when available; fallback to the same IDs you used on the other site */
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "gmailService";
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_rjbetfo";
+const PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || "qxG8BN4BBGtSYpX3g";
 
 export const NavgationForm: React.FC<NavgationFormProps> = ({
   formId,
   type,
   onSuccess,
   onSubmittingChange,
-  mock = true,         
-  simulate = "fail", 
-  mockDelayMs = 900,
   showSubmitButton = false,
   submitLabel = "Submit",
 }) => {
+  const formRef = useRef<HTMLFormElement | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<LeadForm>({
     resolver: zodResolver(leadSchema),
     defaultValues: { name: "", phone: "", email: "", company: "", message: "" },
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const watchName = watch("name");
+  const watchEmail = watch("email");
 
-  // Reflect submitting to parent (to disable modal button)
   const setSubmittingBoth = (v: boolean) => {
     setSubmitting(v);
     onSubmittingChange?.(v);
   };
 
-  const onSubmit = async (data: LeadForm) => {
+  const onSubmit = async () => {
+    if (!formRef.current) return;
+
     try {
       setSubmittingBoth(true);
-      const result = await sendLead(
-        { ...data, type },
-        { mock, simulate, delayMs: mockDelayMs }
+
+      // Send the actual form DOM so EmailJS can read fields by name
+      const res = await emailjs.sendForm(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        formRef.current,
+        PUBLIC_KEY
       );
-      onSuccess?.(result);
-      reset(); 
+
+      if (res.text === "OK") {
+        onSuccess?.({ ok: true, type });
+        reset();
+        // Optional: toast here if you have a ToastContainer on the page
+        // toast.success("Your email has been sent");
+      } else {
+        throw new Error("Failed to send email");
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Submission failed";
       console.error(msg);
-      alert(msg);
+      alert(msg); // or toast.error(msg)
     } finally {
       setSubmittingBoth(false);
     }
   };
 
   return (
-    <form id={formId} className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      id={formId}
+      ref={formRef}
+      className="space-y-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      {/* Visible fields (react-hook-form controlled) */}
       <FormField
         name="name"
         label="Name"
@@ -168,6 +149,13 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
         error={errors.message?.message}
       />
 
+      {/* Hidden mirrors so the EmailJS template gets the SAME expected names */}
+      <input type="hidden" name="from_name" value={watchName || ""} readOnly />
+      <input type="hidden" name="from_email" value={watchEmail || ""} readOnly />
+      {/* If your template needs `type`, pass it too */}
+      <input type="hidden" name="lead_type" value={type} readOnly />
+
+      {/* Hidden button so an external modal/footer button can trigger submit */}
       {showSubmitButton && (
         <button type="submit" className="hidden" disabled={submitting}>
           {submitLabel}

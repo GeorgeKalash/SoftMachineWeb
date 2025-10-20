@@ -17,7 +17,7 @@ const Main = () => {
   return (
     <div >
       <Navigation />
-      <main className="pt-16"> 
+      <main > 
         <section id="home" className="scroll-mt-24"><Hero /></section>
         <section id="features" className="scroll-mt-24"><Features /></section>
         <section id="blog" className="scroll-mt-24"><Blog /></section>
