@@ -8,46 +8,47 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 const faqs = [
   {
-    question: "How do I get started with the platform?",
+    question: "Can Argus integrate with my existing systems (POS, website, etc.)?",
     answer:
-      "Getting started is easy! Simply sign up for a free trial, and you'll have immediate access to all features. Our onboarding wizard will guide you through the setup process, and our support team is available 24/7 if you need any assistance.",
+      "Yes. Argus is designed to seamlessly integrate with existing POS systems, websites, accounting platforms, and other third-party tools through secure APIs and connectors. Our team can also assist with any custom integration you need.",
   },
   {
-    question: "Can I change my plan later?",
+    question: "Is it customizable to our business needs?",
     answer:
-      "Yes, absolutely! You can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle, and we'll prorate any payments to ensure you only pay for what you use.",
+      "Absolutely. Argus is fully modular and customizable. You can enable only the modules you need and tailor workflows, reports, and user roles to match your business operations precisely.",
   },
   {
-    question: "What payment methods do you accept?",
+    question: "Is it subscription-based or a one-time license?",
     answer:
-      "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for enterprise customers. All payments are processed securely through our encrypted payment gateway.",
+      "Argus is available as both a subscription-based SaaS solution and a one-time on-premise license, depending on your business requirements and IT preferences.",
   },
   {
-    question: "Is my data secure?",
+    question: "How long does implementation take?",
     answer:
-      "Security is our top priority. We use industry-standard encryption (256-bit SSL) to protect your data both in transit and at rest. Our infrastructure is SOC 2 compliant, and we perform regular security audits to ensure your information stays safe.",
+      "Implementation time varies based on your setup size and required integrations. For most businesses, a full deployment takes between 2 to 6 weeks, including setup, customization, and staff training.",
   },
   {
-    question: "Do you offer customer support?",
+    question: "How secure is our data?",
     answer:
-      "Yes! We offer email support for all plans, with response times within 24 hours. Professional and Enterprise plans include priority support with faster response times and access to our dedicated support team via chat and phone.",
+      "Data security is one of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards.",
   },
   {
-    question: "Can I integrate with other tools?",
+    question: "Can we import data from existing systems?",
     answer:
-      "Absolutely! We offer integrations with over 100 popular tools and services including Slack, Google Workspace, Microsoft Teams, Salesforce, and many more. We also provide a comprehensive API for custom integrations.",
+      "Yes. Our onboarding team assists with importing and migrating data from your current systems, ensuring a smooth and lossless transition to Argus.",
   },
   {
-    question: "What happens if I cancel my subscription?",
+    question: "Does Argus have a mobile app for reporting, approvals, etc.?",
     answer:
-      "You can cancel your subscription at any time. You'll continue to have access to all features until the end of your billing period. After cancellation, your data will be stored securely for 30 days, giving you time to export it if needed.",
+      "Yes. The Argus mobile app allows users to manage approvals, monitor operations, and view real-time reports directly from their smartphones, whether on Android or iOS.",
   },
   {
-    question: "Do you offer a free trial?",
+    question: "What type of customer support does SoftMachine offer?",
     answer:
-      "Yes! We offer a 14-day free trial with full access to all features. No credit card is required to start your trial, and you can upgrade to a paid plan at any time during or after the trial period.",
+      "SoftMachine provides multi-channel support including email, live chat, and phone. Enterprise clients also benefit from a dedicated account manager and on-site assistance when needed.",
   },
 ];
+
 
 const FAQ = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();

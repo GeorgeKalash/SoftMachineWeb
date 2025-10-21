@@ -6,11 +6,14 @@ import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useNavigate } from "react-router-dom";
 import SharedButton from "@/sharedComponent/Button";
+/* ---------- Add these imports ---------- */
+import MGLogo from "../../../assets/Clients/MGLogo.jpeg";
+import BYCLogo from "../../../assets/Clients/BYCLogo.png";
+import HyundaiLogo from "../../../assets/Clients/HyundaiLogo.png";
+import NEGLogo from "../../../assets/Clients/NEGLogo.jpg";
+import CILLogo from "../../../assets/Clients/CILLogo.jpeg";
 
-/* You can replace these with real project thumbnails */
-import project1 from "@/assets/testimonial-1.jpg";
-import project2 from "@/assets/testimonial-2.jpg";
-import project3 from "@/assets/testimonial-3.jpg";
+
 
 /* ---------- Types ---------- */
 type Project = {
@@ -22,50 +25,52 @@ type Project = {
   href?: string; // optional project case study link
 };
 
-/* ---------- Data (example) ---------- */
+/* ---------- Add these imports ---------- */
+
+
 const PROJECTS: Project[] = [
   {
-    title: "Argus ERP Mobile Companion",
-    client: "Argus ERP",
-    image: project1,
+    title: "Retail ERP Rollout (40 Stores)",
+    client: "Mansour Group — Lebanon",
+    image: MGLogo,
     summary:
-      "React Native companion app with secure auth, beneficiary flows, HyperPay payments, and dynamic theming.",
-    tags: ["React Native", "TypeScript", "Payments"],
-    href: "/projects/argus-mobile",
+      "Centralized inventory and sales across 40 stores with Argus ERP for better control and multi-location insights.",
+    tags: ["ERP", "Retail", "Multi-store"],
   },
   {
-    title: "SoftMachine SaaS Landing",
-    client: "SoftMachine",
-    image: project2,
+    title: "Remittance Operations Platform",
+    client: "Bin Yaala Exchange — KSA",
+    image: BYCLogo,
     summary:
-      "High-performance Vite + shadcn UI marketing site with smooth animations, forms, and modular sections.",
-    tags: ["Vite", "shadcn/ui", "Tailwind"],
-    href: "/projects/softmachine",
+      "Streamlined remittance workflows with higher accuracy and customizable features for day-to-day operations.",
+    tags: ["Fintech", "Remittance", "ERP"],
   },
   {
-    title: "BYC Remittance Platform",
-    client: "BYC",
-    image: project3,
+    title: "Dealer Ops & Services Enablement",
+    client: "Hyundai — Lebanon",
+    image: HyundaiLogo,
     summary:
-      "Remittance flow with beneficiaries, OTP verification, exchange rates, and secure transfer confirmation.",
-    tags: ["React Native", "OTP", "API"],
-    href: "/projects/byc-remittance",
-  },
-  // duplicate a few items to make the carousel feel rich
-  {
-    title: "Argus ERP Mobile Companion v2",
-    client: "Argus ERP",
-    image: project1,
-    summary: "Enhanced flows, image uploads, and refined UI/UX with global theming.",
-    tags: ["React Native", "AsyncStorage"],
+      "Delivered precise services and product fit for dealer operations and after-sales needs.",
+    tags: ["Automotive", "Services", "Ops"],
   },
   {
-    title: "SoftMachine Docs UI",
-    client: "SoftMachine",
-    image: project2,
-    summary: "Documentation microsite with MDX, search, and code-focused layout.",
-    tags: ["MDX", "Docs", "Vite"],
+    title: "Jewelry Manufacturing & Retail",
+    client: "New Egypt Gold — Egypt",
+    image: NEGLogo,
+    summary:
+      "Optimized production and retail visibility with ongoing partnership and measurable operational gains.",
+    tags: ["Manufacturing", "Retail", "ERP"],
   },
+  {
+    title: "Enterprise Systems Support",
+    client: "CIL — Ivory Coast",
+    image: CILLogo,
+    summary:
+      "Long-term reliable support with strong communication and delivery on critical business workflows.",
+    tags: ["Enterprise", "Support", "ERP"],
+  },
+
+
 ];
 
 /* ---------- tiny carousel (unchanged) ---------- */
@@ -173,7 +178,7 @@ function ProjectCard({ p }: { p: Project }) {
     <Card
       ref={ref}
       className={cn(
-        "h-full overflow-hidden rounded-2xl border border-border/60 bg-background",
+        "group h-full overflow-hidden rounded-2xl border border-border/60 bg-background",
         "transition-all duration-700 hover:shadow-xl"
       )}
       style={{
@@ -181,16 +186,22 @@ function ProjectCard({ p }: { p: Project }) {
         opacity: isVisible ? 1 : 0,
       }}
     >
-      {/* thumbnail */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden">
-        <img
-          src={p.image}
-          alt={`${p.title} thumbnail`}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+      {/* thumbnail - UNIFORM LOGO FRAME */}
+      <div className="relative w-full overflow-hidden">
+        {/* Fixed aspect keeps every card identical height */}
+        <div className="aspect-[16/9] w-full bg-card flex items-center justify-center">
+          <img
+            src={p.image}
+            alt={`${p.title} thumbnail`}
+            /* PERFECT FIT FOR LOGOS: no crop, centered, padded */
+            className="max-h-full max-w-full object-contain p-6 sm:p-8 transition-transform duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        {/* subtle top gradient to match your original vibe (optional) */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
       </div>
 
       {/* body */}
@@ -202,7 +213,6 @@ function ProjectCard({ p }: { p: Project }) {
         <h3 className="text-lg font-semibold leading-tight">{p.title}</h3>
         <p className="mt-2 line-clamp-3 text-sm text-foreground/80">{p.summary}</p>
 
-        {/* tags */}
         <div className="mt-4 flex flex-wrap gap-2">
           {p.tags.map((t) => (
             <span
@@ -214,7 +224,6 @@ function ProjectCard({ p }: { p: Project }) {
           ))}
         </div>
 
-        {/* action */}
         {p.href && (
           <a
             href={p.href}
@@ -227,6 +236,7 @@ function ProjectCard({ p }: { p: Project }) {
     </Card>
   );
 }
+
 
 /* ---------- Page ---------- */
 const ProjectsTeaserWithCarousel: React.FC = () => {

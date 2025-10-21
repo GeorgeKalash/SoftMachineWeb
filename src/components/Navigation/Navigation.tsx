@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { id: "about", label: "About" },
   { id: "features", label: "Features" },
   { id: "pricing", label: "Pricing" },
-  { id: "faq", label: "Support" },
+  { id: "faq", label: "faq" },
 ];
 
 const FORM_ID = "lead-modal-form";

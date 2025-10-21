@@ -133,7 +133,7 @@ const About: React.FC<AboutProps> = ({
         </div>
 
         {/* Section 1: About */}
-        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
+        {/* <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div
             ref={content1Ref}
             className={`space-y-6 transition-all duration-700 ${
@@ -180,10 +180,10 @@ const About: React.FC<AboutProps> = ({
               <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-primary/20 rounded-full blur-3xl -z-10" />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Section 2: Capabilities */}
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div
             ref={image2Ref}
             className={`relative order-2 lg:order-1 transition-all duration-700 ${
@@ -229,7 +229,7 @@ const About: React.FC<AboutProps> = ({
             </div>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-wrap gap-4">
+            {/*<div className="pt-2 flex flex-wrap gap-4">
               <button
                 className="inline-flex items-center rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 onClick={onPrimaryCta ?? (() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }))}
@@ -246,7 +246,7 @@ const About: React.FC<AboutProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

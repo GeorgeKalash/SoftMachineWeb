@@ -2,12 +2,19 @@ import React, { useMemo, useState } from "react";
 import { Star, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
-import testimonial1 from "@/assets/testimonial-1.jpg";
-import testimonial2 from "@/assets/testimonial-2.jpg";
-import testimonial3 from "@/assets/testimonial-3.jpg";
+
+// logo imports
+import MGLogo from "../../../assets/Clients/MGLogo.jpeg";
+import MasagLogo from "../../../assets/Clients/MasagLogo.jpeg";
+import BYCLogo from "../../../assets/Clients/BYCLogo.png";
+import NEGLogo from "../../../assets/Clients/NEGLogo.jpg";
+import CILLogo from "../../../assets/Clients/CILLogo.jpeg";
+import HyundaiLogo from "../../../assets/Clients/HyundaiLogo.png";
+import TamkeenLogo from "../../../assets/Clients/TamkeenLogo.png";
+import KorristarLogo from "../../../assets/Clients/KorristarLogo.jpeg";
+import GDKLogo from "../../../assets/Clients/GDKLogo.jpeg";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 
 /* ---------------- types & data ---------------- */
@@ -19,30 +26,112 @@ type T = {
   rating: number;
 };
 
-const base: T[] = [
-  { name: "Sarah Johnson", role: "CEO at TechStart", image: testimonial1, content: "This platform has completely transformed how our team works. The intuitive interface and powerful features have increased our productivity by 40%. Highly recommended!", rating: 5 },
-  { name: "Michael Chen", role: "Product Manager at InnovateCo", image: testimonial2, content: "We've tried many solutions, but this one stands out. The seamless integrations and excellent support team make it a game-changer for our organization.", rating: 5 },
-  { name: "Emily Rodriguez", role: "Founder of DesignHub", image: testimonial3, content: "The best investment we've made for our business. The analytics features alone have helped us make better decisions and grow faster than ever before.", rating: 5 },
+// add sector only internally; keeps T intact elsewhere
+type Sector = "finance" | "manufacturing" | "auto_retail";
+type WithSector = T & { sector: Sector };
+
+const base: WithSector[] = [
+  {
+    name: "Sultan Bin Ghamiah",
+    role: "CEO · Mansour Group (Lebanon)",
+    image: MGLogo as unknown as string,
+    content:
+      "Argus ERP unified our 40 stores and improved inventory and sales visibility, giving us tighter control and better insights across locations.",
+    rating: 5,
+    sector: "auto_retail", // retail group
+  },
+  {
+    name: "Badr Al Amiri",
+    role: "CEO · MASAGH (KSA)",
+    image: MasagLogo as unknown as string,
+    content:
+      "Partnering with SoftMachine removed operational headaches. Dependable team with our back—highly reassuring.",
+    rating: 5,
+    sector: "finance", // services/solutions fit best here
+  },
+  {
+    name: "Khursan Bin Yaala",
+    role: "CEO · Bin Yaala Exchange (KSA)",
+    image: BYCLogo as unknown as string,
+    content:
+      "Argus ERP streamlined remittance workflows, boosting accuracy and efficiency. Custom features transformed day-to-day operations.",
+    rating: 5,
+    sector: "finance",
+  },
+  {
+    name: "Tarek Tarouti",
+    role: "CEO · New Egypt Gold (Egypt)",
+    image: NEGLogo as unknown as string,
+    content:
+      "Grateful for the tangible impact on our business and the ongoing support. Definitely recommended.",
+    rating: 5,
+    sector: "manufacturing",
+  },
+  {
+    name: "Khalil Ghassani",
+    role: "CEO · CIL (Ivory Coast)",
+    image: CILLogo as unknown as string,
+    content:
+      "Long-term, reliable, and thorough support with excellent communication. A high-performing partner for business solutions.",
+    rating: 5,
+    sector: "finance",
+  },
+  {
+    name: "Wissam Bazzoun",
+    role: "CIO · Hyundai (Lebanon)",
+    image: HyundaiLogo as unknown as string,
+    content:
+      "They consistently deliver—products and services precisely match our business needs.",
+    rating: 5,
+    sector: "auto_retail", // automotive
+  },
+  {
+    name: "Yahya Tahan",
+    role: "CEO · Tamkeen (KSA)",
+    image: TamkeenLogo as unknown as string,
+    content:
+      "Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively.",
+    rating: 5,
+    sector: "manufacturing",
+  },
+  {
+    name: "Ali Korri",
+    role: "CEO · Korristar (Lebanon)",
+    image: KorristarLogo as unknown as string,
+    content: "Exceeded expectations across product, service, and ongoing support.",
+    rating: 5,
+    sector: "auto_retail", // retail/services bucket
+  },
+  {
+    name: "Elie Ferzli",
+    role: "CEO · GDK (Ivory Coast)",
+    image: GDKLogo as unknown as string,
+    content:
+      "Seamless ERP integration with strong reporting improved compliance and transparency across operations.",
+    rating: 5,
+    sector: "finance", // services/compliance-oriented
+  },
 ];
 
-const DATA: Record<"company" | "brand" | "enterprise" | "startup", T[]> = {
-  company: [...base, ...base.map((x, i) => ({ ...x, name: x.name + " " + (i + 1) }))],
-  brand: [...base].reverse().concat(base),
-  enterprise: [...base, ...base, ...base.slice(0, 1)],
-  startup: [...base, ...base.map((x) => ({ ...x, role: "Founder / " + x.role }))],
+// derive by filters
+const DATA: Record<"all" | "finance" | "manufacturing" | "autoRetail", T[]> = {
+  all: base,
+  finance: base.filter((x) => x.sector === "finance"),
+  manufacturing: base.filter((x) => x.sector === "manufacturing"),
+  autoRetail: base.filter((x) => x.sector === "auto_retail"),
 };
 
 /* ---------------- helpers ---------------- */
-function initials(name: string) {
-  const p = name.trim().split(" ");
-  return (p[0]?.[0] ?? "") + (p[1]?.[0] ?? "");
-}
-
 function RatingStars({ value = 5 }: { value?: number }) {
   return (
     <div className="mb-6 flex gap-1">
       {Array.from({ length: value }).map((_, i) => (
-        <Star key={i} aria-hidden className="h-5 w-5 text-yellow-500" style={{ filter: "drop-shadow(0 0 4px rgba(234,179,8,.35))" }} />
+        <Star
+          key={i}
+          aria-hidden
+          className="h-5 w-5 text-yellow-500"
+          style={{ filter: "drop-shadow(0 0 4px rgba(234,179,8,.35))" }}
+        />
       ))}
       <span className="sr-only">{value} out of 5 stars</span>
     </div>
@@ -57,7 +146,8 @@ function TestimonialCard({ t, index }: { t: T; index: number }) {
       ref={ref}
       className={cn(
         "group relative h-full overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-background/70 to-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/40",
-        "p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500"
+        "p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500",
+        "flex flex-col"
       )}
       style={{
         transform: isVisible ? "translateY(0px)" : "translateY(10px)",
@@ -67,19 +157,25 @@ function TestimonialCard({ t, index }: { t: T; index: number }) {
     >
       <div className="pointer-events-none absolute inset-px rounded-2xl bg-gradient-to-br from-accent/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <RatingStars value={t.rating} />
-      <p className="mb-8 text-base leading-relaxed text-foreground/90">“{t.content}”</p>
+
+      <p className="mb-8 text-base leading-relaxed text-foreground/90 line-clamp-4">“{t.content}”</p>
+
       <div className="mt-auto flex items-center gap-4 border-t border-border/70 pt-6">
-        <Avatar className="h-14 w-14 ring-2 ring-border/60">
-          <AvatarImage src={t.image} alt={t.name} />
-          <AvatarFallback className="bg-muted text-foreground/70">
-            {initials(t.name).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full bg-white ring-2 ring-border/60 grid place-items-center">
+          <img
+            src={t.image}
+            alt={t.name}
+            className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
+            loading="lazy"
+          />
+        </div>
+
         <div>
           <div className="font-semibold tracking-tight">{t.name}</div>
           <div className="text-sm text-muted-foreground">{t.role}</div>
         </div>
       </div>
+
       <Sparkles className="absolute right-4 top-4 h-4 w-4 text-accent/70 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
     </Card>
   );
@@ -89,24 +185,24 @@ function TestimonialCard({ t, index }: { t: T; index: number }) {
 type ProjectListProps = {
   id?: string;
   variant?: "teaser" | "full";
-  defaultTab?: "company" | "brand" | "enterprise" | "startup";
+  defaultTab?: "all" | "finance" | "manufacturing" | "autoRetail";
   initialCount?: number;
 };
 
 export default function ProjectList({
   id,
   variant = "teaser",
-  defaultTab = "company",
+  defaultTab = "all",
   initialCount = 6,
 }: ProjectListProps) {
   const { ref: blockRef, isVisible } = useScrollAnimation();
 
   const tabs = useMemo(
     () => [
-      { key: "company", label: "Company", data: DATA.company },
-      { key: "brand", label: "Brand", data: DATA.brand },
-      { key: "enterprise", label: "Enterprise", data: DATA.enterprise },
-      { key: "startup", label: "Startup", data: DATA.startup },
+      { key: "all", label: "All", data: DATA.all },
+      { key: "finance", label: "Finance & Services", data: DATA.finance },
+      { key: "manufacturing", label: "Manufacturing & Industry", data: DATA.manufacturing },
+      { key: "autoRetail", label: "Automotive & Retail", data: DATA.autoRetail },
     ],
     []
   );
@@ -123,28 +219,40 @@ export default function ProjectList({
         "bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_60%),radial-gradient(ellipse_at_bottom,rgba(16,185,129,0.08),transparent_60%)]"
       )}
     >
-      
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px),linear-gradient(to_bottom,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px)] bg-[length:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_80%)]" />
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-6">
+        <div className="mb-6">
           <GoBackButton fallbackTo="/" />
         </div>
 
         <div
           ref={blockRef}
-          className={cn("transition-all duration-700", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3")}
+          className={cn(
+            "transition-all duration-700",
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+          )}
         >
           <div className="mx-auto mb-10 max-w-3xl text-center">
-            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Trusted by 500+ teams</p>
-            <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">Projects & Testimonials</h2>
-            <p className="mt-3 text-pretty text-muted-foreground">Real feedback from companies, brands, and startups using our platform.</p>
+            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              Trusted by leading teams
+            </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+              Projects & Testimonials
+            </h2>
+            <p className="mt-3 text-pretty text-muted-foreground">
+              Real feedback from finance, manufacturing, automotive, and retail partners.
+            </p>
           </div>
 
           <Tabs defaultValue={defaultTab} className="mx-auto max-w-6xl">
             <div className="sticky top-0 z-10 -mx-4 mb-6 bg-background/70 px-4 py-3 backdrop-blur sm:static sm:bg-transparent sm:px-0 sm:py-0">
               <TabsList className="grid w-full grid-cols-4 overflow-auto sm:inline-flex sm:justify-center">
                 {tabs.map((t) => (
-                  <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-accent/15 data-[state=active]:text-foreground">
+                  <TabsTrigger
+                    key={t.key}
+                    value={t.key}
+                    className="data-[state=active]:bg-accent/15 data-[state=active]:text-foreground"
+                  >
                     {t.label}
                   </TabsTrigger>
                 ))}
@@ -155,7 +263,7 @@ export default function ProjectList({
               const visible = counts[tab.key] ?? tab.data.length;
               return (
                 <TabsContent key={tab.key} value={tab.key} className="animate-in fade-in-50">
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
                     {tab.data.slice(0, visible).map((item, i) => (
                       <TestimonialCard key={`${item.name}-${i}`} t={item} index={i} />
                     ))}

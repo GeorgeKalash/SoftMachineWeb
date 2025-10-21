@@ -1,41 +1,20 @@
-import { Zap, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Instagram } from "lucide-react";
+import logo from "../../../src/assets/logo.png";
 
 const footerLinks = {
-  product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Integrations", href: "#" },
-    { name: "Changelog", href: "#" },
-    { name: "API", href: "#" },
-  ],
-  company: [
-    { name: "About Us", href: "#about" },
-    { name: "Careers", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Press Kit", href: "#" },
-    { name: "Contact", href: "#" },
-  ],
-  resources: [
-    { name: "Documentation", href: "#" },
-    { name: "Help Center", href: "#" },
-    { name: "Community", href: "#" },
-    { name: "Tutorials", href: "#" },
-    { name: "FAQ", href: "#faq" },
-  ],
   legal: [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
-    { name: "Cookie Policy", href: "#" },
-    { name: "Security", href: "#" },
-    { name: "GDPR", href: "#" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "/terms" },
+    { name: "Cookie Policy", href: "/cookies" },
+    { name: "Security", href: "/security" },
+    { name: "GDPR", href: "/gdpr" },
   ],
 };
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
+  // If you have the exact LinkedIn URL, replace the href below.
   { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Instagram, href: "https://www.instagram.com/_softmachine_/", label: "Instagram" },
 ];
 
 const Footer = () => {
@@ -49,86 +28,41 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary rounded-lg p-2">
-                <Zap className="h-6 w-6 text-primary-foreground" />
+              <div className="bg-secondary rounded-lg p-1">
+                <img
+                  src={logo}
+                  alt="SoftMachine logo"
+                  className="h-10 w-auto"
+                  loading="eager"
+                  decoding="async"
+                />
               </div>
-              <span className="text-2xl font-bold">Base</span>
+              <span className="text-2xl font-bold">SoftMachine</span>
             </div>
+
             <p className="text-muted-foreground mb-6 max-w-sm">
-              Empowering teams to work smarter with cutting-edge technology and intuitive
-              design.
+              We design and build custom software that solves real business problems.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:hello@base.com" className="hover:text-primary transition-colors">
-                  hello@base.com
+                <a href="mailto:info@softmachine.co" className="hover:text-primary transition-colors">
+                  info@softmachine.co
                 </a>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <a href="tel:+10123456789" className="hover:text-primary transition-colors">
-                  (0123) 456-789
+                <a href="tel:+96176888468" className="hover:text-primary transition-colors">
+                  +961 76 888 468
                 </a>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>123 Business St, San Francisco, CA 94102</span>
+                <span>Bitar Bldg, 4th Floor, Sahel Alma, 1658 Jounieh, Lebanon</span>
               </div>
             </div>
-          </div>
-
-          {/* Product Links */}
-          <div>
-            <h3 className="font-bold mb-4">Product</h3>
-            <ul className="space-y-3">
-              {footerLinks.product.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Links */}
-          <div>
-            <h3 className="font-bold mb-4">Company</h3>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div>
-            <h3 className="font-bold mb-4">Resources</h3>
-            <ul className="space-y-3">
-              {footerLinks.resources.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Legal Links */}
@@ -154,7 +88,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             {/* Copyright */}
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Base. All rights reserved.
+              © {currentYear} SoftMachine. All rights reserved.
             </p>
 
             {/* Social Links */}
@@ -166,6 +100,8 @@ const Footer = () => {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all"
                   >
                     <Icon className="h-5 w-5" />
@@ -174,15 +110,6 @@ const Footer = () => {
               })}
             </div>
 
-            {/* Additional Links */}
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">
-                Sitemap
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                Accessibility
-              </a>
-            </div>
           </div>
         </div>
       </div>
