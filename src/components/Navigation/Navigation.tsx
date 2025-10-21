@@ -189,9 +189,9 @@ const Navigation = () => {
         {modalType && (
           <NavgationForm
             formId={FORM_ID}
-            type={modalType}                     // tell the form which flow it is
-            onSuccess={handleFormSuccess}        // form calls this on success
-            onSubmittingChange={setIsSending}    // form reports submitting state to disable modal button
+            type={modalType}                   
+            onSuccess={handleFormSuccess}        
+            onSubmittingChange={setIsSending}    
           />
         )}
       </PageModal>

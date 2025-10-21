@@ -276,6 +276,7 @@ const ProjectsTeaserWithCarousel: React.FC = () => {
           <SharedButton
             title="View all projects"
             onClick={() => navigate("/allProjects")}
+            color="primary"
           />
         </div>
       </div>

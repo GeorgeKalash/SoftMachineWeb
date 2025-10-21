@@ -23,7 +23,6 @@ type T = {
   role: string;
   image: string;
   content: string;
-  rating: number;
 };
 
 // add sector only internally; keeps T intact elsewhere
@@ -37,7 +36,7 @@ const base: WithSector[] = [
     image: MGLogo as unknown as string,
     content:
       "Argus ERP unified our 40 stores and improved inventory and sales visibility, giving us tighter control and better insights across locations.",
-    rating: 5,
+     
     sector: "auto_retail", // retail group
   },
   {
@@ -46,7 +45,7 @@ const base: WithSector[] = [
     image: MasagLogo as unknown as string,
     content:
       "Partnering with SoftMachine removed operational headaches. Dependable team with our back—highly reassuring.",
-    rating: 5,
+     
     sector: "finance", // services/solutions fit best here
   },
   {
@@ -55,7 +54,7 @@ const base: WithSector[] = [
     image: BYCLogo as unknown as string,
     content:
       "Argus ERP streamlined remittance workflows, boosting accuracy and efficiency. Custom features transformed day-to-day operations.",
-    rating: 5,
+     
     sector: "finance",
   },
   {
@@ -64,7 +63,7 @@ const base: WithSector[] = [
     image: NEGLogo as unknown as string,
     content:
       "Grateful for the tangible impact on our business and the ongoing support. Definitely recommended.",
-    rating: 5,
+     
     sector: "manufacturing",
   },
   {
@@ -73,7 +72,7 @@ const base: WithSector[] = [
     image: CILLogo as unknown as string,
     content:
       "Long-term, reliable, and thorough support with excellent communication. A high-performing partner for business solutions.",
-    rating: 5,
+     
     sector: "finance",
   },
   {
@@ -82,7 +81,7 @@ const base: WithSector[] = [
     image: HyundaiLogo as unknown as string,
     content:
       "They consistently deliver—products and services precisely match our business needs.",
-    rating: 5,
+     
     sector: "auto_retail", // automotive
   },
   {
@@ -91,7 +90,7 @@ const base: WithSector[] = [
     image: TamkeenLogo as unknown as string,
     content:
       "Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively.",
-    rating: 5,
+     
     sector: "manufacturing",
   },
   {
@@ -99,7 +98,7 @@ const base: WithSector[] = [
     role: "CEO · Korristar (Lebanon)",
     image: KorristarLogo as unknown as string,
     content: "Exceeded expectations across product, service, and ongoing support.",
-    rating: 5,
+     
     sector: "auto_retail", // retail/services bucket
   },
   {
@@ -108,7 +107,7 @@ const base: WithSector[] = [
     image: GDKLogo as unknown as string,
     content:
       "Seamless ERP integration with strong reporting improved compliance and transparency across operations.",
-    rating: 5,
+     
     sector: "finance", // services/compliance-oriented
   },
 ];
@@ -121,22 +120,7 @@ const DATA: Record<"all" | "finance" | "manufacturing" | "autoRetail", T[]> = {
   autoRetail: base.filter((x) => x.sector === "auto_retail"),
 };
 
-/* ---------------- helpers ---------------- */
-function RatingStars({ value = 5 }: { value?: number }) {
-  return (
-    <div className="mb-6 flex gap-1">
-      {Array.from({ length: value }).map((_, i) => (
-        <Star
-          key={i}
-          aria-hidden
-          className="h-5 w-5 text-yellow-500"
-          style={{ filter: "drop-shadow(0 0 4px rgba(234,179,8,.35))" }}
-        />
-      ))}
-      <span className="sr-only">{value} out of 5 stars</span>
-    </div>
-  );
-}
+
 
 /* ---------------- card ---------------- */
 function TestimonialCard({ t, index }: { t: T; index: number }) {
@@ -156,7 +140,6 @@ function TestimonialCard({ t, index }: { t: T; index: number }) {
       }}
     >
       <div className="pointer-events-none absolute inset-px rounded-2xl bg-gradient-to-br from-accent/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      <RatingStars value={t.rating} />
 
       <p className="mb-8 text-base leading-relaxed text-foreground/90 line-clamp-4">“{t.content}”</p>
 
@@ -208,7 +191,12 @@ export default function ProjectList({
   );
 
   const [counts] = useState<Record<string, number>>(
-    Object.fromEntries(tabs.map((t) => [t.key, variant === "full" ? t.data.length : initialCount]))
+    Object.fromEntries(
+      tabs.map((t) => [
+        t.key,
+        variant === "full" || t.key === "all" ? t.data.length : initialCount,
+      ])
+    )
   );
 
   return (

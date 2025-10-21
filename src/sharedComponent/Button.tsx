@@ -11,8 +11,10 @@ import {
 
 type SharedButtonProps = {
   title?: string;
+  /** semantic color */
   color?: "primary" | "secondary" | "danger" | "ghost" | "link" | "outline";
   size?: "sm" | "lg" | "default" | "icon";
+  /** force outline styling for the chosen color */
   outline?: boolean;
   disabled?: boolean;
   active?: boolean;
@@ -44,49 +46,67 @@ function mapVariant(
   }
 }
 
-/** Use `!` to beat shadcn hover styles; repeat same color on hover/active */
-function lockedColorClasses(color?: SharedButtonProps["color"], forceOutline?: boolean) {
-  if (forceOutline || color === "outline") {
-    return [
-      "!border-blue-600 !text-blue-700",
-      "hover:!bg-transparent hover:!text-blue-700",
-      "active:!bg-transparent focus-visible:!ring-blue-600",
-    ].join(" ");
+/** Additional semantic tweaks without hardcoding hues */
+function semanticClasses(
+  color?: SharedButtonProps["color"],
+  forceOutline?: boolean,
+  active?: boolean,
+  hasLogo?: boolean
+) {
+  const base: string[] = ["transition-colors"];
+
+  // Active ring should match the semantic color
+  if (active) {
+    // Use ring tokens that align with selected variant
+    switch (color) {
+      case "secondary":
+        base.push("ring-2 ring-offset-2 ring-secondary");
+        break;
+      case "danger":
+        base.push("ring-2 ring-offset-2 ring-destructive");
+        break;
+      case "ghost":
+        base.push("ring-2 ring-offset-2 ring-muted");
+        break;
+      case "link":
+        base.push("ring-2 ring-offset-2 ring-primary");
+        break;
+      case "primary":
+      default:
+        base.push("ring-2 ring-offset-2 ring-primary");
+        break;
+    }
   }
 
-  switch (color) {
-    case "secondary":
-      return [
-        "!bg-gray-600 !text-white",
-        "hover:!bg-gray-600 active:!bg-gray-600",
-        "focus-visible:!ring-gray-600",
-      ].join(" ");
-    case "danger":
-      return [
-        "!bg-red-600 !text-white",
-        "hover:!bg-red-600 active:!bg-red-600",
-        "focus-visible:!ring-red-600",
-      ].join(" ");
-    case "ghost":
-      return [
-        "!text-gray-700 !bg-transparent",
-        "hover:!bg-transparent hover:!text-gray-700",
-        "active:!bg-transparent focus-visible:!ring-gray-300",
-      ].join(" ");
-    case "link":
-      return [
-        "!text-blue-600",
-        "hover:!text-blue-600 hover:!no-underline",
-        "active:!text-blue-600",
-      ].join(" ");
-    case "primary":
-    default:
-      return [
-        "!bg-blue-600 !text-white",
-        "hover:!bg-blue-600 active:!bg-blue-600",
-        "focus-visible:!ring-blue-600",
-      ].join(" ");
+  // Outline variant should inherit the semantic border/text color without hardcoding
+  if (forceOutline || color === "outline") {
+    // Add light semantic nudge: for outline + "primary", ensure primary border/text
+    base.push("border-current");
+    switch (color) {
+      case "secondary":
+        base.push("text-secondary");
+        break;
+      case "danger":
+        base.push("text-destructive");
+        break;
+      case "ghost":
+        base.push("text-muted-foreground");
+        break;
+      case "link":
+        base.push("text-primary");
+        break;
+      case "primary":
+      default:
+        base.push("text-primary");
+        break;
+    }
   }
+
+  if (hasLogo) {
+    base.push("p-0 w-10 h-10");
+  }
+
+  return base.join(" ");
 }
 
 export const SharedButton: React.FC<SharedButtonProps> = ({
@@ -104,37 +124,38 @@ export const SharedButton: React.FC<SharedButtonProps> = ({
   type = "button",
 }) => {
   const variant = mapVariant(color, outline);
-  const hardLock = lockedColorClasses(color, outline);
+  const extras = semanticClasses(color, outline, active, Boolean(logo));
 
-  const content = (
-    <Button
-      id={id}
-      type={type}
-      variant={variant}
-      size={logo ? "icon" : size}
-      disabled={disabled}
-      onClick={onClick}
-      className={[
-        // disable color shifts on hover/active; keep motion minimal
-        "transition-colors",
-        hardLock,
-        // optional ring when "active" prop is true (keep hue identical)
-        active ? "!ring-2 !ring-offset-2 !ring-blue-600" : "",
-        logo ? "p-0 w-10 h-10" : "",
-        className || "",
-      ].join(" ")}
-    >
-      {logo ? (
-        <img
-          src={logo}
-          alt="logo"
-          className="w-[22px] h-[22px] object-contain"
-        />
-      ) : (
-        title
-      )}
-    </Button>
-  );
+// SharedButton.tsx – only change is the `className` compose
+
+const content = (
+  <Button
+    id={id}
+    type={type}
+    variant={variant}
+    size={logo ? "icon" : size}
+    disabled={disabled}
+    onClick={onClick}
+    className={[
+      // keep smooth color transition
+      "transition-colors",
+      // ✅ kill the opacity-based hover from shadcn and use solid darkening
+      "!bg-[hsl(var(--primary))] !text-[hsl(var(--primary-foreground))]",
+      "!hover:bg-[hsl(var(--primary))] hover:brightness-90", // darker red on hover
+      "!active:bg-[hsl(var(--primary))] active:brightness-75", // even darker on active
+      active ? "!ring-2 !ring-offset-2 !ring-primary" : "",
+      logo ? "p-0 w-10 h-10" : "",
+      className || "",
+    ].join(" ")}
+  >
+    {logo ? (
+      <img src={logo} alt="logo" className="w-[22px] h-[22px] object-contain" />
+    ) : (
+      title
+    )}
+  </Button>
+);
+
 
   if (!tooltip) return content;
 
@@ -149,4 +170,3 @@ export const SharedButton: React.FC<SharedButtonProps> = ({
 };
 
 export default SharedButton;
-
