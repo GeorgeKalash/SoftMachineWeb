@@ -117,7 +117,7 @@ export function SolutionsMenu({
   const ICON_SIZE = "h-8 w-8 md:h-9 md:w-9";                            // was h-5 w-5
   const LABEL_CLASS = "text-[15px] md:text-base font-medium leading-6"; // was text-sm
   const CELL_CLASS =
-  "group flex items-start gap-3 p-2 md:p-2 rounded-lg border hover:border-primary/40 hover:bg-muted/50 transition active:scale-[0.98]";
+  "group flex items-start gap-3 p-2 md:p-2 rounded-lg  hover:border-primary/40 hover:bg-muted/50 transition active:scale-[0.98]";
 
 
   const ItemCell = ({ icon: Icon, imgSrc, imgHoverSrc, label, href, meta, onClick }: SolutionItem) => {

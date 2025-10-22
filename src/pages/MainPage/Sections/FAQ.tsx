@@ -68,9 +68,7 @@ const FAQ = () => {
                 : 'opacity-0 translate-y-10'
             }`}
           >
-            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
-              FAQ
-            </div>
+          
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Frequently Asked Questions
             </h2>

@@ -256,6 +256,7 @@ const ProjectsTeaserWithCarousel: React.FC = () => {
             headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px),linear-gradient(to_bottom,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px)] bg-[length:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_80%)]" />
           <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
             Latest Projects
           </div>

@@ -7,6 +7,7 @@ import { Sparkles, PlayCircle } from "lucide-react";
 
 // assets
 import cat from "@/assets/cat.gif";
+import giphy from "@/assets/giphy-1.gif"
 import workcomputer from "@/assets/workcomputer.gif";
 import path from "@/assets/path.gif";
 
@@ -26,7 +27,6 @@ type ShowcaseAction = {
 type ShowcaseItem = {
   key: string;
   title: string;
-  /** We’ll use `body` to keep your exact text */
   body: string;
   image: ImageLike;
   imageAlt?: string;
@@ -88,7 +88,7 @@ const items: ShowcaseItem[] = [
     title: "User Training & Change Management",
     body:
       "We believe that successful ERP projects depend on user adoption. Our experts deliver personalized training sessions to equip your team with the skills needed to fully leverage Argus ERP. Through effective change management and hands-on guidance, we help your employees adapt quickly and confidently to the new system.",
-    image: cat,
+    image: giphy,
     imageAlt: "User training",
     anchorId: "training",
     primary: {
@@ -183,6 +183,21 @@ function useViewportStepHeight(offset: number) {
   return h;
 }
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false
+  );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const m = window.matchMedia(query);
+    const handler = () => setMatches(m.matches);
+    handler();
+    m.addEventListener?.("change", handler);
+    return () => m.removeEventListener?.("change", handler);
+  }, [query]);
+  return matches;
+}
+
 /* ---------------- helpers ---------------- */
 const smoothScrollTo = (id: string) => {
   const el = document.getElementById(id);
@@ -206,8 +221,8 @@ export default function ScrollableShowcase({
   const { sentinelsRef, active, setActive } = useActiveStep(items.length, topOffsetPx);
   usePreloadImages(items.map((i) => toSrc(i.image)));
 
-  // exact per-step height so left & right match and scroll ends cleanly
   const stepHeight = useViewportStepHeight(topOffsetPx);
+  const isLg = useMediaQuery("(min-width: 1024px)");
 
   const jumpTo = (idx: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, idx));
@@ -220,16 +235,13 @@ export default function ScrollableShowcase({
 
   return (
     <section id={id} className={cn("bg-background py-24", className)}>
-      {/* Tighter container and column spacing */}
       <div className="container mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-[1.3fr_0.9fr] lg:gap-x-6">
           {/* TEXT COLUMN (left) */}
           <div className="lg:order-1">
             <div className="rounded-2xl bg-card">
-              {/* Reduced inner padding */}
-              <div className="px-5 py-8 md:px-8 md:py-12">
-                {/* Reduced vertical rhythm between steps */}
-                <div className="space-y-20 md:space-y-24">
+              <div className="px-5 py-8 md:px-8 md:py-10">
+                <div className="space-y-12 md:space-y-16">
                   {items.map((item, idx) => (
                     <StepBlock
                       key={item.key}
@@ -239,6 +251,7 @@ export default function ScrollableShowcase({
                       topOffsetPx={topOffsetPx}
                       matchHeight={stepHeight}
                       isLast={idx === items.length - 1}
+                      isLg={isLg}
                     />
                   ))}
                 </div>
@@ -246,39 +259,50 @@ export default function ScrollableShowcase({
             </div>
           </div>
 
-          {/* STICKY MEDIA (right) */}
-          <div className="lg:order-2">
-            <div className="lg:sticky" style={{ top: topOffsetPx }}>
-              <div
-                className="hidden lg:flex items-center justify-center"
-                style={{ minHeight: stepHeight }}
-              >
-                {/* Slightly narrower media column */}
-                <div className="w-full max-w-sm">
-                  <div className="group relative overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-lg">
-                    <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
-                    <div className="aspect-square w-full overflow-hidden">
-                      <img
-                        key={toSrc(activeItem.image)}
-                        src={toSrc(activeItem.image)}
-                        alt={activeItem.imageAlt ?? activeItem.title}
-                        className="h-full w-full object-cover transition-all duration-500 ease-out"
-                      />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
-                      <div
-                        className="h-1 bg-primary/70 transition-all duration-500 ease-out"
-                        style={{ width: `${((active + 1) / items.length) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* STICKY MEDIA (right) — desktop only */}
+<div className="lg:order-2">
+  <div className="lg:sticky" style={{ top: topOffsetPx }}>
+    <div
+      className="hidden lg:flex items-center justify-center"
+      style={{ minHeight: stepHeight }}
+    >
+      {/* wider on big screens */}
+      <div className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
+        <div className="group relative overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-lg">
+          {/* faint ring on the outer card */}
+          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
 
-              {/* Mobile/tablet empty to focus on text first */}
-              <div className="lg:hidden" />
+          {/* framed media area with padding so the whole img shows */}
+          <div className="w-full">
+            <div className="rounded-xl border bg-secondary p-4 md:p-6">
+              {/* choose an aspect; 4/3 feels roomy. square also works */}
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  key={toSrc(activeItem.image)}
+                  src={toSrc(activeItem.image)}
+                  alt={activeItem.imageAlt ?? activeItem.title}
+                  className="h-full w-full object-contain transition-all duration-500 ease-out"
+                />
+              </div>
             </div>
           </div>
+
+          {/* progress bar */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
+            <div
+              className="h-1 bg-primary/70 transition-all duration-500 ease-out"
+              style={{ width: `${((active + 1) / items.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Hide on mobile/tablet to avoid duplicate media */}
+    <div className="lg:hidden" />
+  </div>
+</div>
+
         </div>
       </div>
     </section>
@@ -293,6 +317,7 @@ function StepBlock({
   topOffsetPx,
   matchHeight,
   isLast = false,
+  isLg,
 }: {
   refFn: (el: HTMLDivElement | null) => void;
   item: ShowcaseItem;
@@ -300,6 +325,7 @@ function StepBlock({
   topOffsetPx: number;
   matchHeight: number | null;
   isLast?: boolean;
+  isLg: boolean;
 }) {
   const onPrimary = () => {
     fireContactEvent(item.key, "cta");
@@ -316,10 +342,11 @@ function StepBlock({
     <article
       id={item.anchorId}
       className={cn(
-        "grid items-center transition-all duration-500",
-        isActive ? "opacity-100" : "opacity-80"
+        "relative grid items-center transition-all duration-400",
+        isActive ? "opacity-100" : "opacity-90"
       )}
-      style={{ minHeight: matchHeight ?? 680 }}
+      // Only enforce tall matched heights on large screens to keep mobile compact
+      style={isLg ? { minHeight: matchHeight ?? 620 } : undefined}
     >
       {/* sentinel */}
       <div
@@ -329,44 +356,83 @@ function StepBlock({
         aria-hidden
       />
 
-      {/* content */}
+      {/* vertical rail + active pip (desktop only) */}
+      <div className={cn("absolute -left-3 top-0 hidden h-full lg:block")} aria-hidden>
+        <div className="mx-auto h-full w-px bg-border/60" />
+        <div
+          className={cn(
+            "absolute -left-[5px] top-3 h-2.5 w-2.5 rounded-full border bg-background transition-all duration-300",
+            isActive ? "border-primary ring-4 ring-primary/15" : "border-border"
+          )}
+        />
+      </div>
+
+      {/* content box */}
       <div
         className={cn(
-          "transform-gpu transition-all duration-500",
-          isActive ? "translate-y-0" : "translate-y-1"
+          "max-w-[68ch] pl-0 lg:pl-6",
+          "transform-gpu transition-all duration-400",
+          isActive ? "translate-y-0" : "translate-y-0.5"
         )}
       >
-        {/* subtle overline/pill like “Segment” */}
+        {/* tag */}
         {item.tag ? (
-          <div className="mb-3">
-            <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium tracking-wide text-muted-foreground">
+          <div className="mb-2.5">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full border px-2.5 py-1",
+                "text-[11px] font-medium tracking-wide text-muted-foreground",
+                isActive ? "border-primary/30 bg-primary/5" : "border-border/60 bg-transparent"
+              )}
+            >
               {item.tag}
             </span>
           </div>
         ) : null}
 
-        {/* big, crisp headline */}
-        <h3 className="text-3xl md:text-5xl font-semibold tracking-tight leading-[1.1]">
+        {/* MOBILE IMAGE (per section) */}
+        <div className="lg:hidden mb-4">
+          <div className="overflow-hidden rounded-xl border bg-card/50">
+            <img
+              src={toSrc(item.image)}
+              alt={item.imageAlt ?? item.title}
+              loading="lazy"
+              className="block w-full h-56 object-cover"
+            />
+          </div>
+        </div>
+
+        {/* headline */}
+        <h3
+          className={cn(
+            "text-2xl md:text-4xl font-semibold tracking-tight leading-[1.15]",
+            "text-foreground"
+          )}
+        >
           {item.title}
         </h3>
 
-        {/* comfy body text */}
-        <p className="mt-4 text-base md:text-xl text-muted-foreground leading-8">
+        {/* body */}
+        <p
+          className={cn(
+            "mt-3 md:mt-4",
+            "text-[15px] md:text-lg leading-7 md:leading-8",
+            "text-muted-foreground/90"
+          )}
+        >
           {item.body}
         </p>
 
         {/* CTAs */}
-        <div className="mt-7 flex flex-wrap items-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           {item.primary ? (
             <Button
               onClick={onPrimary}
               variant={item.primary.variant ?? "default"}
-              className="h-11 rounded-xl px-6 text-base shadow-sm"
+              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm"
             >
               {item.primary.icon}
-              <span className={cn(item.primary.icon && "ml-2")}>
-                {item.primary.label}
-              </span>
+              <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
             </Button>
           ) : null}
 
@@ -375,7 +441,7 @@ function StepBlock({
               <Button
                 variant={item.secondary.variant ?? "outline"}
                 asChild
-                className="h-11 rounded-xl px-6 text-base"
+                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
                 onClick={(e) => onSecondary(e)}
               >
                 <a href={item.secondary.href}>{item.secondary.label}</a>
@@ -383,7 +449,7 @@ function StepBlock({
             ) : (
               <Button
                 variant={item.secondary.variant ?? "outline"}
-                className="h-11 rounded-xl px-6 text-base"
+                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
                 onClick={() => smoothScrollTo(item.anchorId)}
               >
                 {item.secondary.label}
@@ -391,6 +457,13 @@ function StepBlock({
             )
           ) : null}
         </div>
+
+        {/* divider between steps (not after last) */}
+        {!isLast && (
+          <div className="mt-8 md:mt-10">
+            <div className="h-px w-full bg-border/70" />
+          </div>
+        )}
       </div>
     </article>
   );
