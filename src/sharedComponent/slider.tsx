@@ -1,37 +1,48 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimationFrame } from "framer-motion";
 
-
+/* --------------------------------- Types -------------------------------- */
 export type Metric = { label: string; value: string };
+export type ImageLike = string | { src: string };
+
 export type CaseItem = {
   id: string | number;
   brand: string;
-  logo?: string | { src: string } | React.ReactNode; // import, url, or node
+  /* Header */
+  logo?: ImageLike;
+  logoAlt?: string;
+  nameOverride?: string;
+  /* Body media */
+  image?: ImageLike; // optional
+  imageAlt?: string;
+  mediaAspect?: number; // e.g., 16/9 -> 1.777...
+  imageFit?: "contain" | "cover"; // default contain
+  /* Optional extras */
   quote?: string;
-  person?: string; // e.g., "Carlos Costa"
-  role?: string;   // e.g., "Director, TAG Heuer"
-  metrics?: Metric[]; // e.g., [{ value: "+625%", label: "User spend / month" }]
+  person?: string;
+  role?: string;
+  metrics?: Metric[];
 };
 
-export type CaseStudyCarouselProps = {
-  items: CaseItem[];
-  /** number of horizontal lanes (rows). Auto‑clamped to 1–3. */
-  lanes?: 1 | 2 | 3;
-  /** pixels/second lane speed (constant regardless of content width) */
-  speed?: number;
-  /** pause scroll on hover */
+export type FixedCarouselProps = {
+  lanes?: 1 | 2 | 3; // stacked auto-scroll lanes
+  speed?: number; // pixels / second
   pauseOnHover?: boolean;
-  /** optional custom renderer for each card */
-  renderItem?: (item: CaseItem) => React.ReactNode;
-  /** container className */
+  gap?: number; // px between columns (each column = 2 cards)
+  pairGap?: number; // px between two cards in the same column
+  cardWidth?: number; // target card width in px (used for media sizing)
+  responsiveWidth?: boolean; // clamp the visual width responsively
+  edgeFade?: boolean; // fade edges to hint more content
+  direction?: "ltr" | "rtl"; // reverse direction for RTL
+  autoPauseOffscreen?: boolean; // auto-pause when the section is offscreen
   className?: string;
 };
 
-/* ------------------------------ Helper utils ----------------------------- */
-const toSrc = (img?: string | { src: string }) =>
-  typeof img === "string" ? img : img?.src ?? undefined;
+/* ------------------------------- Utilities ------------------------------ */
+const toSrc = (img?: ImageLike) => (typeof img === "string" ? img : img?.src ?? undefined);
+const cx = (...cls: Array<string | undefined | false | null>) => cls.filter(Boolean).join(" ");
 
 const usePrefersReducedMotion = () => {
   const [reduced, set] = useState(false);
@@ -46,127 +57,494 @@ const usePrefersReducedMotion = () => {
   return reduced;
 };
 
-/* ------------------------------- Card (UI) ------------------------------- */
-const DefaultCard: React.FC<{ item: CaseItem }> = ({ item }) => {
-  const img = toSrc(item.logo as any);
+function chunkPairs<T>(arr: T[]): Array<[T, T | undefined]> {
+  const out: Array<[T, T | undefined]> = [];
+  for (let i = 0; i < arr.length; i += 2) out.push([arr[i], arr[i + 1]]);
+  if (arr.length % 2 === 1) out[out.length - 1][1] = arr[0];
+  return out;
+}
+
+/* ----------------------------- Remote assets ---------------------------- */
+/** Simple text-based logo (first letter) hosted by dummyimage */
+const brandLogo = (brand: string) =>
+  `https://dummyimage.com/96x96/0b0b0b/ffffff.png&text=${encodeURIComponent(brand?.[0] ?? "•")}`;
+
+/** A few tasteful Unsplash shots (stable IDs + 16:9 crops) */
+const IMG = {
+  analytics: "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=1280&q=60",
+  sales: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1280&q=60",
+  dashboard: "https://images.unsplash.com/photo-1551281044-8b94c1a1be6c?auto=format&fit=crop&w=1280&q=60",
+  hotel: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&w=1280&q=60",
+  warehouse: "https://images.unsplash.com/photo-1581091870622-3a89c89f785d?auto=format&fit=crop&w=1280&q=60",
+  partsSquare: "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=640&q=60",
+  chipSquare: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=640&q=60",
+  opsSquare: "https://images.unsplash.com/photo-1580894732444-8ecded3e7bff?auto=format&fit=crop&w=640&q=60",
+};
+
+/* ----------------------------- Fixed data set --------------------------- */
+const STATIC_ITEMS: CaseItem[] = [
+  {
+    id: "aurora-1",
+    brand: "Aurora Retail",
+    logo: brandLogo("Aurora Retail"),
+    image: IMG.dashboard,
+    imageAlt: "POS dashboard snapshot",
+    mediaAspect: 16 / 9,
+    imageFit: "contain",
+    quote: "We closed our monthly books 2 days faster. The daily view is a lifesaver.",
+    person: "Maya N.",
+    role: "Finance Manager",
+    metrics: [
+      { label: "Close time", value: "-38%" },
+      { label: "Manual entries", value: "-52%" },
+    ],
+  },
+  {
+    id: "cedar-2",
+    brand: "Cedar Foods",
+    logo: brandLogo("Cedar Foods"),
+    quote: "Inventory alerts are spot on. Out-of-stocks dropped without overstocking.",
+    person: "Rami K.",
+    role: "Supply Lead",
+    metrics: [
+      { label: "Stockouts", value: "-47%" },
+      { label: "Waste", value: "-29%" },
+    ],
+  },
+  {
+    id: "nimbus-3",
+    brand: "Nimbus Logistics",
+    logo: brandLogo("Nimbus Logistics"),
+    image: IMG.opsSquare,
+    imageAlt: "Operations badge",
+    mediaAspect: 1,
+    imageFit: "contain",
+    metrics: [
+      { label: "On-time delivery", value: "97.4%" },
+      { label: "Avg. handling time", value: "-31%" },
+    ],
+  },
+  {
+    id: "atlas-4",
+    brand: "Atlas Distributors",
+    logo: brandLogo("Atlas Distributors"),
+    image: IMG.sales,
+    imageAlt: "Sales pipeline view",
+    mediaAspect: 16 / 9,
+    imageFit: "contain",
+    quote: "Clean UI and clear permissions. Our reps finally love logging activities.",
+    person: "Aya Boutros",
+    role: "Sales Operations",
+  },
+  {
+    id: "marina-5",
+    brand: "Marina Boutique",
+    logo: brandLogo("Marina Boutique"),
+    quote: "The mobile approvals are clutch. I approve POs between meetings.",
+    person: "Samar T.",
+    role: "General Manager",
+  },
+  {
+    id: "zenhub-6",
+    brand: "ZenHub Pharmacy",
+    logo: brandLogo("ZenHub Pharmacy"),
+    image: IMG.chipSquare,
+    imageAlt: "Analytics chip close-up",
+    mediaAspect: 1,
+    imageFit: "contain",
+    metrics: [
+      { label: "Shrinkage", value: "-35%" },
+      { label: "Cycle count time", value: "-44%" },
+    ],
+  },
+  {
+    id: "orchard-7",
+    brand: "Orchard Markets",
+    logo: brandLogo("Orchard Markets"),
+    image: IMG.analytics,
+    imageAlt: "Cohorts & retention",
+    mediaAspect: 16 / 9,
+    imageFit: "contain",
+    quote: "Dashboards are actually readable. Our weekly standups are 15 minutes now.",
+    person: "Firas H.",
+    role: "Head of Ops",
+    metrics: [
+      { label: "Meeting time", value: "-40%" },
+      { label: "Report prep", value: "-61%" },
+    ],
+  },
+  {
+    id: "cedar-8",
+    brand: "Cedar Foods",
+    logo: brandLogo("Cedar Foods"),
+    metrics: [
+      { label: "PO lead time", value: "-22%" },
+      { label: "Supplier SLA", value: "+13%" },
+    ],
+  },
+  {
+    id: "lighthouse-9",
+    brand: "Lighthouse Hotels",
+    logo: brandLogo("Lighthouse Hotels"),
+    image: IMG.hotel,
+    imageAlt: "Reservations & billing",
+    mediaAspect: 16 / 9,
+    imageFit: "contain",
+    quote: "Front desk can do everything from one screen now. Night audits are painless.",
+    person: "Yara A.",
+    role: "Operations Supervisor",
+  },
+  {
+    id: "metro-10",
+    brand: "Metro Auto Parts",
+    logo: brandLogo("Metro Auto Parts"),
+    image: IMG.partsSquare,
+    imageAlt: "Parts matrix",
+    mediaAspect: 1,
+    imageFit: "contain",
+    metrics: [
+      { label: "Return rate", value: "-18%" },
+      { label: "Avg. ticket", value: "+21%" },
+    ],
+  },
+  {
+    id: "cedar-11",
+    brand: "Cedar Foods",
+    logo: brandLogo("Cedar Foods"),
+    quote: "Support replies with actual fixes, not templates. We ship features faster now.",
+    person: "Imad R.",
+    role: "Product Owner",
+  },
+  {
+    id: "aurora-12",
+    brand: "Aurora Retail",
+    logo: brandLogo("Aurora Retail"),
+    image: IMG.analytics,
+    imageAlt: "Store performance",
+    mediaAspect: 16 / 9,
+    imageFit: "contain",
+    metrics: [
+      { label: "Retention", value: "+14%" },
+      { label: "Revenue per store", value: "+9%" },
+    ],
+  },
+  {
+    id: "nimbus-13",
+    brand: "Nimbus Logistics",
+    logo: brandLogo("Nimbus Logistics"),
+    image: IMG.warehouse,
+    imageAlt: "Logistics icon",
+    mediaAspect: 16 / 9,
+    imageFit: "cover",
+  },
+  {
+    id: "atlas-14",
+    brand: "Atlas Distributors",
+    logo: brandLogo("Atlas Distributors"),
+    quote: "We finally killed the spreadsheet chaos. The team is visibly less stressed.",
+    person: "Hussein D.",
+    role: "Warehouse Lead",
+  },
+];
+
+/* ------------------------------ Card UI --------------------------------- */
+const Card: React.FC<{
+  item: CaseItem;
+  cardWidthPx: number;
+  widthStyle: number | string;
+}> = ({ item, cardWidthPx, widthStyle }) => {
+  const fit = item.imageFit === "cover" ? "object-cover" : "object-contain";
+  const aspect = item.mediaAspect ?? 16 / 9;
+
+  const hasImage = Boolean(item.image);
+  const hasText = Boolean(item.quote || item.metrics?.length || item.person || item.role);
+  const hasBody = hasImage || hasText;
+
+  const imageBoxW = Math.min(112, Math.max(84, Math.round(cardWidthPx * 0.34)));
+  const cardBg = "bg-zinc-50/80 dark:bg-zinc-900/60";
+
   return (
-    <div
-      className={
-        "group/card relative flex w-[320px] flex-col justify-between rounded-2xl  bg-white/90 p-5 shadow-sm ring-1 ring-black/5 backdrop-blur-sm transition-colors dark:bg-zinc-900/80 dark:text-zinc-100 "
-      }
+    <article
       role="listitem"
+      className={cx(
+        "group relative flex flex-col rounded-2xl border border-zinc-200/70 p-4 backdrop-blur-lg transition-[opacity,transform,border-color] will-change-transform",
+        "hover:opacity-95 active:scale-[0.995] focus-within:ring-2 focus-within:ring-zinc-400/40 dark:focus-within:ring-zinc-500/40",
+        "dark:border-zinc-700/60",
+        cardBg
+      )}
+      style={{ width: widthStyle, minWidth: widthStyle }}
     >
-      <div className="flex items-center gap-3">
-        {item.logo && typeof item.logo !== "object" && typeof item.logo !== "string" ? (
-          <div className="shrink-0">{item.logo}</div>
-        ) : img ? (
-          <img
-            src={img}
-            alt={`${item.brand} logo`}
-            className="h-7 w-auto shrink-0 object-contain"
-            loading="lazy"
-          />
-        ) : (
-          <div className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-zinc-100 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-            {item.brand[0]}
+      {/* Header: circular logo + brand (logo fills circle but uses contain to avoid cropping) */}
+      <header className="flex items-center gap-3">
+        <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-inset ring-zinc-200/70 dark:ring-zinc-700/70 bg-white dark:bg-zinc-950">
+          {item.logo ? (
+            <img
+              src={toSrc(item.logo)}
+              alt={item.logoAlt ?? item.brand}
+              className="h-full w-full object-contain object-center"
+              draggable={false}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : null}
+        </div>
+
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium leading-6 text-zinc-900 dark:text-zinc-100">
+            {item.nameOverride ?? item.brand}
           </div>
-        )}
-        <div className="text-sm font-medium opacity-80">{item.brand}</div>
-      </div>
+        </div>
+      </header>
 
-      {item.quote && (
-        <p className="mt-3 line-clamp-4 text-balance text-sm/6 text-zinc-700 dark:text-zinc-300">
-          “{item.quote}”
-        </p>
-      )}
-
-      {!!item.metrics?.length && (
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          {item.metrics.map((m, idx) => (
-            <div key={idx} className="rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70">
-              <div className="text-lg font-bold tracking-tight">{m.value}</div>
-              <div className="text-xs text-zinc-500 dark:text-zinc-400">{m.label}</div>
+      {/* Body */}
+      {hasBody && (
+        <div
+          className={cx(
+            "mt-3 grid items-start gap-3",
+            hasImage && hasText ? "grid-cols-[auto,1fr]" : "grid-cols-1"
+          )}
+        >
+          {hasImage && (
+            <div
+              className="shrink-0 overflow-hidden rounded-xl bg-zinc-100/80 dark:bg-zinc-800/70"
+              style={{ width: imageBoxW, aspectRatio: aspect }}
+            >
+              <img
+                src={toSrc(item.image)}
+                alt={item.imageAlt ?? item.brand}
+                className={cx("h-full w-full object-center", fit)}
+                draggable={false}
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+              />
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {(item.person || item.role) && (
-        <div className="mt-4 flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
-          <div className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-100 dark:from-zinc-700 dark:to-zinc-800" />
-          <div>
-            {item.person && <div className="font-medium text-zinc-700 dark:text-zinc-200">{item.person}</div>}
-            {item.role && <div>{item.role}</div>}
-          </div>
+          {hasText && (
+            <div className="min-w-0">
+              {item.quote && (
+                <p className="text-[13px]/6 text-zinc-700 dark:text-zinc-300 line-clamp-3">“{item.quote}”</p>
+              )}
+
+              {!!item.metrics?.length && (
+                <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                  {item.metrics.map((m, i) => (
+                    <div key={i}>
+                      <dt className="text-[10px] text-zinc-500 dark:text-zinc-400">{m.label}</dt>
+                      <dd className="text-sm font-semibold leading-6 tracking-tight text-zinc-900 dark:text-zinc-100">
+                        {m.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {(item.person || item.role) && (
+                <div className="mt-2 text-[11px] text-zinc-600 dark:text-zinc-400">
+                  {item.person && <div className="truncate text-zinc-900 dark:text-zinc-100">{item.person}</div>}
+                  {item.role && <div className="truncate">{item.role}</div>}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
+    </article>
+  );
+};
+
+/* ------------------------------ Pair column ----------------------------- */
+const PairColumn: React.FC<{
+  top: CaseItem;
+  bottom?: CaseItem;
+  pairGap: number;
+  cardWidthPx: number;
+  widthStyle: number | string;
+}> = ({ top, bottom, pairGap, cardWidthPx, widthStyle }) => {
+  return (
+    <div className="flex shrink-0 select-none flex-col" style={{ gap: pairGap }}>
+      <Card item={top} cardWidthPx={cardWidthPx} widthStyle={widthStyle} />
+      {bottom && <Card item={bottom} cardWidthPx={cardWidthPx} widthStyle={widthStyle} />}
     </div>
   );
 };
 
-/* ----------------------------- Lane (1 row) ------------------------------ */
+/* -------------------------------- Lane ---------------------------------- */
 const Lane: React.FC<{
   items: CaseItem[];
   speed: number; // px/s
+  gap: number; // px between columns
+  pairGap: number; // px between the two cards in a column
   pauseOnHover: boolean;
-  renderItem?: (item: CaseItem) => React.ReactNode;
-}> = ({ items, speed, pauseOnHover, renderItem }) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimation();
+  cardWidthPx: number;
+  widthStyle: number | string;
+  direction: "ltr" | "rtl";
+  edgeFade: boolean;
+  autoPauseOffscreen: boolean;
+}> = ({
+  items,
+  speed,
+  gap,
+  pairGap,
+  pauseOnHover,
+  cardWidthPx,
+  widthStyle,
+  direction,
+  edgeFade,
+  autoPauseOffscreen,
+}) => {
   const reduced = usePrefersReducedMotion();
-  const [contentWidth, setContentWidth] = useState(0);
 
-  // Measure single‑copy width
+  const columns = useMemo(() => chunkPairs(items), [items]);
+
+  const baseCols = useMemo(
+    () => (columns.length < 4 ? [...columns, ...columns, ...columns] : columns),
+    [columns]
+  );
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const firstCopyRef = useRef<HTMLDivElement>(null);
+  const [copyWidth, setCopyWidth] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [onscreen, setOnscreen] = useState(true);
+
+  const offsetRef = useRef(0);
+  const lastTsRef = useRef<number | null>(null);
+
   useEffect(() => {
-    const measure = () => setContentWidth(contentRef.current?.scrollWidth ?? 0);
+    if (!autoPauseOffscreen || typeof IntersectionObserver === "undefined") return;
+    const node = rootRef.current;
+    if (!node) return;
+    const io = new IntersectionObserver(([entry]) => setOnscreen(entry.isIntersecting), {
+      rootMargin: "200px",
+    });
+    io.observe(node);
+    return () => io.disconnect();
+  }, [autoPauseOffscreen]);
+
+  useEffect(() => {
+    const measure = () => {
+      const full = firstCopyRef.current?.scrollWidth ?? 0;
+      setCopyWidth(full);
+      setReady(full > 0);
+    };
     measure();
     const ro = new ResizeObserver(measure);
-    if (contentRef.current) ro.observe(contentRef.current);
+    if (firstCopyRef.current) ro.observe(firstCopyRef.current);
     return () => ro.disconnect();
-  }, [items.length]);
+  }, [baseCols.length, gap, cardWidthPx, pairGap]);
 
-  // Start/loop animation based on measured width
-  useEffect(() => {
-    if (reduced || !contentWidth) return;
-    const duration = Math.max(6, contentWidth / speed); // seconds
-    controls.start({
-      x: -contentWidth,
-      transition: { ease: "linear", duration, repeat: Infinity, repeatType: "loop" },
-    });
-  }, [contentWidth, speed, reduced, controls]);
-
-  const handleEnter = () => {
-    if (pauseOnHover) controls.stop();
-  };
-  const handleLeave = () => {
-    if (pauseOnHover && !reduced && contentWidth) {
-      const duration = Math.max(6, contentWidth / speed);
-      controls.start({ x: -contentWidth, transition: { ease: "linear", duration, repeat: Infinity, repeatType: "loop" } });
+  useAnimationFrame((ts) => {
+    if (!ready || reduced || !copyWidth || paused || focused || !onscreen) {
+      lastTsRef.current = ts;
+      return;
     }
-  };
+    if (lastTsRef.current == null) {
+      lastTsRef.current = ts;
+      return;
+    }
+    const dt = (ts - (lastTsRef.current ?? ts)) / 1000;
+    lastTsRef.current = ts;
 
-  // Duplicate the content to make a continuous loop
-  const duplicated = useMemo(() => (items.length < 6 ? [...items, ...items, ...items] : items), [items]);
+    const dir = direction === "rtl" ? -1 : 1;
+    offsetRef.current += dir * speed * dt;
 
-  return (
-    <div className="relative overflow-hidden" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <motion.div
-        ref={trackRef}
-        className="flex w-max gap-4 will-change-transform"
-        animate={reduced ? undefined : controls}
-        style={{ transform: "translate3d(0,0,0)" }}
-      >
-        {/* one copy (measured) */}
-        <div ref={contentRef} className="flex w-max gap-4" aria-hidden={false}>
-          {duplicated.map((item, i) => (
-            <div key={`a-${item.id}-${i}`}>{renderItem ? renderItem(item) : <DefaultCard item={item} />}</div>
+    let off = offsetRef.current % copyWidth;
+    if (off < 0) off += copyWidth;
+    offsetRef.current = off;
+
+    if (trackRef.current) {
+      const x = direction === "rtl" ? off : -off;
+      trackRef.current.style.transform = `translate3d(${x}px,0,0)`;
+    }
+  });
+
+  const onEnter = () => pauseOnHover && setPaused(true);
+  const onLeave = () => pauseOnHover && setPaused(false);
+
+  if (reduced) {
+    return (
+      <div className="relative overflow-x-auto overflow-y-hidden" ref={rootRef}>
+        <div className="flex w-max items-stretch" style={{ gap }}>
+          {baseCols.map(([a, b], idx) => (
+            <PairColumn
+              key={`rm-${a.id}-${b?.id ?? "x"}-${idx}`}
+              top={a}
+              bottom={b}
+              pairGap={pairGap}
+              cardWidthPx={cardWidthPx}
+              widthStyle={widthStyle}
+            />
           ))}
         </div>
-        {/* second copy for seamless wrap */}
-        <div className="flex w-max gap-4" aria-hidden>
-          {duplicated.map((item, i) => (
-            <div key={`b-${item.id}-${i}`}>{renderItem ? renderItem(item) : <DefaultCard item={item} />}</div>
+      </div>
+    );
+  }
+
+  const maskCSS = edgeFade
+    ? {
+        WebkitMaskImage:
+          "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,1) 92%, rgba(0,0,0,0) 100%)",
+        maskImage:
+          "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,1) 92%, rgba(0,0,0,0) 100%)",
+      } as React.CSSProperties
+    : undefined;
+
+  return (
+    <div
+      ref={rootRef}
+      className="relative overflow-hidden"
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      style={maskCSS}
+    >
+      {!ready && (
+        <div className="pointer-events-none absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-zinc-200/40 to-transparent dark:via-zinc-700/30" />
+      )}
+
+      <motion.div
+        ref={trackRef}
+        className="flex w-max items-stretch will-change-transform"
+        role="list"
+        aria-roledescription="carousel lane"
+        aria-label="Customer stories"
+        style={{ gap, opacity: ready ? 1 : 0 }}
+      >
+        <div
+          ref={firstCopyRef}
+          className="flex w-max items-stretch"
+          style={{ gap }}
+          tabIndex={0}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          aria-label="Auto-scrolling content. Focus pauses motion."
+        >
+          {baseCols.map(([a, b], idx) => (
+            <PairColumn
+              key={`a-${a.id}-${b?.id ?? "x"}-${idx}`}
+              top={a}
+              bottom={b}
+              pairGap={pairGap}
+              cardWidthPx={cardWidthPx}
+              widthStyle={widthStyle}
+            />
+          ))}
+        </div>
+
+        <div className="pointer-events-none flex w-max select-none items-stretch" style={{ gap }} aria-hidden>
+          {baseCols.map(([a, b], idx) => (
+            <PairColumn
+              key={`b-${a.id}-${b?.id ?? "x"}-${idx}`}
+              top={a}
+              bottom={b}
+              pairGap={pairGap}
+              cardWidthPx={cardWidthPx}
+              widthStyle={widthStyle}
+            />
           ))}
         </div>
       </motion.div>
@@ -174,32 +552,52 @@ const Lane: React.FC<{
   );
 };
 
-/* ------------------------- Main carousel (multi‑lane) ------------------------- */
-export const CaseStudyCarousel: React.FC<CaseStudyCarouselProps> = ({
-  items,
-  lanes = 3,
+/* --------------------------------- Root --------------------------------- */
+export const CaseStudyCarousel: React.FC<FixedCarouselProps> = ({
+  lanes = 1,
   speed = 70,
+  gap = 16,
+  pairGap = 10,
+  cardWidth = 300,
   pauseOnHover = true,
-  renderItem,
+  responsiveWidth = true,
+  edgeFade = true,
+  direction: dirProp,
+  autoPauseOffscreen = true,
   className,
 }) => {
   const laneCount = Math.min(3, Math.max(1, lanes));
 
-  // Distribute items into N lanes (round‑robin)
+  const [direction, setDirection] = useState<"ltr" | "rtl">(dirProp ?? "ltr");
+  useEffect(() => {
+    if (dirProp) return setDirection(dirProp);
+    if (typeof document !== "undefined") {
+      const d = (document?.dir as "ltr" | "rtl" | undefined) ?? "ltr";
+      setDirection(d);
+    }
+  }, [dirProp]);
+
   const distributed = useMemo(() => {
     const arr: CaseItem[][] = Array.from({ length: laneCount }, () => []);
-    items.forEach((it, i) => arr[i % laneCount].push(it));
+    STATIC_ITEMS.forEach((it, i) => arr[i % laneCount].push(it));
     return arr;
-  }, [items, laneCount]);
+  }, [laneCount]);
+
+  const widthStyle: string | number = responsiveWidth
+    ? `clamp(${Math.round(cardWidth * 0.72)}px, 28vw, ${cardWidth}px)`
+    : cardWidth;
 
   return (
-    <section className={"not-prose w-full " + (className ?? "")}
-      aria-label="Customer results and testimonials carousel">
+    <section className={["not-prose w-full", className ?? ""].join(" ")} aria-label="Customer stories carousel">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-end justify-between gap-4">
+        <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Loved by product and growth teams</h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Auto‑scrolling case studies with real metrics.</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              Customer stories
+            </h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              Compact, image-friendly pairs. Seamless loop. Constant speed. Accessible.
+            </p>
           </div>
         </div>
 
@@ -208,9 +606,15 @@ export const CaseStudyCarousel: React.FC<CaseStudyCarouselProps> = ({
             <Lane
               key={idx}
               items={laneItems}
-              speed={speed * (1 + idx * 0.1)} // subtle parallax: lower rows a bit faster
+              speed={speed * (1 + idx * 0.08)} // subtle parallax per lane
+              gap={gap}
+              pairGap={pairGap}
               pauseOnHover={pauseOnHover}
-              renderItem={renderItem}
+              cardWidthPx={cardWidth}
+              widthStyle={widthStyle}
+              direction={direction}
+              edgeFade={edgeFade}
+              autoPauseOffscreen={autoPauseOffscreen}
             />
           ))}
         </div>
@@ -220,80 +624,3 @@ export const CaseStudyCarousel: React.FC<CaseStudyCarouselProps> = ({
 };
 
 export default CaseStudyCarousel;
-
-/* --------------------------------- Demo ---------------------------------- */
-// Remove this block in production. It helps you see the component quickly.
-export const DemoSection: React.FC = () => {
-  const DATA: CaseItem[] = [
-    {
-      id: "zenni",
-      brand: "Zenni Optical",
-      quote: "embraces data‑driven personalization and the results couldn't be more clear",
-      metrics: [
-        { value: "16%", label: "Surge in retention" },
-        { value: "2x", label: "Increase in revenue" },
-      ],
-    },
-    {
-      id: "taptap",
-      brand: "Taptap Send",
-      quote: "We use the platform because it's simple to use and there's the possibility of scaling campaigns.",
-      person: "Traci Trang",
-      role: "CRM Specialist, Taptap Send",
-    },
-    {
-      id: "bitcoin",
-      brand: "Bitcoin.com",
-      quote: "Turns messaging into a growth lever—engaging, educating, and launching features seamlessly.",
-      metrics: [
-        { value: "+15%", label: "Avg. daily transaction attempts" },
-        { value: "+11%", label: "Avg. daily completed transactions" },
-      ],
-    },
-    {
-      id: "tag",
-      brand: "TAG Heuer",
-      quote: "The quality of the service is very good and the platform is easy to use—strong suits I'd recommend.",
-      person: "Carlos Costa",
-      role: "Product Group Director, TAG Heuer",
-    },
-    {
-      id: "beachbum",
-      brand: "Beach Bum Games",
-      quote: "Uses journeys to re‑engage players and boost retention across their portfolio.",
-      metrics: [
-        { value: "+250%", label: "Click‑through rates" },
-        { value: "+140%", label: "Paid user reactivation" },
-      ],
-    },
-    {
-      id: "rapchat",
-      brand: "Rapchat",
-      quote: "It's a game‑changer. It's an extension of our product with really good notifications set up.",
-      person: "Seth Miller",
-      role: "CEO, Rapchat",
-    },
-    {
-      id: "betmate",
-      brand: "Betmate",
-      quote: "From onboarding to re‑engagement, journeys deliver the right message at every step.",
-      metrics: [
-        { value: "+600%", label: "MAU (unique, paying users)" },
-        { value: "+625%", label: "User spending / month" },
-      ],
-    },
-    {
-      id: "cashea",
-      brand: "Cashea",
-      quote: "Very straightforward—you can come with limited experience and still understand the strategy.",
-      person: "Marco Rosales",
-      role: "Growth & Performance Lead, Cashea",
-    },
-  ];
-
-  return (
-    <div className="py-12">
-      <CaseStudyCarousel items={DATA} lanes={3} speed={70} />
-    </div>
-  );
-};

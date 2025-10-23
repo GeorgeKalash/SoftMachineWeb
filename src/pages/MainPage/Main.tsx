@@ -13,6 +13,7 @@ import Blog from "@/pages/MainPage/Sections/Blog";
 import Projects from "@/pages/MainPage/Sections/projects";
 import Team from "@/pages/MainPage/Sections/Team";
 import ScrollableShowcase from "./Sections/ScrollableShowcase";
+import CaseStudyCarousel from "@/sharedComponent/slider";
 
 const Main = () => {
   return (
@@ -29,8 +30,11 @@ const Main = () => {
         {/* <section id="projects" className="scroll-mt-24"><Projects /></section> */}
         <section id="testimonials" className="scroll-mt-24"><Testimonials /></section>
         {/* <section id="team" className="scroll-mt-24"><Team /></section> */}
+        <CaseStudyCarousel />
+
         <section id="faq" className="scroll-mt-24"><FAQ /></section>
         {/* <section id="cta" className="scroll-mt-24"><CTA /></section> */}
+        
       </main>
       <Footer />
     </div>

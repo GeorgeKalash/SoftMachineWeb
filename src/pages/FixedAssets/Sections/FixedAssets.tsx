@@ -21,76 +21,6 @@ import heroImage from "@/assets/hero-image.jpg";
 
 // ✅ Use the reusable grid (not the card)
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
-import CaseStudyCarousel, { type CaseItem } from "@/sharedComponent/slider";
-
-
-const CASE_STUDIES: CaseItem[] = [
-  {
-    id: "zenni",
-    brand: "Zenni Optical",
-    quote: "Embraces data-driven personalization and the results couldn't be more clear.",
-    metrics: [
-      { value: "16%", label: "Surge in retention" },
-      { value: "2x",  label: "Increase in revenue" },
-    ],
-  },
-  {
-    id: "taptap",
-    brand: "Taptap Send",
-    quote: "Simple to use with the possibility of scaling campaigns.",
-    person: "Traci Trang",
-    role: "CRM Specialist, Taptap Send",
-  },
-  {
-    id: "bitcoin",
-    brand: "Bitcoin.com",
-    quote: "Turned messaging into a growth lever—engaging and launching seamlessly.",
-    metrics: [
-      { value: "+15%", label: "Avg. daily transaction attempts" },
-      { value: "+11%", label: "Avg. daily completed transactions" },
-    ],
-  },
-  {
-    id: "tag",
-    brand: "TAG Heuer",
-    quote: "Great service quality and ease of use—highly recommended.",
-    person: "Carlos Costa",
-    role: "Product Group Director, TAG Heuer",
-  },
-  {
-    id: "beachbum",
-    brand: "Beach Bum Games",
-    quote: "Re-engaged players and boosted retention portfolio-wide.",
-    metrics: [
-      { value: "+250%", label: "Click-through rates" },
-      { value: "+140%", label: "Paid user reactivation" },
-    ],
-  },
-  {
-    id: "rapchat",
-    brand: "Rapchat",
-    quote: "A game-changer—really good notifications set up.",
-    person: "Seth Miller",
-    role: "CEO, Rapchat",
-  },
-  {
-    id: "betmate",
-    brand: "Betmate",
-    quote: "Right message at every step from onboarding to re-engagement.",
-    metrics: [
-      { value: "+600%", label: "MAU (unique, paying users)" },
-      { value: "+625%", label: "User spend / month" },
-    ],
-  },
-  {
-    id: "cashea",
-    brand: "Cashea",
-    quote: "Straightforward even with limited experience—easy to build strategy.",
-    person: "Marco Rosales",
-    role: "Growth & Performance Lead, Cashea",
-  },
-];
-
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -304,66 +234,93 @@ export default function ReferencesPage() {
       </div>
 
       {/* DARK SECTION — Why Argus */}
-      <div id="why" className="relative bg-black py-16 md:py-20">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:20px_20px]"
-        />
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+{/* DARK SECTION — Why Argus */}
+<div
+  id="why"
+  className="relative py-16 md:py-20 bg-gradient-to-br from-black via-slate-900 to-slate-800"
+
+>
+  {/* Soft radial spotlight from the top */}
+  <div
+    aria-hidden
+    className="
+      pointer-events-none absolute inset-0
+      bg-[radial-gradient(60%_50%_at_50%_0%,rgba(99,102,241,0.20),transparent_60%)]
+      mix-blend-screen
+    "
+  />
+
+  {/* Subtle grid lines, gently masked so edges fade */}
+  <div
+    aria-hidden
+    className="
+      pointer-events-none absolute inset-0
+      bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)]
+      bg-[size:20px_20px]
+      [mask-image:radial-gradient(80%_60%_at_50%_0%,#000_35%,transparent_100%)]
+      opacity-90
+    "
+  />
+
+  <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+    >
+      <motion.div variants={fadeUp}>
+        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+          Why Argus Fixed Asset Management
+        </h2>
+        <p className="mt-4 text-slate-300 leading-relaxed">
+          By centralizing all asset data, Argus helps finance and operations teams save time, stay compliant,
+          and make data-driven asset management decisions.
+        </p>
+
+        <ul className="mt-6 space-y-3">
+          {[
+            "Single source of truth for every asset",
+            "Automatic, compliant depreciation postings",
+            "Stronger audit readiness with clean reporting",
+            "Lower downtime via planned maintenance",
+            "Seamless handoff to Argus Financials",
+          ].map((line) => (
+            <li key={line} className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-emerald-400" />
+              <span className="text-slate-200">{line}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-7">
+          <a
+            href="#contact"
+            className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-white text-black hover:bg-slate-100 transition"
           >
-            <motion.div variants={fadeUp}>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white">Why Argus Fixed Asset Management</h2>
-              <p className="mt-4 text-slate-300 leading-relaxed">
-                By centralizing all asset data, Argus helps finance and operations teams save time, stay compliant,
-                and make data-driven asset management decisions.
-              </p>
-
-              <ul className="mt-6 space-y-3">
-                {[
-                  "Single source of truth for every asset",
-                  "Automatic, compliant depreciation postings",
-                  "Stronger audit readiness with clean reporting",
-                  "Lower downtime via planned maintenance",
-                  "Seamless handoff to Argus Financials",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-emerald-400" />
-                    <span className="text-slate-200">{line}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-7">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-white text-black hover:bg-slate-100 transition"
-                >
-                  Talk to an Expert <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeUp}>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl ring-1 ring-white/10 shadow-2xl">
-                <motion.img
-                  src={heroImage as unknown as string}
-                  alt="Why Argus"
-                  className="absolute inset-0 h-full w-full object-cover"
-                  initial={{ scale: 1.02 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 1.2, ease: EASE }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
+            Talk to an Expert <ArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </div>
-      </div>
+      </motion.div>
+
+      <motion.div variants={fadeUp}>
+        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl ring-1 ring-white/10 shadow-2xl">
+          <motion.img
+            src={heroImage as unknown as string}
+            alt="Why Argus"
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={{ scale: 1.02 }}
+            whileInView={{ scale: 1 }}
+            transition={{ duration: 1.2, ease: EASE }}
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  </div>
+</div>
+
+
 
       {/* CONTACT / CTA */}
       <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -393,16 +350,7 @@ export default function ReferencesPage() {
             </div>
           </div>
         </div>
-      </div>åç
-      <div id="results" className="py-16">
-  <CaseStudyCarousel
-    items={CASE_STUDIES}
-    lanes={3}
-    speed={70}
-    pauseOnHover
-    className="bg-transparent"
-  />
-</div>
+      </div>
     </section>
   );
 }
