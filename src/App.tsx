@@ -26,10 +26,24 @@ const queryClient = new QueryClient();
 function ScrollManager({ selector }: { selector?: string }) {
   const location = useLocation();
   const action = useNavigationType(); // "PUSH" | "REPLACE" | "POP"
-  const scrollElRef = useRef<Window | HTMLElement | null>(null);
+  const scrollElRef = React.useRef<Window | HTMLElement | null>(null);
 
   // key ignores hash so anchors don't create new storage keys
   const key = `${location.pathname}${location.search}`;
+
+  // --- helpers (type guards + utils) ---
+  const isWin = (el: Window | HTMLElement): el is Window => el === window;
+
+  const getScrollY = (el: Window | HTMLElement): number =>
+    isWin(el) ? window.scrollY : el.scrollTop;
+
+  const setScrollY = (el: Window | HTMLElement, y: number) => {
+    if (isWin(el)) {
+      window.scrollTo({ top: y, left: 0, behavior: "auto" });
+    } else {
+      el.scrollTop = y;
+    }
+  };
 
   // resolve scroll container once
   useEffect(() => {
@@ -38,15 +52,17 @@ function ScrollManager({ selector }: { selector?: string }) {
       : window;
   }, [selector]);
 
+  // persist position while scrolling
   useEffect(() => {
-    const el = scrollElRef.current as any;
+    const el = scrollElRef.current;
     if (!el) return;
 
-    let raf = 0;
-    const onScroll = () => {
+    let raf = 0 as number;
+
+    const onScroll = (_e: Event) => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
-        const y = el === window ? window.scrollY : (el as HTMLElement).scrollTop;
+        const y = getScrollY(el);
         sessionStorage.setItem(`scroll:${key}`, String(y));
         raf = 0;
       });
@@ -54,14 +70,14 @@ function ScrollManager({ selector }: { selector?: string }) {
 
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener("scroll", onScroll as EventListener);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [key]);
 
   // apply position on navigation
   useLayoutEffect(() => {
-    const el = scrollElRef.current as any;
+    const el = scrollElRef.current;
     if (!el) return;
 
     // native behavior for in-page anchors
@@ -71,19 +87,16 @@ function ScrollManager({ selector }: { selector?: string }) {
       // back/forward → restore
       const saved = sessionStorage.getItem(`scroll:${key}`);
       const y = saved ? parseInt(saved, 10) : 0;
-      requestAnimationFrame(() => {
-        if (el === window) window.scrollTo(0, y);
-        else (el as HTMLElement).scrollTop = y;
-      });
+      requestAnimationFrame(() => setScrollY(el, y));
     } else {
       // push/replace → top
-      if (el === window) window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      else (el as HTMLElement).scrollTop = 0;
+      setScrollY(el, 0);
     }
   }, [action, key, location.hash]);
 
   return null;
 }
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -91,8 +104,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        {/* if you scroll a custom container, pass a selector:
-            <ScrollManager selector='[data-scroll-root]' /> */}
+     
         <ScrollManager />
         <Routes>
           <Route path="/" element={<Index />} />
