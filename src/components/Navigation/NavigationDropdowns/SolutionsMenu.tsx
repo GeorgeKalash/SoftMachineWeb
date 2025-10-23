@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Badge } from "@/components/ui/badge";
 import { useLocation, useNavigate } from "react-router-dom";
 
-/* media query helper */
+/* media query helper (unchanged) */
 function useMediaQuery(query: string) {
   const get = () =>
     typeof window !== "undefined" ? window.matchMedia(query).matches : false;
@@ -21,7 +21,7 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
-/* images … (same imports you already have) */
+/* images (unchanged) */
 import HR from "@/assets/modules/HumanResources.png";
 import HRRed from "@/assets/modules/HumanResourcesRed.png";
 import Financials from "@/assets/modules/Financials.png";
@@ -41,7 +41,7 @@ import DeliveryRed from "@/assets/modules/DeliveryRed.png";
 import InventoryManagement from "@/assets/modules/InventoryManagement.png";
 import InventoryManagementRed from "@/assets/modules/InventoryManagementRed.png";
 
-/* types */
+/* types (unchanged) */
 export type SolutionItem = {
   icon?: React.ComponentType<{ className?: string }>;
   imgSrc?: string;
@@ -66,11 +66,11 @@ export const DEFAULT_SOLUTIONS: SolutionItem[] = [
   { imgSrc: Financials, imgHoverSrc: FinancialsRed, label: "Financials", href: "#financials" },
   { imgSrc: RepairAndService, imgHoverSrc: RepairAndServiceRed, label: "Repair And Service", href: "#repair-service" },
   { imgSrc: SalesOrderProcessing, imgHoverSrc: SalesOrderProcessingRed, label: "Sales Order Processing", href: "#sales-order-processing" },
-  { imgSrc: FixedAssets, imgHoverSrc: FixedAssetsRed, label: "Fixed Assets", href: "#fixed-assets" },
+  { imgSrc: FixedAssets, imgHoverSrc: FixedAssetsRed, label: "Fixed Assets", href: "/FixedAssets" },
   { imgSrc: Manufacturing, imgHoverSrc: ManufacturingRed, label: "Manufacturing", href: "#manufacturing" },
   { imgSrc: PurchaseOrderProcessing, imgHoverSrc: PurchaseOrderProcessingRed, label: "Purchase Order Processing", href: "#purchase-order-processing" },
   { imgSrc: Delivery, imgHoverSrc: DeliveryRed, label: "Delivery", href: "#delivery" },
-  { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/about" },
+  { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/InventoryManagment" },
 ];
 
 export function SolutionsMenu({
@@ -111,14 +111,19 @@ export function SolutionsMenu({
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* ——— size presets ——— */
-  const ICON_BOX = "p-2 md:p-2 rounded-xl bg-primary/10 shrink-0";
-  const ICON_IMG_WRAPPER = "relative h-8 w-8 md:h-9 md:w-9";           // was h-5 w-5
-  const ICON_SIZE = "h-8 w-8 md:h-9 md:w-9";                            // was h-5 w-5
-  const LABEL_CLASS = "text-[15px] md:text-base font-medium leading-6"; // was text-sm
+  /* ——— style presets (refined) ——— */
+  const ICON_BOX =
+    "p-2 rounded-xl bg-primary/10 ring-1 ring-primary/15 shadow-sm " + // ★ softer pill w/ ring
+    "group-hover:bg-primary/15 transition-colors shrink-0";
+  const ICON_IMG_WRAPPER = "relative h-8 w-8 md:h-9 md:w-9";
+  const ICON_SIZE = "h-8 w-8 md:h-9 md:w-9";
+  const LABEL_CLASS =
+    "text-[15px] md:text-base font-medium leading-6 tracking-tight";      // ★ slightly tighter tracking
   const CELL_CLASS =
-  "group flex items-start gap-3 p-2 md:p-2 rounded-lg  hover:border-primary/40 hover:bg-muted/50 transition active:scale-[0.98]";
-
+    "group flex items-start gap-3 p-2.5 md:p-3 rounded-xl border border-transparent " + // ★ rounded-xl + border base
+    "hover:border-primary/30 hover:bg-muted/50 transition-colors " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 " + // ★ accessible focus
+    "active:scale-[0.99]";
 
   const ItemCell = ({ icon: Icon, imgSrc, imgHoverSrc, label, href, meta, onClick }: SolutionItem) => {
     const handleClick = (e?: React.MouseEvent) => {
@@ -138,12 +143,16 @@ export function SolutionsMenu({
         } else scrollToHash(href);
         return;
       }
-
       if (href.startsWith("/")) navigate(href);
     };
 
     return (
-      <button key={label} type="button" onClick={handleClick} className="w-full text-left">
+      <button
+        key={label}
+        type="button"
+        onClick={handleClick}
+        className="w-full text-left focus-visible:outline-none focus-visible:ring-0"
+      >
         <div className={CELL_CLASS}>
           <div className={ICON_BOX}>
             {imgSrc ? (
@@ -170,13 +179,19 @@ export function SolutionsMenu({
             ) : null}
           </div>
 
-          <div className="flex-1 flex gap-2">
-            <span className={LABEL_CLASS}>{label}</span>
-            {meta && (
-              <Badge variant="secondary" className="h-5 px-1.5 text-[10px] self-start">
-                {meta}
-              </Badge>
-            )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start gap-2">
+              <span className={LABEL_CLASS}>{label}</span>
+              {meta && (
+                <Badge
+                  variant="secondary"
+                  className="h-5 px-1.5 text-[10px] leading-[18px] mt-0.5"
+                >
+                  {meta}
+                </Badge>
+              )}
+            </div>
+            {/* Optional: add a tiny sublabel here if you ever need it */}
           </div>
         </div>
       </button>
@@ -210,11 +225,27 @@ export function SolutionsMenu({
           <PopoverContent
             align="start"
             sideOffset={14}
-            className={`w-[480px] md:w-[620px] lg:w-[680px] p-2 z-[60] ${className}`}  /* wider panel */
+            /* ★ glassy panel + nicer ring/shadow + larger radius */
+            className={[
+              "w-[500px] md:w-[640px] lg:w-[720px]",
+              "p-2.5 md:p-3",
+              "rounded-2xl bg-popover/95 backdrop-blur-xl",
+              "shadow-2xl ring-1 ring-border border border-border/50",
+              "outline-none",
+              className || "",
+            ].join(" ")}
             onMouseEnter={() => openWithDelay(0)}
             onMouseLeave={() => closeWithDelay()}
           >
-            <div className="grid grid-cols-2 gap-1">  
+            {/* ★ compact header (optional) */}
+            <div className="px-1.5 pb-2 pt-0.5 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                Modules of Argus
+              </span>
+            </div>
+
+            {/* ★ tighter, responsive grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 md:gap-2">
               {items.map((it) => (
                 <ItemCell key={it.label} {...it} />
               ))}
@@ -239,15 +270,21 @@ export function SolutionsMenu({
         </button>
       </SheetTrigger>
 
-      <SheetContent side="bottom" className="h-[85vh] p-0 flex flex-col rounded-t-2xl overflow-hidden">
-        <SheetHeader className="px-4 py-3 border-b bg-background/80 backdrop-blur-md">
+      <SheetContent
+        side="bottom"
+        /* ★ taller but with large radius & clean canvas */
+        className="h-[85vh] p-0 flex flex-col rounded-t-3xl overflow-hidden bg-popover/95 backdrop-blur-xl"
+      >
+        <SheetHeader className="px-4 py-3 border-b bg-background/60 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-base font-semibold">MODULES OF ARGUS</SheetTitle>
+            <SheetTitle className="text-sm font-semibold tracking-tight">
+              MODULES OF ARGUS
+            </SheetTitle>
           </div>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="space-y-2 pb-10">
+        <div className="flex-1 overflow-y-auto px-3.5 md:px-4 py-3 md:py-4">
+          <div className="grid grid-cols-1 gap-1">
             {items.map((it) => (
               <ItemCell key={it.label} {...it} />
             ))}

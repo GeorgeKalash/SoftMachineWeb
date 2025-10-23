@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import About from "./pages/AboutPage/about";
+import InventoryManagment from "./pages/InventoryManagment/InventoryManagment";
 import Projects from "./pages/Projects/Projects";
 import TermsOfService from "./pages/TermsOfService/TermsOfService"
 import PrivacyPolicyPage from "./pages/PrivacyPolicy/PrivacyPolicy";
+import FixedAssets from "./pages/FixedAssets/FixedAssets";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -19,7 +20,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />}/>
+          <Route path="/InventoryManagment" element={<InventoryManagment />}/>
+          <Route path="/FixedAssets" element={<FixedAssets />}/>
+
           <Route path="/allProjects" element={<Projects />}/>
           <Route path="/PrivacyPolicyPage" element={<PrivacyPolicyPage />}/>
           <Route path="/TermsOfService" element={<TermsOfService />}/>

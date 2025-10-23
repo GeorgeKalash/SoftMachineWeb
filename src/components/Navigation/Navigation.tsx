@@ -2,13 +2,13 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
 import { NavgationForm, type LeadForm } from "./NavigationForms/NavigationForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../../../src/assets/logo.png"
+import logo from "../../../src/assets/softMachineLogo.png"
 const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -78,8 +78,13 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full  backdrop-blur-sm z-50 bg-background/10">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+<nav className="fixed top-0 w-full z-50
+  bg-background/95
+  md:bg-background/10
+  backdrop-blur-none
+  supports-[backdrop-filter]:md:backdrop-blur-sm
+">    
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* header */}
         <div className="flex items-center justify-between h-16">
           <button
@@ -87,7 +92,7 @@ const Navigation = () => {
             className="flex items-center gap-2"
             aria-label="Go to Home"
           >
-            <div className=" bg-secondary  rounded-lg p-1">
+            <div className="  rounded-lg p-1">
             <img
               src={logo}
               alt="Company logo"

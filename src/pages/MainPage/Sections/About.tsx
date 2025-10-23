@@ -33,36 +33,39 @@ type AboutProps = {
 };
 
 /* ------------------------------ defaults -------------------------------- */
+// KEEPING the count-up stats exactly as-is
 const DEFAULT_STATS: Stat[] = [
   { icon: Users, value: "40+", label: "Projects delivered" },
   { icon: Target, value: "10+", label: "Years building" },
   { icon: TrendingUp, value: "12+", label: "Industries served" },
 ];
 
+// 6 benefits (same count), rewritten to reflect your VALUE + message
 const DEFAULT_BENEFITS = [
-  "Custom software tailored to your workflows",
-  "Security & reliability as first-class concerns",
-  "Ongoing support and roadmap partnership",
-  "Seamless integrations with your tools",
-  "Modern, accessible UI/UX",
-  "Built to scale with your growth",
+  "SOP-driven delivery across industries",
+  "Cloud-first with optional desktop access",
+  "Remote, instant access to every record",
+  "Security, reliability, and performance",
+  "Integrates with POS, web, and tools",
+  "30+ years of hands-on consulting",
 ];
 
+// 3 feature cards (same count), focused on Argus + implementation
 const DEFAULT_FEATURE_CARDS = [
   {
-    title: "Real-time Collaboration",
+    title: "Cloud ERP, zero hardware",
     copy:
-      "Work securely with your team in real time, with clear roles and audit trails.",
+      "Run securely in the cloud with optional desktop clients. Access your data instantly—from the office or on the move.",
   },
   {
-    title: "Advanced Analytics",
+    title: "Scalable & industry-ready",
     copy:
-      "Turn data into decisions with dashboards, alerts, and exportable reports.",
+      "Modular architecture and proven SOPs adapt to retail, distribution, manufacturing and more as you grow.",
   },
   {
-    title: "API & Integrations",
+    title: "Implementation that sticks",
     copy:
-      "Connect billing, auth, and third-party platforms with stable, tested APIs.",
+      "We build and maintain Argus ourselves, and partner with you on migration, training, and integrations so you hit your goals.",
   },
 ];
 
@@ -71,13 +74,15 @@ const About: React.FC<AboutProps> = ({
   stats = DEFAULT_STATS,
   benefits = DEFAULT_BENEFITS,
 
-  pill1 = "About SoftMachine",
-  heading1 = "Built for modern teams and growing businesses",
-  copy1a = "We design and build custom software—web, mobile, and business systems—that solve real problems with clarity and speed.",
-  copy1b = "From MVPs to enterprise rollouts, we align architecture and UX with your goals, then support you as you scale.",
+  // WHO WE ARE
+  pill1 = "Who We Are",
+  heading1 = "3 decades of ERP—built, owned, and evolved by SoftMachine",
+  copy1a = "We started over 30 years ago, shipping our first Windows ERP in 1995. With creativity and determination we grew into the cloud, delivering a product line that helps businesses run smoothly and scale confidently.",
+  copy1b = "Our vision is global—one world-class product, real value for clients and teammates. Our mission: provide technological solutions that exceed expectations—Software Smart by Design.",
 
-  pill2 = "Capabilities",
-  heading2 = "Everything you need in one place",
+  // ABOUT ARGUS
+  pill2 = "About Argus",
+  heading2 = "Smart, cloud ERP—fast, flexible, and ready for the unexpected",
   featureCards = DEFAULT_FEATURE_CARDS,
 
   primaryCtaText = "Talk to us",
@@ -125,15 +130,15 @@ const About: React.FC<AboutProps> = ({
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-        {/* Stats */}
+        {/* Stats (unchanged) */}
         <div ref={statsRef} className="grid md:grid-cols-3 gap-8 mb-20">
           {stats.map((stat, index) => (
             <StatCard key={`${stat.label}-${index}`} stat={stat} index={index} />
           ))}
         </div>
 
-        {/* Section 1: About */}
-        {/* <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
+        {/* Section 1: Who We Are */}
+        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div
             ref={content1Ref}
             className={`space-y-6 transition-all duration-700 ${
@@ -180,10 +185,10 @@ const About: React.FC<AboutProps> = ({
               <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-primary/20 rounded-full blur-3xl -z-10" />
             </div>
           </div>
-        </div> */}
+        </div>
 
-        {/* Section 2: Capabilities */}
-        {/* <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* Section 2: About Argus */}
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div
             ref={image2Ref}
             className={`relative order-2 lg:order-1 transition-all duration-700 ${
@@ -193,7 +198,7 @@ const About: React.FC<AboutProps> = ({
             <div className="relative">
               <img
                 src={aboutDashboard}
-                alt="Example product dashboard interface"
+                alt="Argus ERP dashboard interface"
                 className="rounded-3xl shadow-2xl w-full"
                 loading="lazy"
                 decoding="async"
@@ -213,7 +218,7 @@ const About: React.FC<AboutProps> = ({
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold leading-tight">{heading2}</h2>
             <p className="text-lg text-muted-foreground">
-              We bring architecture, UX, and delivery together—so your product ships faster and scales cleanly.
+              Argus is our ERP that makes daily operations instant and intelligent. No hardware lock-in, work from anywhere, and stay ready for change.
             </p>
 
             <div className="space-y-4 pt-4">
@@ -229,24 +234,36 @@ const About: React.FC<AboutProps> = ({
             </div>
 
             {/* CTAs */}
-            {/*<div className="pt-2 flex flex-wrap gap-4">
+            <div className="pt-2 flex flex-wrap gap-4">
               <button
                 className="inline-flex items-center rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                onClick={onPrimaryCta ?? (() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }))}
+                onClick={
+                  onPrimaryCta ??
+                  (() =>
+                    document
+                      .getElementById("contact")
+                      ?.scrollIntoView({ behavior: "smooth" }))
+                }
                 aria-label={primaryCtaText}
               >
                 {primaryCtaText}
               </button>
               <button
                 className="inline-flex items-center rounded-md border px-5 py-3 text-sm font-medium hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                onClick={onSecondaryCta ?? (() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" }))}
+                onClick={
+                  onSecondaryCta ??
+                  (() =>
+                    document
+                      .getElementById("work")
+                      ?.scrollIntoView({ behavior: "smooth" }))
+                }
                 aria-label={secondaryCtaText}
               >
                 {secondaryCtaText}
               </button>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </section>
   );

@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sparkles, PlayCircle } from "lucide-react";
 
-// assets
+/* ---------------- assets ---------------- */
 import cat from "@/assets/cat.gif";
-import giphy from "@/assets/giphy-1.gif"
+import giphy from "@/assets/giphy-1.gif";
 import workcomputer from "@/assets/workcomputer.gif";
 import path from "@/assets/path.gif";
 
@@ -123,51 +123,64 @@ const items: ShowcaseItem[] = [
 ];
 
 /* ---------------- hooks ---------------- */
-function useActiveStep(
-  stepCount: number,
-  topOffsetPx: number,
-  options?: IntersectionObserverInit
-) {
-  const sentinelsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [active, setActive] = useState(0);
 
-  const opts = useMemo<IntersectionObserverInit>(
-    () => ({
-      root: null,
-      rootMargin: `-${topOffsetPx}px 0px -25% 0px`,
-      threshold: 0,
-      ...options,
-    }),
-    [options, topOffsetPx]
-  );
+/** IntersectionObserver with hysteresis (prevents jitter) */
+function useActiveStepObserver(stepCount: number, rootMargin = "-25% 0px -55% 0px") {
+  const sectionsRef = useRef<(HTMLElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+  const lastStable = useRef(0);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    const nodes = sectionsRef.current.filter(Boolean) as HTMLElement[];
+    if (!nodes.length) return;
 
-      if (visible.length > 0) {
-        const idx = sentinelsRef.current.findIndex((el) => el === visible[0].target);
-        if (idx !== -1) setActive(idx);
-      }
-    }, opts);
+    const visible = new Map<number, number>(); // idx -> intersectionRatio
 
-    sentinelsRef.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, [opts, stepCount]);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const idx = nodes.indexOf(e.target as HTMLElement);
+          if (idx === -1) continue;
+          if (e.isIntersecting) visible.set(idx, e.intersectionRatio ?? 0);
+          else visible.delete(idx);
+        }
+        if (visible.size) {
+          // pick the most visible section
+          let bestIdx = lastStable.current;
+          let bestRatio = -1;
+          for (const [idx, ratio] of visible.entries()) {
+            if (ratio > bestRatio) {
+              bestIdx = idx;
+              bestRatio = ratio;
+            }
+          }
+          // hysteresis: only switch if new is clearly more visible
+          if (bestIdx !== lastStable.current && bestRatio > 0.12) {
+            lastStable.current = bestIdx;
+            setActive(bestIdx);
+          }
+        }
+      },
+      { root: null, rootMargin, threshold: [0, 0.12, 0.25, 0.5, 0.75, 1] }
+    );
 
-  return { sentinelsRef, active, setActive };
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, [stepCount, rootMargin]);
+
+  return { sectionsRef, active, setActive };
 }
 
 function usePreloadImages(urls: string[]) {
   useEffect(() => {
     const imgs = urls.map((u) => {
       const i = new Image();
+      i.decoding = "async";
+      i.loading = "eager";
       i.src = u;
       return i;
     });
-    return () => {};
+    return () => void imgs;
   }, [urls]);
 }
 
@@ -175,7 +188,7 @@ function usePreloadImages(urls: string[]) {
 function useViewportStepHeight(offset: number) {
   const [h, setH] = useState(0);
   useEffect(() => {
-    const calc = () => setH(Math.max(320, window.innerHeight - offset));
+    const calc = () => setH(Math.max(360, window.innerHeight - offset));
     calc();
     window.addEventListener("resize", calc);
     return () => window.removeEventListener("resize", calc);
@@ -199,18 +212,94 @@ function useMediaQuery(query: string) {
 }
 
 /* ---------------- helpers ---------------- */
-const smoothScrollTo = (id: string) => {
+const smoothScrollToCenter = (id: string) => {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const target = window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+  window.scrollTo({ top: target, behavior: "smooth" });
 };
 
 const fireContactEvent = (phase: string, intent: string) => {
-  window.dispatchEvent(
-    new CustomEvent("open-contact", {
-      detail: { phase, intent },
-    })
-  );
+  window.dispatchEvent(new CustomEvent("open-contact", { detail: { phase, intent } }));
 };
+
+/* ---------------- media panel with cross-fade ---------------- */
+function MediaPanel({ src, alt, progress }: { src: string; alt: string; progress: number }) {
+  const [baseSrc, setBaseSrc] = useState(src);
+  const [overlaySrc, setOverlaySrc] = useState<string | null>(null);
+  const [isFading, setIsFading] = useState(false);
+  const fadeTokenRef = useRef(0);
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+
+  useEffect(() => {
+    if (src === baseSrc) return;
+    const token = ++fadeTokenRef.current;
+
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => {
+      if (fadeTokenRef.current !== token) return;
+      if (reduceMotion) {
+        setBaseSrc(src);
+        setOverlaySrc(null);
+        setIsFading(false);
+        return;
+      }
+      setOverlaySrc(src);
+      requestAnimationFrame(() => setIsFading(true));
+    };
+    img.src = src;
+  }, [src, baseSrc, reduceMotion]);
+
+  const handleFadeEnd = () => {
+    if (!overlaySrc) return;
+    setBaseSrc(overlaySrc);
+    setOverlaySrc(null);
+    setIsFading(false);
+  };
+
+  return (
+    <div className="group relative overflow-hidden rounded-2xl bg-card text-card-foreground shadow-lg">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
+      <div className="rounded-xl bg-secondary p-4 md:p-6">
+        <div className="relative aspect-square w-full overflow-hidden">
+          <img
+            src={baseSrc}
+            alt={alt}
+            className="absolute inset-0 h-full w-full object-contain select-none pointer-events-none"
+            style={{ willChange: "opacity, transform", backfaceVisibility: "hidden", transform: "translateZ(0)", opacity: 1 }}
+            loading="eager"
+            decoding="async"
+            draggable={false}
+          />
+          {overlaySrc && (
+            <img
+              src={overlaySrc}
+              alt={alt}
+              onTransitionEnd={handleFadeEnd}
+              className="absolute inset-0 h-full w-full object-contain select-none pointer-events-none"
+              style={{
+                willChange: "opacity, transform",
+                backfaceVisibility: "hidden",
+                transform: "translateZ(0)",
+                transition: "opacity 220ms ease",
+                opacity: isFading ? 1 : 0,
+              }}
+              decoding="async"
+              draggable={false}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
+        <div className="h-1 bg-primary/70 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+      </div>
+    </div>
+  );
+}
 
 /* ---------------- component ---------------- */
 export default function ScrollableShowcase({
@@ -218,40 +307,95 @@ export default function ScrollableShowcase({
   className,
   topOffsetPx = 96,
 }: ScrollableShowcaseProps) {
-  const { sentinelsRef, active, setActive } = useActiveStep(items.length, topOffsetPx);
+  const { sectionsRef, active, setActive } = useActiveStepObserver(items.length);
   usePreloadImages(items.map((i) => toSrc(i.image)));
 
   const stepHeight = useViewportStepHeight(topOffsetPx);
   const isLg = useMediaQuery("(min-width: 1024px)");
 
+  const activeItem = items[active];
+
+  // Keyboard navigation + hash sync (↑/↓/PgUp/PgDn)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (["ArrowDown", "PageDown"].includes(e.key)) {
+        e.preventDefault();
+        const next = Math.min(items.length - 1, active + 1);
+        jumpTo(next);
+      } else if (["ArrowUp", "PageUp"].includes(e.key)) {
+        e.preventDefault();
+        const prev = Math.max(0, active - 1);
+        jumpTo(prev);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
+  useEffect(() => {
+    const hash = `#${items[active].anchorId}`;
+    if (history.replaceState) history.replaceState(null, "", hash);
+  }, [active]);
+
   const jumpTo = (idx: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, idx));
-    const el = sentinelsRef.current[clamped];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = sectionsRef.current[clamped];
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const target = window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
     setActive(clamped);
   };
 
-  const activeItem = items[active];
-
   return (
-    <section id={id} className={cn("bg-background py-24", className)}>
+    <section id={id} className={cn("bg-background py-20 md:py-24", className)}>
       <div className="container mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-[1.3fr_0.9fr] lg:gap-x-6">
+        <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-[1.15fr_0.95fr] lg:gap-x-4 xl:gap-x-6">
           {/* TEXT COLUMN (left) */}
           <div className="lg:order-1">
             <div className="rounded-2xl bg-card">
-              <div className="px-5 py-8 md:px-8 md:py-10">
-                <div className="space-y-12 md:space-y-16">
+              {/* Mobile helper: sticky step dots */}
+              <div className="lg:hidden sticky top-0 z-10 -mt-4 mb-2 flex justify-center">
+                <div className="rounded-full bg-background/80 backdrop-blur px-3 py-1">
+                  <nav aria-label="Progress" className="flex gap-1.5">
+                    {items.map((_, i) => (
+                      <button
+                        key={i}
+                        aria-label={`Go to step ${i + 1}`}
+                        aria-current={i === active ? "step" : undefined}
+                        className={cn(
+                          "h-2.5 rounded-full transition-all",
+                          i === active ? "w-5 bg-primary" : "w-2.5 bg-muted-foreground/40"
+                        )}
+                        onClick={() => jumpTo(i)}
+                      />
+                    ))}
+                  </nav>
+                </div>
+              </div>
+
+              <div
+                className={cn(
+                  // mobile: scroll-snap for smooth section paging
+                  "px-5 py-6 md:px-8 md:py-10",
+                  "lg:px-8 lg:py-12",
+                  "snap-y snap-mandatory lg:snap-none"
+                )}
+              >
+                <div className="space-y-8 md:space-y-12">
                   {items.map((item, idx) => (
                     <StepBlock
                       key={item.key}
-                      refFn={(el) => (sentinelsRef.current[idx] = el)}
+                      refArticle={(el) => (sectionsRef.current[idx] = el)}
                       item={item}
                       isActive={idx === active}
                       topOffsetPx={topOffsetPx}
                       matchHeight={stepHeight}
                       isLast={idx === items.length - 1}
                       isLg={isLg}
+                      onJumpNext={() => jumpTo(Math.min(items.length - 1, idx + 1))}
                     />
                   ))}
                 </div>
@@ -260,49 +404,20 @@ export default function ScrollableShowcase({
           </div>
 
           {/* STICKY MEDIA (right) — desktop only */}
-<div className="lg:order-2">
-  <div className="lg:sticky" style={{ top: topOffsetPx }}>
-    <div
-      className="hidden lg:flex items-center justify-center"
-      style={{ minHeight: stepHeight }}
-    >
-      {/* wider on big screens */}
-      <div className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
-        <div className="group relative overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-lg">
-          {/* faint ring on the outer card */}
-          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
-
-          {/* framed media area with padding so the whole img shows */}
-          <div className="w-full">
-            <div className="rounded-xl border bg-secondary p-4 md:p-6">
-              {/* choose an aspect; 4/3 feels roomy. square also works */}
-              <div className="aspect-[4/3] w-full overflow-hidden">
-                <img
-                  key={toSrc(activeItem.image)}
-                  src={toSrc(activeItem.image)}
-                  alt={activeItem.imageAlt ?? activeItem.title}
-                  className="h-full w-full object-contain transition-all duration-500 ease-out"
-                />
+          <div className="lg:order-2">
+            <div className="lg:sticky" style={{ top: topOffsetPx }}>
+              <div className="hidden lg:flex items-center justify-center" style={{ minHeight: stepHeight }}>
+                <div className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
+                  <MediaPanel
+                    src={toSrc(activeItem.image)}
+                    alt={activeItem.imageAlt ?? activeItem.title}
+                    progress={((active + 1) / items.length) * 100}
+                  />
+                </div>
               </div>
+              <div className="lg:hidden" />
             </div>
           </div>
-
-          {/* progress bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
-            <div
-              className="h-1 bg-primary/70 transition-all duration-500 ease-out"
-              style={{ width: `${((active + 1) / items.length) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Hide on mobile/tablet to avoid duplicate media */}
-    <div className="lg:hidden" />
-  </div>
-</div>
-
         </div>
       </div>
     </section>
@@ -311,21 +426,23 @@ export default function ScrollableShowcase({
 
 /* ---------------- child ---------------- */
 function StepBlock({
-  refFn,
+  refArticle,
   item,
   isActive,
   topOffsetPx,
   matchHeight,
   isLast = false,
   isLg,
+  onJumpNext,
 }: {
-  refFn: (el: HTMLDivElement | null) => void;
+  refArticle: (el: HTMLElement | null) => void;
   item: ShowcaseItem;
   isActive: boolean;
   topOffsetPx: number;
   matchHeight: number | null;
   isLast?: boolean;
   isLg: boolean;
+  onJumpNext: () => void;
 }) {
   const onPrimary = () => {
     fireContactEvent(item.key, "cta");
@@ -334,27 +451,23 @@ function StepBlock({
   const onSecondary = (e?: React.MouseEvent) => {
     if (item.anchorId) {
       e?.preventDefault();
-      smoothScrollTo(item.anchorId);
+      smoothScrollToCenter(item.anchorId);
     }
   };
 
   return (
     <article
       id={item.anchorId}
+      ref={refArticle}
       className={cn(
-        "relative grid items-center transition-all duration-400",
+        "relative grid items-center transition-all duration-300 snap-start",
         isActive ? "opacity-100" : "opacity-90"
       )}
-      // Only enforce tall matched heights on large screens to keep mobile compact
-      style={isLg ? { minHeight: matchHeight ?? 620 } : undefined}
+      style={isLg ? { minHeight: Math.max(360, Math.round((matchHeight ?? 620) * 0.7)) } : undefined}
+      aria-current={isActive ? "true" : undefined}
+      aria-label={item.title}
     >
-      {/* sentinel */}
-      <div
-        ref={refFn}
-        style={{ scrollMarginTop: topOffsetPx + 16 }}
-        className="h-px w-full"
-        aria-hidden
-      />
+      <div style={{ scrollMarginTop: topOffsetPx + 16 }} className="h-px w-full" aria-hidden />
 
       {/* vertical rail + active pip (desktop only) */}
       <div className={cn("absolute -left-3 top-0 hidden h-full lg:block")} aria-hidden>
@@ -371,55 +484,40 @@ function StepBlock({
       <div
         className={cn(
           "max-w-[68ch] pl-0 lg:pl-6",
-          "transform-gpu transition-all duration-400",
-          isActive ? "translate-y-0" : "translate-y-0.5"
+          "transform-gpu transition-all duration-300",
+          isActive ? "translate-y-0" : "translate-y-0.5",
+          isActive ? "scale-[1.00]" : "scale-[0.995]"
         )}
       >
-        {/* tag */}
         {item.tag ? (
           <div className="mb-2.5">
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full border px-2.5 py-1",
-                "text-[11px] font-medium tracking-wide text-muted-foreground",
-                isActive ? "border-primary/30 bg-primary/5" : "border-border/60 bg-transparent"
-              )}
-            >
+            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">
               {item.tag}
-            </span>
+            </div>
           </div>
         ) : null}
 
         {/* MOBILE IMAGE (per section) */}
         <div className="lg:hidden mb-4">
-          <div className="overflow-hidden rounded-xl border bg-card/50">
+          <div className="overflow-hidden rounded-xl bg-card/50">
             <img
               src={toSrc(item.image)}
               alt={item.imageAlt ?? item.title}
               loading="lazy"
+              decoding="async"
               className="block w-full h-56 object-cover"
+              draggable={false}
             />
           </div>
         </div>
 
         {/* headline */}
-        <h3
-          className={cn(
-            "text-2xl md:text-4xl font-semibold tracking-tight leading-[1.15]",
-            "text-foreground"
-          )}
-        >
+        <h2 className="text-2xl md:text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.15] text-foreground">
           {item.title}
-        </h3>
+        </h2>
 
         {/* body */}
-        <p
-          className={cn(
-            "mt-3 md:mt-4",
-            "text-[15px] md:text-lg leading-7 md:leading-8",
-            "text-muted-foreground/90"
-          )}
-        >
+        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">
           {item.body}
         </p>
 
@@ -450,20 +548,26 @@ function StepBlock({
               <Button
                 variant={item.secondary.variant ?? "outline"}
                 className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
-                onClick={() => smoothScrollTo(item.anchorId)}
+                onClick={() => smoothScrollToCenter(item.anchorId)}
               >
                 {item.secondary.label}
               </Button>
             )
           ) : null}
+
+          {/* Next step (mobile quality-of-life) */}
+          <Button
+            variant="ghost"
+            className="ml-auto h-10 px-3 text-sm text-muted-foreground lg:hidden"
+            onClick={onJumpNext}
+            aria-label="Next section"
+          >
+            Next →
+          </Button>
         </div>
 
         {/* divider between steps (not after last) */}
-        {!isLast && (
-          <div className="mt-8 md:mt-10">
-            <div className="h-px w-full bg-border/70" />
-          </div>
-        )}
+        {!isLast && <div className="mt-8 md:mt-10 h-px w-full bg-border/70" />}
       </div>
     </article>
   );

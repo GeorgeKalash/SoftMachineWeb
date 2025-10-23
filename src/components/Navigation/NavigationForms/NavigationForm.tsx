@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef, useState } from "react";
@@ -26,20 +25,15 @@ interface NavgationFormProps {
   type: SubmitType;
   onSuccess?: (result: unknown) => void;
   onSubmittingChange?: (submitting: boolean) => void;
-  showSubmitButton?: boolean;
+  showSubmitButton?: boolean; // external modal button support
   submitLabel?: string;
 }
 
-/* ---------------- EmailJS config ---------------- */
+/* ---------------- EmailJS config (hardcoded) ---------------- */
 const SERVICE_ID = "service_f2p8z6e";
-const TEMPLATE_ID = "template_04sbrw7";
-const PUBLIC_KEY  = "mxnMw5kD9r_8dLGMD";
-
-/* ---------------- Recipients ---------------- */
-const RECIPIENTS = {
-  demo: ["alihjhsn57@gmail.com"], // send to one email
-  partner: ["11830575@students.liu.edu.lb", "mac.softmachineco@gmail.com"], // send to two
-};
+const TEMPLATE_ID_PARTNER = "template_04sbrw7"; // Become a partner
+const TEMPLATE_ID_DEMO    = "template_ca4py7g"; // Schedule a demo
+const PUBLIC_KEY          = "mxnMw5kD9r_8dLGMD"; // your EmailJS public key
 
 export const NavgationForm: React.FC<NavgationFormProps> = ({
   formId,
@@ -76,18 +70,10 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
 
     try {
       setSubmittingBoth(true);
-
       emailjs.init(PUBLIC_KEY);
 
-      // pick recipients based on form type
-      const toEmails = RECIPIENTS[type]?.join(",") || RECIPIENTS.demo.join(",");
-
-      // add hidden field dynamically before sending
-      const hiddenInput = document.createElement("input");
-      hiddenInput.type = "hidden";
-      hiddenInput.name = "to_email";
-      hiddenInput.value = toEmails;
-      formRef.current.appendChild(hiddenInput);
+      const TEMPLATE_ID =
+        type === "partner" ? TEMPLATE_ID_PARTNER : TEMPLATE_ID_DEMO;
 
       const res = await emailjs.sendForm(
         SERVICE_ID,
@@ -96,14 +82,7 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
         PUBLIC_KEY
       );
 
-      // remove hidden input afterward (cleanup)
-      hiddenInput.remove();
-
       if (res.text === "OK") {
-        toast({
-          title: "Sent successfully",
-          description: type === "demo" ? "Your demo request was sent." : "Your partner request was sent.",
-        });
         onSuccess?.({ ok: true, type });
         reset();
       } else {
@@ -173,10 +152,10 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
         error={errors.message?.message}
       />
 
-      {/* Hidden mirrors */}
+      {/* Hidden mirrors for template variables */}
       <input type="hidden" name="from_name"  value={watchName  || ""} readOnly />
       <input type="hidden" name="from_email" value={watchEmail || ""} readOnly />
-      <input type="hidden" name="lead_type"  value={type} readOnly />
+      <input type="hidden" name="lead_type"  value={type}           readOnly />
 
       {showSubmitButton && (
         <button type="submit" className="hidden" disabled={sending || isSubmitting}>
