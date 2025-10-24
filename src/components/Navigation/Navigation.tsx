@@ -94,7 +94,7 @@ const Navigation = () => {
       className="
         fixed top-0 w-full z-50
         bg-transparent                     /* allow blending with content behind */
-        supports-[backdrop-filter]:md:backdrop-blur-sm
+        supports-[backdrop-filter]:md:backdrop-blur-md
       "
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

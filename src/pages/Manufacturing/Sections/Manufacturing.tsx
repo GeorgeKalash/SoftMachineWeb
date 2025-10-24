@@ -96,7 +96,7 @@ export default function ManufacturingManagementPage() {
   ];
 
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Back */}
         <div className="mb-6">

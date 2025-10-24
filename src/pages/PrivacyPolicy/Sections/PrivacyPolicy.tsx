@@ -44,7 +44,8 @@ export default function PrivacyPolicyPage() {
   const lastUpdated = useMemo(() => "Nov 14, 2024", []);
 
   return (
-    <section className="relative">
+      <section className="relative overflow-hidden z-0">
+
       {/* BACKGROUND ACCENTS */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         {/* soft radial glow */}
