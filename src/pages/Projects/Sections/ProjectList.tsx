@@ -16,6 +16,7 @@ import TamkeenLogo from "../../../assets/Clients/TamkeenLogo.png";
 import KorristarLogo from "../../../assets/Clients/KorristarLogo.jpeg";
 import GDKLogo from "../../../assets/Clients/GDKLogo.jpeg";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
+import ClientsWorldwideSection from "@/sharedComponent/WorldPresenceMap";
 
 /* ---------------- types & data ---------------- */
 type T = {
@@ -262,6 +263,8 @@ export default function ProjectList({
           </Tabs>
         </div>
       </div>
+      <ClientsWorldwideSection />
+
     </section>
   );
 }
