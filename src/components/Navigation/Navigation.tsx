@@ -1,35 +1,32 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
 import { NavgationForm } from "./NavigationForms/NavigationForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "@/assets/softMachineLogo.png";
+import logo from "../../../src/assets/softMachineLogo.png";
 
-/* ---------------------------------- Data --------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
 const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
   { id: "features", label: "Features" },
   { id: "pricing", label: "Pricing" },
-  { id: "faq", label: "FAQ" },
+  { id: "faq", label: "faq" },
 ];
 
 const FORM_ID = "lead-modal-form";
 
-/* ------------------------------ Compact sizing --------------------------- */
-const COMPACT = true; // flip to false if you want the taller nav
+/* -------------------------------------------------------------------------- */
+/*                                Navigation                                  */
+/* -------------------------------------------------------------------------- */
 
-const ROW_H   = COMPACT ? "h-12 sm:h-14" : "h-16";
-const LOGO_H  = COMPACT ? "h-8 sm:h-9"   : "h-10";
-const GAP     = COMPACT ? "gap-4"        : "gap-6";
-const ICON_SZ = COMPACT ? "h-5 w-5"      : "h-6 w-6";
-const BTN_CLS = COMPACT ? "h-8 px-3 text-sm" : "h-9 px-4";
-
-/* ------------------------------- Component -------------------------------- */
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<null | "demo" | "partner">(null);
@@ -59,10 +56,14 @@ const Navigation = () => {
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const navH = navRef.current?.getBoundingClientRect().height ?? 70;
-    const y = el.getBoundingClientRect().top + window.scrollY - navH;
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+    const navHeight =
+      navRef.current?.getBoundingClientRect().height ??
+      70; // dynamic offset (fallback to 70)
+    const y = el.getBoundingClientRect().top + window.scrollY - navHeight;
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: y, behavior: prefersReduced ? "auto" : "smooth" });
   };
 
   const handleNav = (id: string) => {
@@ -73,6 +74,7 @@ const Navigation = () => {
     }
     navigate({ pathname: "/", hash: `#${id}` });
     setIsOpen(false);
+    // Optional: ensure hash-scroll after route mount (implement effect on Home)
   };
 
   const handleModalSend = () => {
@@ -82,21 +84,23 @@ const Navigation = () => {
     else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
   };
 
-  const handleFormSuccess = () => setModalType(null);
+  const handleFormSuccess = (_result: unknown) => {
+    setModalType(null);
+  };
 
   return (
     <nav
       ref={navRef}
       className="
-        fixed top-0 w-full z-50 bg-white
-        supports-[backdrop-filter]:backdrop-blur-lg
-        py-0
+        fixed top-0 w-full z-50
+        bg-transparent                     /* allow blending with content behind */
+        supports-[backdrop-filter]:md:backdrop-blur-sm
       "
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top row */}
-        <div className={`flex items-center justify-between ${ROW_H}`}>
-          {/* Logo */}
+        {/* header */}
+        <div className="flex items-center justify-between h-16">
+          {/* Logo: keep OUTSIDE the blending wrapper so it stays normal */}
           <button
             onClick={() => handleNav("home")}
             className="flex items-center gap-2"
@@ -106,20 +110,20 @@ const Navigation = () => {
               <img
                 src={logo}
                 alt="Company logo"
-                className={`${LOGO_H} w-auto`}
+                className="h-10 w-auto"
                 loading="eager"
                 decoding="async"
               />
             </div>
           </button>
 
-          {/* Desktop: links + solutions */}
-          <div className={`hidden md:flex items-center ${GAP} nav-ink`}>
+          {/* desktop nav (text + icons should be inside .nav-dfg) */}
+          <div className="hidden md:flex items-center gap-6 nav-dfg">
             {NAV_LINKS.map(({ id, label }) => (
               <button
                 key={id}
                 onClick={() => handleNav(id)}
-                className="transition-opacity hover:opacity-80 no-ink-bg"
+                className="transition-opacity hover:opacity-80"
               >
                 {label}
               </button>
@@ -127,47 +131,42 @@ const Navigation = () => {
             <SolutionsMenu variant="desktop" />
           </div>
 
-          {/* Desktop: CTAs */}
-          <div className={`hidden md:flex items-center ${COMPACT ? "gap-2" : "gap-3"} nav-ink`}>
+          {/* desktop CTAs — make them text-only to blend cleanly */}
+          <div className="hidden md:flex items-center gap-3 nav-dfg">
             <Button
               variant="ghost"
               size="sm"
-              className={`btn-ghost no-ink-bg ${BTN_CLS}`}
+              className="border border-transparent hover:bg-white/0"
               onClick={() => setModalType("demo")}
             >
               Schedule a demo
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`btn-ghost no-ink-bg ${BTN_CLS}`}
-              onClick={() => setModalType("partner")}
-            >
+            <Button size="sm" onClick={() => setModalType("partner")}>
               Become a partner
             </Button>
           </div>
 
-          {/* Mobile toggle */}
+          {/* mobile toggle (not blended, keep visible on all backgrounds) */}
           <button
             onClick={() => setIsOpen((v) => !v)}
-            className="md:hidden p-1.5 rounded-lg transition-opacity nav-ink hover:opacity-80 no-ink-bg"
+            className="md:hidden p-2 rounded-lg hover:bg-secondary/30 transition-colors"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
             aria-controls="mobile-nav"
           >
-            {isOpen ? <X className={ICON_SZ} /> : <Menu className={ICON_SZ} />}
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile menu */}
+        {/* mobile menu — wrap text in .nav-dfg; avoid solid fills */}
         {isOpen && (
-          <div id="mobile-nav" className="md:hidden py-3 space-y-3 animate-in slide-in-from-top">
-            <div className="nav-ink space-y-2">
+          <div id="mobile-nav" className="md:hidden py-4 space-y-3 animate-in slide-in-from-top">
+            <div className="nav-dfg space-y-3">
               {NAV_LINKS.map(({ id, label }) => (
                 <button
                   key={id}
                   onClick={() => handleNav(id)}
-                  className="block w-full text-left px-4 py-2 rounded-lg hover:opacity-80 no-ink-bg"
+                  className="block w-full text-left px-4 py-2 rounded-lg hover:bg-transparent"
                 >
                   {label}
                 </button>
@@ -177,10 +176,10 @@ const Navigation = () => {
                 <SolutionsMenu variant="mobile" onNavigate={() => setIsOpen(false)} />
               </div>
 
-              <div className="flex gap-2 px-4 pt-2">
+              <div className="flex gap-3 px-4 pt-3">
                 <Button
                   variant="ghost"
-                  className="flex-1 btn-ghost no-ink-bg h-9"
+                  className="flex-1 hover:bg-white/0"
                   onClick={() => {
                     setIsOpen(false);
                     setModalType("demo");
@@ -190,7 +189,7 @@ const Navigation = () => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex-1 btn-ghost no-ink-bg h-9"
+                  className="flex-1 hover:bg-white/0"
                   onClick={() => {
                     setIsOpen(false);
                     setModalType("partner");
@@ -204,7 +203,7 @@ const Navigation = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal: Send button submits the form; form handles API + success */}
       <PageModal
         open={isModalOpen}
         onOpenChange={(open) => setModalType(open ? (modalType ?? "demo") : null)}
