@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import {
   CheckCircle2,
@@ -61,7 +61,7 @@ const REFERENCES: ReferenceItem[] = [
 ];
 
 const CAROUSEL: CarouselItem[] = [
-  { src: heroImage as unknown as string, alt: "Assets overview" },
+  { src: heroImage as unknown as string, alt: "Sales overview" },
   { src: hero as unknown as string, alt: "Argus platform visual" },
   { src: logo as unknown as string, alt: "Brand identity" },
 ];
@@ -71,54 +71,66 @@ const CAROUSEL: CarouselItem[] = [
 export default function ReferencesPage() {
   const items = useMemo(() => REFERENCES, []);
 
-  // Simple cross-fade carousel
+  // Simple cross-fade carousel with reduced-motion respect
+  const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
   useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (paused) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % CAROUSEL.length);
     }, 3800);
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion, paused]);
 
-  // Build feature items for the reusable grid
-  const featureItems: FeatureItem[] = [
-    {
-      title: "Asset Register",
-      desc: "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.",
-      preview: "cards",
-      icon: <Database className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Depreciation Management",
-      desc: "Automatically calculate depreciation using customizable methods and schedules.",
-      preview: "timeline",
-      icon: <Calculator className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Asset Lifecycle Tracking",
-      desc: "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.",
-      preview: "bubbles",
-      icon: <Layers className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Integration with Financials",
-      desc: "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.",
-      preview: "link",
-      icon: <Link2 className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Maintenance Scheduling",
-      desc: "Plan preventive maintenance to extend asset life and minimize downtime.",
-      preview: "gear",
-      icon: <Wrench className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Reporting & Audit Support",
-      desc: "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.",
-      preview: "scroll",
-      icon: <FileText className="h-5 w-5 text-slate-900" />,
-    },
-  ];
+  // Sales features → previews (word-for-word content)
+const featureItems: FeatureItem[] = [
+  {
+    title: "Quotation & Order Management",
+    desc: "Create professional quotations in seconds, manage approvals, and convert them directly into sales orders without duplication.",
+    preview: "quote2order",
+    icon: <FileText className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Price Lists & Discount Rules",
+    desc: "Set up flexible pricing strategies, volume discounts, and customer-specific rates to stay competitive.",
+    preview: "pricing",
+    icon: <Calculator className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Sales Workflow Automation",
+    desc: "Standardize your sales cycle with predefined steps, approval limits, and document generation to minimize manual errors.",
+    preview: "pipeline",
+    icon: <Layers className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Customer Database",
+    desc: "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in one place.",
+    preview: "crm",
+    icon: <Database className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Invoice Integration",
+    desc: "Automatically generate invoices from confirmed sales orders, ensuring accurate billing and faster payments.",
+    preview: "invoice",
+    icon: <Link2 className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Reporting & Analytics",
+    desc: "Access real-time sales data, product performance insights, and profitability reports to support data-driven decision-making.",
+    preview: "analytics",
+    icon: <FileText className="h-5 w-5 text-slate-900" />,
+  },
+  {
+    title: "Multi-Currency & Multi-Branch Support",
+    desc: "Manage sales operations across branches or countries with unified control and accurate reporting.",
+    preview: "multicurrency", // or "branches" if you prefer that visual
+    icon: <Layers className="h-5 w-5 text-slate-900" />,
+  },
+];
+
 
   return (
     <section className="relative">
@@ -146,16 +158,13 @@ export default function ReferencesPage() {
             {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
-                Fixed Asset Management
+                Sales Order Processing
               </h1>
               <p className="mt-4 text-lg text-slate-600">
-                Track, Control, and Optimize Your Assets with Confidence
+                Streamline Your Sales Cycle and Empower Your Team
               </p>
               <p className="mt-3 text-slate-600 leading-relaxed">
-                Argus Fixed Asset Management enables businesses to maintain full visibility and control over their
-                tangible assets — from acquisition to depreciation and disposal. The system automates every step of
-                asset tracking and accounting, helping you reduce manual errors, improve compliance, and make smarter
-                financial decisions.
+                Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in one seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -176,12 +185,21 @@ export default function ReferencesPage() {
 
             {/* Visual / Carousel */}
             <motion.div variants={fadeUp} className="relative">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur">
+              <div
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Product visuals"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+              >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
                     key={img.alt}
                     src={img.src}
-                    alt={img.alt}
+                    alt={index === i ? img.alt : ""}
+                    aria-hidden={index !== i}
+                    loading={i === 0 ? "eager" : "lazy"}
                     className="absolute inset-0 h-full w-full object-cover"
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: index === i ? 1 : 0, scale: index === i ? 1 : 1.02 }}
@@ -235,7 +253,9 @@ export default function ReferencesPage() {
       </div>
 
       {/* DARK SECTION — Why Argus */}
-  <SectionSplit
+
+
+      <SectionSplit
   id="why"
   navInk="light"
   tone="dark"
@@ -249,10 +269,23 @@ export default function ReferencesPage() {
     "Seamless handoff to Argus Financials",
   ]}
   ctas={[{ label: "Talk to an Expert", href: "#contact" }]}
-  /* single image */
-  media={heroImage as unknown as string}
+
+  /* 👇 two images = carousel */
+  mediaItems={[
+    {
+      src: heroImage as unknown as string,
+      alt: "Product visual 1",
+      caption: <>Centralized fixed-asset register.</>,
+    },
+    {
+      src: hero as unknown as string,
+      alt: "Product visual 2",
+      caption: <>Automated depreciation & audit-ready reports.</>,
+    },
+  ]}
   
 />
+
 
       {/* CONTACT / CTA */}
       <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -260,10 +293,10 @@ export default function ReferencesPage() {
           <div className="grid md:grid-cols-2 items-center gap-8">
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-slate-900">
-                Ready to simplify asset control & reporting?
+                Ready to streamline your sales cycle?
               </h3>
               <p className="mt-2 text-slate-600">
-                We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.
+                We can tailor Argus Sales Management to your workflows, approvals, and reporting needs.
               </p>
             </div>
             <div className="flex md:justify-end gap-3">

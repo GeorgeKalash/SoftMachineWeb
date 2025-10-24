@@ -40,3 +40,55 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ===== PURE B/W auto-contrast (Light → White, Dark → Black) ===== */
+.nav-ink,
+.ink-inline {
+  /* Blend (invert the backdrop with white) */
+  color: #fff;
+  mix-blend-mode: difference;
+
+  /* Binarize HARD + reverse so light → white, dark → black */
+  /* Order matters: grayscale → (optional) brightness tweak → contrast → invert */
+  filter: grayscale(1) brightness(1.45) contrast(999999) invert(1);
+
+  /* Make compositing predictable; reduce grey halos from smoothing */
+  isolation: isolate;
+  -webkit-font-smoothing: subpixel-antialiased; /* darker, crisper on macOS */
+  text-rendering: geometricPrecision;
+  -webkit-text-stroke: 0.25px currentColor;     /* crisp edge */
+  text-shadow: 0 0 0 currentColor;              /* squash fringe */
+}
+
+/* Inherit final ink color everywhere inside */
+.nav-ink, .nav-ink *,
+.ink-inline, .ink-inline * { color: inherit !important; }
+
+/* Icons follow currentColor */
+.nav-ink svg,
+.ink-inline svg {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Absolutely no local backgrounds / opacity on inked elements */
+.no-ink-bg,
+.no-ink-bg:hover,
+.btn-ghost,
+.btn-ghost:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  opacity: 1 !important;
+}
+
+/* Fallback when blend unsupported (rare) */
+@supports not (mix-blend-mode: difference) {
+  .nav-ink,
+  .ink-inline {
+    color: #000;
+    filter: none;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+}

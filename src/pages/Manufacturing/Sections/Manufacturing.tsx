@@ -1,27 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import {
-  CheckCircle2,
-  Calculator,
-  Database,
-  Wrench,
-  Layers,
-  Link2,
-  FileText,
   ArrowRight,
+  Database,
+  FileText,
+  Layers,
+  Wrench,
+  Calculator,
+  Link2,
 } from "lucide-react";
 
-// Images (reuse as requested)
+// Images (reuse)
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
 
-// ✅ Use the reusable grid (not the card)
-import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
+// Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
+import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -36,87 +35,63 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
-/* ------------------------------- Types/Data ------------------------------ */
-type ReferenceItem = {
-  logo: string;
-  name: string;
-  industry: string;
-  sector: string;
-  description: string;
-};
-
-type CarouselItem = {
-  src: string;
-  alt: string;
-};
-
-const REFERENCES: ReferenceItem[] = [
-  {
-    logo: (logo as unknown as string),
-    name: "SoftMachine",
-    industry: "Software",
-    sector: "ERP",
-    description: "Trusted ERP partner with 30+ years of experience.",
-  },
-];
-
-const CAROUSEL: CarouselItem[] = [
-  { src: heroImage as unknown as string, alt: "Assets overview" },
-  { src: hero as unknown as string, alt: "Argus platform visual" },
-  { src: logo as unknown as string, alt: "Brand identity" },
-];
-
 /* --------------------------------- Page --------------------------------- */
 
-export default function ReferencesPage() {
-  const items = useMemo(() => REFERENCES, []);
-
-  // Simple cross-fade carousel
+export default function ManufacturingManagementPage() {
+  // Simple cross-fade carousel (respects reduced motion)
+  const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
+  const CAROUSEL = [
+    { src: heroImage as unknown as string, alt: "Manufacturing overview 1" },
+    { src: hero as unknown as string, alt: "Manufacturing overview 2" },
+    { src: logo as unknown as string, alt: "Brand identity" },
+  ];
+
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % CAROUSEL.length);
     }, 3800);
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Build feature items for the reusable grid
+  // Key Features (word-for-word titles + descriptions)
   const featureItems: FeatureItem[] = [
     {
-      title: "Asset Register",
-      desc: "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.",
-      preview: "cards",
+      title: "Bill of Materials (BOM):",
+      desc: "Define components, quantities, and production steps for every finished product.",
+      preview: "tiles",
       icon: <Database className="h-5 w-5 text-slate-900" />,
     },
     {
-      title: "Depreciation Management",
-      desc: "Automatically calculate depreciation using customizable methods and schedules.",
-      preview: "timeline",
-      icon: <Calculator className="h-5 w-5 text-slate-900" />,
+      title: "Production Orders:",
+      desc: "Create and manage work orders with live status updates and material availability checks.",
+      preview: "pipeline",
+      icon: <FileText className="h-5 w-5 text-slate-900" />,
     },
     {
-      title: "Asset Lifecycle Tracking",
-      desc: "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.",
-      preview: "bubbles",
+      title: "Material Requirement Planning (MRP):",
+      desc: "Automate material demand calculations based on production forecasts and stock levels.",
+      preview: "spark",
       icon: <Layers className="h-5 w-5 text-slate-900" />,
     },
     {
-      title: "Integration with Financials",
-      desc: "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.",
-      preview: "link",
-      icon: <Link2 className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Maintenance Scheduling",
-      desc: "Plan preventive maintenance to extend asset life and minimize downtime.",
-      preview: "gear",
+      title: "Work Center Management:",
+      desc: "Monitor production performance, track downtime, and optimize capacity utilization.",
+      preview: "gauge",
       icon: <Wrench className="h-5 w-5 text-slate-900" />,
     },
     {
-      title: "Reporting & Audit Support",
-      desc: "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.",
-      preview: "scroll",
-      icon: <FileText className="h-5 w-5 text-slate-900" />,
+      title: "Costing & Analysis:",
+      desc: "Capture labor, overhead, and material costs for precise production cost reporting.",
+      preview: "donut",
+      icon: <Calculator className="h-5 w-5 text-slate-900" />,
+    },
+    {
+      title: "Integration with Inventory & Purchase:",
+      desc: "Ensure raw materials are always available through real-time links with stock and procurement data.",
+      preview: "link",
+      icon: <Link2 className="h-5 w-5 text-slate-900" />,
     },
   ];
 
@@ -143,19 +118,16 @@ export default function ReferencesPage() {
             viewport={{ once: true, amount: 0.2 }}
             className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
           >
-            {/* Copy */}
+            {/* Copy (word-for-word) */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
-                Fixed Asset Management
+                Manufacturing Management
               </h1>
               <p className="mt-4 text-lg text-slate-600">
-                Track, Control, and Optimize Your Assets with Confidence
+                Optimize Production Efficiency and Resource Planning
               </p>
               <p className="mt-3 text-slate-600 leading-relaxed">
-                Argus Fixed Asset Management enables businesses to maintain full visibility and control over their
-                tangible assets — from acquisition to depreciation and disposal. The system automates every step of
-                asset tracking and accounting, helping you reduce manual errors, improve compliance, and make smarter
-                financial decisions.
+                Argus Manufacturing provides a complete solution for managing production operations — from planning and scheduling to cost tracking and reporting. Whether you manage discrete or batch manufacturing, Argus ensures visibility, control, and efficiency across your shop floor.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -163,7 +135,7 @@ export default function ReferencesPage() {
                   href="#features"
                   className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
                 >
-                  Explore Capabilities <ArrowRight className="ml-2 h-4 w-4" />
+                  Explore Key Features <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
                 <a
                   href="#why"
@@ -176,17 +148,24 @@ export default function ReferencesPage() {
 
             {/* Visual / Carousel */}
             <motion.div variants={fadeUp} className="relative">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur">
+              <div
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Manufacturing visuals"
+              >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
                     key={img.alt}
                     src={img.src}
-                    alt={img.alt}
+                    alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: index === i ? 1 : 0, scale: index === i ? 1 : 1.02 }}
                     transition={{ duration: 0.8, ease: EASE }}
                     style={{ willChange: "opacity, transform" }}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    aria-hidden={index !== i}
                   />
                 ))}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
@@ -194,10 +173,9 @@ export default function ReferencesPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${
-                        i === index ? "bg-slate-900" : "bg-slate-300"
-                      }`}
+                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
                       aria-label={`Slide ${i + 1}`}
+                      aria-current={i === index}
                     />
                   ))}
                 </div>
@@ -207,7 +185,7 @@ export default function ReferencesPage() {
         </div>
       </div>
 
-      {/* FEATURES — Reusable grid with built-in hover ambient sweep */}
+      {/* FEATURES — Reusable grid */}
       <div id="features" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
@@ -218,7 +196,7 @@ export default function ReferencesPage() {
             className="space-y-10"
           >
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
-              Key Features
+              Key Features:
             </motion.h2>
 
             <FeatureGrid
@@ -229,41 +207,39 @@ export default function ReferencesPage() {
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
+              enableTilt
             />
           </motion.div>
         </div>
       </div>
 
-      {/* DARK SECTION — Why Argus */}
-  <SectionSplit
-  id="why"
-  navInk="light"
-  tone="dark"
-  title="Why Argus Fixed Asset Management"
-  description="By centralizing all asset data, Argus helps finance and operations teams save time, stay compliant, and make data-driven asset management decisions."
-  bullets={[
-    "Single source of truth for every asset",
-    "Automatic, compliant depreciation postings",
-    "Stronger audit readiness with clean reporting",
-    "Lower downtime via planned maintenance",
-    "Seamless handoff to Argus Financials",
-  ]}
-  ctas={[{ label: "Talk to an Expert", href: "#contact" }]}
-  /* single image */
-  media={heroImage as unknown as string}
-  
-/>
+      {/* DARK SECTION — Why Argus Manufacturing */}
+      <SectionSplit
+        id="why"
+        navInk="light"
+        tone="dark"
+        title="Why Argus Manufacturing:"
+        description="Argus connects planning, production, and inventory into one unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency."
+        mediaItems={[
+          { src: heroImage as unknown as string, alt: "Production planning" },
+          { src: hero as unknown as string, alt: "Shop floor tracking" },
+        ]}
+        bullets={[
+          "reducing delays",
+          "minimizing waste",
+          "boosting overall production efficiency."
+        ]}      />
 
-      {/* CONTACT / CTA */}
+      {/* CONTACT / CTA (generic) */}
       <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
           <div className="grid md:grid-cols-2 items-center gap-8">
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-slate-900">
-                Ready to simplify asset control & reporting?
+                Ready to optimize production?
               </h3>
               <p className="mt-2 text-slate-600">
-                We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.
+                We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.
               </p>
             </div>
             <div className="flex md:justify-end gap-3">

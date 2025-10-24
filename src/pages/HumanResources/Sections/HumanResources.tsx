@@ -1,27 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import {
-  CheckCircle2,
-  Calculator,
-  Database,
-  Wrench,
-  Layers,
-  Link2,
-  FileText,
   ArrowRight,
+  Database,
+  Clock,
+  Calendar,
+  Calculator,
+  FileText,
 } from "lucide-react";
 
-// Images (reuse as requested)
+// Images (reuse)
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
 
-// ✅ Use the reusable grid (not the card)
-import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
+// Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
+import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -61,62 +59,52 @@ const REFERENCES: ReferenceItem[] = [
 ];
 
 const CAROUSEL: CarouselItem[] = [
-  { src: heroImage as unknown as string, alt: "Assets overview" },
-  { src: hero as unknown as string, alt: "Argus platform visual" },
+  { src: heroImage as unknown as string, alt: "HR overview 1" },
+  { src: hero as unknown as string, alt: "HR overview 2" },
   { src: logo as unknown as string, alt: "Brand identity" },
 ];
 
 /* --------------------------------- Page --------------------------------- */
 
-export default function ReferencesPage() {
+export default function HumanResourcesPage() {
   const items = useMemo(() => REFERENCES, []);
 
-  // Simple cross-fade carousel
+  // Simple cross-fade carousel (respects reduced motion)
+  const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % CAROUSEL.length);
     }, 3800);
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion]);
 
-  // Build feature items for the reusable grid
+  // Build feature items (word-for-word)
   const featureItems: FeatureItem[] = [
     {
-      title: "Asset Register",
-      desc: "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.",
-      preview: "cards",
+      title: "Centralized Employee Information:",
+      desc: "Maintain accurate and up-to-date employee profiles, contracts, and records in one place, accessible anytime.",
+      preview: "crm",
       icon: <Database className="h-5 w-5 text-slate-900" />,
     },
     {
-      title: "Depreciation Management",
-      desc: "Automatically calculate depreciation using customizable methods and schedules.",
+      title: "Attendance & Time Tracking:",
+      desc: "Monitor attendance using smart integrations like biometric devices or web check-ins, ensuring accurate payroll calculations.",
       preview: "timeline",
+      icon: <Clock className="h-5 w-5 text-slate-900" />,
+    },
+    {
+      title: "Leave Management System:",
+      desc: "Simplify leave requests, approvals, and balance tracking with automated workflows and notifications.",
+      preview: "inbox",
+      icon: <Calendar className="h-5 w-5 text-slate-900" />,
+    },
+    {
+      title: "Payroll Automation:",
+      desc: "Calculate salaries, deductions, taxes, and benefits effortlessly with Argus Payroll integration.",
+      preview: "invoice",
       icon: <Calculator className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Asset Lifecycle Tracking",
-      desc: "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.",
-      preview: "bubbles",
-      icon: <Layers className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Integration with Financials",
-      desc: "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.",
-      preview: "link",
-      icon: <Link2 className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Maintenance Scheduling",
-      desc: "Plan preventive maintenance to extend asset life and minimize downtime.",
-      preview: "gear",
-      icon: <Wrench className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Reporting & Audit Support",
-      desc: "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.",
-      preview: "scroll",
-      icon: <FileText className="h-5 w-5 text-slate-900" />,
     },
   ];
 
@@ -146,24 +134,21 @@ export default function ReferencesPage() {
             {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
-                Fixed Asset Management
+                Human Resources (HR Management)
               </h1>
               <p className="mt-4 text-lg text-slate-600">
-                Track, Control, and Optimize Your Assets with Confidence
+                Empower Your People, Simplify HR Operations
               </p>
               <p className="mt-3 text-slate-600 leading-relaxed">
-                Argus Fixed Asset Management enables businesses to maintain full visibility and control over their
-                tangible assets — from acquisition to depreciation and disposal. The system automates every step of
-                asset tracking and accounting, helping you reduce manual errors, improve compliance, and make smarter
-                financial decisions.
+                Argus Human Resources is a powerful and user-friendly module designed to manage the entire employee lifecycle — from recruitment to retirement. It helps organizations automate HR processes, centralize employee data, and create a culture of transparency and performance. Whether you’re managing a small team or a large workforce, Argus HR gives you complete visibility and control over your human capital.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <a
-                  href="#features"
+                  href="#benefits"
                   className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
                 >
-                  Explore Capabilities <ArrowRight className="ml-2 h-4 w-4" />
+                  Explore Benefits <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
                 <a
                   href="#why"
@@ -176,17 +161,24 @@ export default function ReferencesPage() {
 
             {/* Visual / Carousel */}
             <motion.div variants={fadeUp} className="relative">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur">
+              <div
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="HR visuals"
+              >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
                     key={img.alt}
                     src={img.src}
-                    alt={img.alt}
+                    alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: index === i ? 1 : 0, scale: index === i ? 1 : 1.02 }}
                     transition={{ duration: 0.8, ease: EASE }}
                     style={{ willChange: "opacity, transform" }}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    aria-hidden={index !== i}
                   />
                 ))}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
@@ -194,10 +186,9 @@ export default function ReferencesPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${
-                        i === index ? "bg-slate-900" : "bg-slate-300"
-                      }`}
+                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
                       aria-label={`Slide ${i + 1}`}
+                      aria-current={i === index}
                     />
                   ))}
                 </div>
@@ -207,8 +198,8 @@ export default function ReferencesPage() {
         </div>
       </div>
 
-      {/* FEATURES — Reusable grid with built-in hover ambient sweep */}
-      <div id="features" className="relative">
+      {/* BENEFITS — Reusable grid */}
+      <div id="benefits" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div
             variants={container}
@@ -218,7 +209,7 @@ export default function ReferencesPage() {
             className="space-y-10"
           >
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
-              Key Features
+              Key Benefits:
             </motion.h2>
 
             <FeatureGrid
@@ -229,30 +220,22 @@ export default function ReferencesPage() {
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
+              enableTilt
             />
           </motion.div>
         </div>
       </div>
 
-      {/* DARK SECTION — Why Argus */}
-  <SectionSplit
-  id="why"
-  navInk="light"
-  tone="dark"
-  title="Why Argus Fixed Asset Management"
-  description="By centralizing all asset data, Argus helps finance and operations teams save time, stay compliant, and make data-driven asset management decisions."
-  bullets={[
-    "Single source of truth for every asset",
-    "Automatic, compliant depreciation postings",
-    "Stronger audit readiness with clean reporting",
-    "Lower downtime via planned maintenance",
-    "Seamless handoff to Argus Financials",
-  ]}
-  ctas={[{ label: "Talk to an Expert", href: "#contact" }]}
-  /* single image */
-  media={heroImage as unknown as string}
-  
-/>
+      {/* DARK SECTION — Why Argus HR */}
+      <SectionSplit
+        id="why"
+        navInk="light"
+        tone="dark"
+        title="Why Businesses Choose Argus HR:"
+        description="With built-in analytics, employee self-service access, and complete compliance support, Argus HR helps HR teams save time, reduce manual work, and focus on building a motivated, productive workforce."
+        media={heroImage as unknown as string}
+        mediaCaption={<>Employee self-service with real-time visibility.</>}
+      />
 
       {/* CONTACT / CTA */}
       <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -260,10 +243,10 @@ export default function ReferencesPage() {
           <div className="grid md:grid-cols-2 items-center gap-8">
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-slate-900">
-                Ready to simplify asset control & reporting?
+                Ready to empower your HR team?
               </h3>
               <p className="mt-2 text-slate-600">
-                We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.
+                We can tailor Argus HR to your policies, approval chains, and payroll requirements.
               </p>
             </div>
             <div className="flex md:justify-end gap-3">

@@ -19,6 +19,10 @@ import Projects from "./pages/Projects/Projects";
 import TermsOfService from "./pages/TermsOfService/TermsOfService";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy/PrivacyPolicy";
 import FixedAssets from "./pages/FixedAssets/FixedAssets";
+import SalesOrderProcessing from "./pages/SalesOrderProcessing/SalesOrderProcessing";
+import HumanResources from "./pages/HumanResources/HumanResources";
+import Financials from "./pages/Financials/Financials";
+import Manufacturing from "./pages/Manufacturing/Manufacturing";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +116,11 @@ const App = () => (
           <Route path="/FixedAssets" element={<FixedAssets />} />
           <Route path="/allProjects" element={<Projects />} />
           <Route path="/PrivacyPolicyPage" element={<PrivacyPolicyPage />} />
+          <Route path="/SalesOrderProcessing" element={<SalesOrderProcessing />} />
+          <Route path="/HumanResources" element={<HumanResources />} />
+          <Route path="/Financials" element={<Financials />} />
+          <Route path="/Manufacturing" element={<Manufacturing />} />
+          
           <Route path="/TermsOfService" element={<TermsOfService />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

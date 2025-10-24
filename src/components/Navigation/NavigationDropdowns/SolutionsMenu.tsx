@@ -62,12 +62,12 @@ type SolutionsMenuProps = {
 };
 
 export const DEFAULT_SOLUTIONS: SolutionItem[] = [
-  { imgSrc: HR, imgHoverSrc: HRRed, label: "Human Resources", href: "#hr" },
-  { imgSrc: Financials, imgHoverSrc: FinancialsRed, label: "Financials", href: "#financials" },
+  { imgSrc: HR, imgHoverSrc: HRRed, label: "Human Resources", href: "/HumanResources" },
+  { imgSrc: Financials, imgHoverSrc: FinancialsRed, label: "Financials", href: "/Financials" },
   { imgSrc: RepairAndService, imgHoverSrc: RepairAndServiceRed, label: "Repair And Service", href: "#repair-service" },
-  { imgSrc: SalesOrderProcessing, imgHoverSrc: SalesOrderProcessingRed, label: "Sales Order Processing", href: "#sales-order-processing" },
+  { imgSrc: SalesOrderProcessing, imgHoverSrc: SalesOrderProcessingRed, label: "Sales Order Processing", href: "/SalesOrderProcessing" },
   { imgSrc: FixedAssets, imgHoverSrc: FixedAssetsRed, label: "Fixed Assets", href: "/FixedAssets" },
-  { imgSrc: Manufacturing, imgHoverSrc: ManufacturingRed, label: "Manufacturing", href: "#manufacturing" },
+  { imgSrc: Manufacturing, imgHoverSrc: ManufacturingRed, label: "Manufacturing", href: "/Manufacturing" },
   { imgSrc: PurchaseOrderProcessing, imgHoverSrc: PurchaseOrderProcessingRed, label: "Purchase Order Processing", href: "#purchase-order-processing" },
   { imgSrc: Delivery, imgHoverSrc: DeliveryRed, label: "Delivery", href: "#delivery" },
   { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/InventoryManagment" },
@@ -111,18 +111,18 @@ export function SolutionsMenu({
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* ——— style presets (refined) ——— */
+  /* ——— style presets (unchanged) ——— */
   const ICON_BOX =
-    "p-2 rounded-xl bg-primary/10 ring-1 ring-primary/15 shadow-sm " + // ★ softer pill w/ ring
+    "p-2 rounded-xl bg-primary/10 ring-1 ring-primary/15 shadow-sm " +
     "group-hover:bg-primary/15 transition-colors shrink-0";
   const ICON_IMG_WRAPPER = "relative h-8 w-8 md:h-9 md:w-9";
   const ICON_SIZE = "h-8 w-8 md:h-9 md:w-9";
   const LABEL_CLASS =
-    "text-[15px] md:text-base font-medium leading-6 tracking-tight";      // ★ slightly tighter tracking
+    "text-[15px] md:text-base font-medium leading-6 tracking-tight";
   const CELL_CLASS =
-    "group flex items-start gap-3 p-2.5 md:p-3 rounded-xl border border-transparent " + // ★ rounded-xl + border base
+    "group flex items-start gap-3 p-2.5 md:p-3 rounded-xl border border-transparent " +
     "hover:border-primary/30 hover:bg-muted/50 transition-colors " +
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 " + // ★ accessible focus
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 " +
     "active:scale-[0.99]";
 
   const ItemCell = ({ icon: Icon, imgSrc, imgHoverSrc, label, href, meta, onClick }: SolutionItem) => {
@@ -191,7 +191,6 @@ export function SolutionsMenu({
                 </Badge>
               )}
             </div>
-            {/* Optional: add a tiny sublabel here if you ever need it */}
           </div>
         </div>
       </button>
@@ -210,22 +209,24 @@ export function SolutionsMenu({
           <PopoverTrigger asChild>
             <button
               type="button"
-              className={`inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors ${triggerClassName}`}
+              /* keep button neutral; only the inline text+icon gets ink */
+              className={`inline-flex items-center gap-1 no-ink-bg ${triggerClassName}`}
               aria-haspopup="dialog"
               aria-expanded={openDesktop}
               onClick={(e) => e.preventDefault()}
             >
-              {triggerLabel}
-              <ChevronDown
-                className={`h-4 w-4 opacity-70 transition-transform ${openDesktop ? "rotate-180" : ""}`}
-              />
+              <span className="ink-inline inline-flex items-center gap-1">
+                {triggerLabel}
+                <ChevronDown
+                  className={`h-4 w-4 opacity-70 transition-transform ${openDesktop ? "rotate-180" : ""}`}
+                />
+              </span>
             </button>
           </PopoverTrigger>
 
           <PopoverContent
             align="start"
             sideOffset={14}
-            /* ★ glassy panel + nicer ring/shadow + larger radius */
             className={[
               "w-[500px] md:w-[640px] lg:w-[720px]",
               "p-2.5 md:p-3",
@@ -237,14 +238,12 @@ export function SolutionsMenu({
             onMouseEnter={() => openWithDelay(0)}
             onMouseLeave={() => closeWithDelay()}
           >
-            {/* ★ compact header (optional) */}
             <div className="px-1.5 pb-2 pt-0.5 flex items-center justify-between">
               <span className="text-xs uppercase tracking-wider text-muted-foreground">
                 Modules of Argus
               </span>
             </div>
 
-            {/* ★ tighter, responsive grid */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 md:gap-2">
               {items.map((it) => (
                 <ItemCell key={it.label} {...it} />
@@ -265,14 +264,17 @@ export function SolutionsMenu({
           className={`w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-secondary transition-colors ${className}`}
           aria-expanded={openMobile}
         >
-          <span className="text-foreground font-medium">{triggerLabel}</span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${openMobile ? "rotate-180" : ""}`} />
+          {/* label ink on left */}
+          <span className="ink-inline font-medium">{triggerLabel}</span>
+          {/* arrow ink on right */}
+          <span className="ink-inline">
+            <ChevronDown className={`h-4 w-4 transition-transform ${openMobile ? "rotate-180" : ""}`} />
+          </span>
         </button>
       </SheetTrigger>
 
       <SheetContent
         side="bottom"
-        /* ★ taller but with large radius & clean canvas */
         className="h-[85vh] p-0 flex flex-col rounded-t-3xl overflow-hidden bg-popover/95 backdrop-blur-xl"
       >
         <SheetHeader className="px-4 py-3 border-b bg-background/60 backdrop-blur-md">
