@@ -19,10 +19,11 @@ type AboutProps = {
   heading1?: string;
   copy1a?: string;
   copy1b?: string;
-
   // Section 2 (Features/Capabilities)
   pill2?: string;
   heading2?: string;
+  copy2a?: string;
+  copy2b?: string;
   featureCards?: { title: string; copy: string }[];
 
   // CTA
@@ -33,41 +34,108 @@ type AboutProps = {
 };
 
 /* ------------------------------ defaults -------------------------------- */
-// KEEPING the count-up stats exactly as-is
 const DEFAULT_STATS: Stat[] = [
   { icon: Users, value: "40+", label: "Projects delivered" },
   { icon: Target, value: "10+", label: "Years building" },
   { icon: TrendingUp, value: "12+", label: "Industries served" },
 ];
 
-// 6 benefits (same count), rewritten to reflect your VALUE + message
 const DEFAULT_BENEFITS = [
-  "SOP-driven delivery across industries",
-  "Cloud-first with optional desktop access",
-  "Remote, instant access to every record",
-  "Security, reliability, and performance",
-  "Integrates with POS, web, and tools",
-  "30+ years of hands-on consulting",
+  "Standard operationg procedure for our multi-industry workspace",
+  "SoftMachine is expanding to become a phenomenally thriving company with clients all over the globe in the same product and line by giving sufficient value to our clients, and employees.",
+  "Providing technological solutions that exceed clients expectations",
 ];
 
-// 3 feature cards (same count), focused on Argus + implementation
 const DEFAULT_FEATURE_CARDS = [
   {
     title: "Cloud ERP, zero hardware",
     copy:
-      "Run securely in the cloud with optional desktop clients. Access your data instantly—from the office or on the move.",
+      "Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data.",
   },
   {
-    title: "Scalable & industry-ready",
+    title: "secutites ",
     copy:
-      "Modular architecture and proven SOPs adapt to retail, distribution, manufacturing and more as you grow.",
-  },
-  {
-    title: "Implementation that sticks",
-    copy:
-      "We build and maintain Argus ourselves, and partner with you on migration, training, and integrations so you hit your goals.",
+      "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud.",
   },
 ];
+
+
+/* ------------------------------ helpers/ui ------------------------------ */
+const StatCard = ({
+  stat,
+  index,
+  visible,
+}: {
+  stat: Stat;
+  index: number;
+  visible: boolean;
+}) => {
+  const Icon = stat.icon;
+  return (
+    <div
+      className={`text-center p-8 rounded-2xl bg-background shadow-lg hover:shadow-xl transition-all duration-700 ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
+      <Icon className="h-12 w-12 text-primary mx-auto mb-4" aria-hidden />
+      <div className="text-4xl font-bold mb-2">{stat.value}</div>
+      <div className="text-muted-foreground">{stat.label}</div>
+    </div>
+  );
+};
+
+/** Big card (used for Section 1 now) */
+const BigCard = ({
+  label,
+  index,
+  visible,
+}: {
+  label: string;
+  index: number;
+  visible: boolean;
+}) => (
+  <div
+    className={`p-6 sm:p-7 bg-background rounded-xl shadow-md hover:shadow-lg transition-all duration-700 ${
+      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+    }`}
+    style={{ transitionDelay: `${index * 70}ms` }}
+  >
+    <div className="flex items-start gap-3">
+      <Check className="h-5 w-5 text-primary shrink-0 mt-1" aria-hidden />
+      <div>
+        <h3 className="text-lg font-semibold leading-snug">{label}</h3>
+        {/* no extra copy — keeping your data intact */}
+      </div>
+    </div>
+  </div>
+);
+
+/** Small bullet row (used for Section 2 now) */
+const BulletRow = ({
+  title,
+  copy,
+  index,
+  visible,
+}: {
+  title: string;
+  copy: string;
+  index: number;
+  visible: boolean;
+}) => (
+  <div
+    className={`flex items-start gap-3 transition-all duration-700 ${
+      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+    }`}
+    style={{ transitionDelay: `${index * 60}ms` }}
+  >
+    <Check className="h-5 w-5 text-primary shrink-0 mt-1" aria-hidden />
+    <div>
+      <div className="font-medium leading-tight">{title}</div>
+      <p className="text-sm text-muted-foreground leading-snug">{copy}</p>
+    </div>
+  </div>
+);
 
 /* --------------------------------- ui ----------------------------------- */
 const About: React.FC<AboutProps> = ({
@@ -76,41 +144,30 @@ const About: React.FC<AboutProps> = ({
 
   // WHO WE ARE
   pill1 = "Who We Are",
-  heading1 = "3 decades of ERP—built, owned, and evolved by SoftMachine",
-  copy1a = "We started over 30 years ago, shipping our first Windows ERP in 1995. With creativity and determination we grew into the cloud, delivering a product line that helps businesses run smoothly and scale confidently.",
-  copy1b = "Our vision is global—one world-class product, real value for clients and teammates. Our mission: provide technological solutions that exceed expectations—Software Smart by Design.",
+  heading1 = "3 decades of ERP—Software",
+  copy1a = "Just over 30 years ago, we started as an erp software company that offers business solutions at its best! We grew with creativity and determination, creating out first windows erp software back in 1995.",
+  copy1b = "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is one of the leading software companies across industries and regions still aiming high, still reaching there!",
 
-  // ABOUT ARGUS
-  pill2 = "About Argus",
-  heading2 = "Smart, cloud ERP—fast, flexible, and ready for the unexpected",
+
+ 
+   pill2 = "About Argus",
+   heading2 = "Argus ERP Cloud",
+   copy2a =
+     "Argus is an erp software product that enables businesses to plan and manage their operations more successfully and efficiently. It enables you to function smoothly, instantly, and intelligently.",
+   copy2b =
+     "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud. You operate with desktop computers and don't rely on hardware. Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data.",
+ 
   featureCards = DEFAULT_FEATURE_CARDS,
 
   primaryCtaText = "Talk to us",
   onPrimaryCta,
-  secondaryCtaText = "See work",
-  onSecondaryCta,
+
 }) => {
   const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation();
   const { ref: content1Ref, isVisible: content1Visible } = useScrollAnimation();
   const { ref: image1Ref, isVisible: image1Visible } = useScrollAnimation();
   const { ref: image2Ref, isVisible: image2Visible } = useScrollAnimation();
   const { ref: content2Ref, isVisible: content2Visible } = useScrollAnimation();
-
-  const StatCard = ({ stat, index }: { stat: Stat; index: number }) => {
-    const Icon = stat.icon;
-    return (
-      <div
-        className={`text-center p-8 rounded-2xl bg-background shadow-lg hover:shadow-xl transition-all duration-700 ${
-          statsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
-        style={{ transitionDelay: `${index * 100}ms` }}
-      >
-        <Icon className="h-12 w-12 text-primary mx-auto mb-4" aria-hidden />
-        <div className="text-4xl font-bold mb-2">{stat.value}</div>
-        <div className="text-muted-foreground">{stat.label}</div>
-      </div>
-    );
-  };
 
   return (
     <section
@@ -133,11 +190,16 @@ const About: React.FC<AboutProps> = ({
         {/* Stats (unchanged) */}
         <div ref={statsRef} className="grid md:grid-cols-3 gap-8 mb-20">
           {stats.map((stat, index) => (
-            <StatCard key={`${stat.label}-${index}`} stat={stat} index={index} />
+            <StatCard
+              key={`${stat.label}-${index}`}
+              stat={stat}
+              index={index}
+              visible={statsVisible}
+            />
           ))}
         </div>
 
-        {/* Section 1: Who We Are */}
+        {/* Section 1: Who We Are — NOW uses BIG CARDS (flipped design) */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div
             ref={content1Ref}
@@ -152,18 +214,10 @@ const About: React.FC<AboutProps> = ({
             <p className="text-lg text-muted-foreground">{copy1a}</p>
             <p className="text-lg text-muted-foreground">{copy1b}</p>
 
-            <div className="grid sm:grid-cols-2 gap-4 pt-4">
-              {benefits.map((benefit, index) => (
-                <div
-                  key={index}
-                  className={`flex items-start gap-3 transition-all duration-700 ${
-                    content1Visible ? "opacity-100" : "opacity-0"
-                  }`}
-                  style={{ transitionDelay: `${index * 50}ms` }}
-                >
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-1" aria-hidden />
-                  <span className="text-foreground">{benefit}</span>
-                </div>
+            {/* FLIPPED: benefits as BIG CARDS */}
+            <div className="grid sm:grid-cols-1 gap-4 pt-4">
+              {benefits.map((b, i) => (
+                <BigCard key={`benefit-${i}`} label={b} index={i} visible={content1Visible} />
               ))}
             </div>
           </div>
@@ -187,7 +241,7 @@ const About: React.FC<AboutProps> = ({
           </div>
         </div>
 
-        {/* Section 2: About Argus */}
+        {/* Section 2: About Argus — NOW uses SMALL BULLETS (flipped design) */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div
             ref={image2Ref}
@@ -218,18 +272,20 @@ const About: React.FC<AboutProps> = ({
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold leading-tight">{heading2}</h2>
             <p className="text-lg text-muted-foreground">
-              Argus is our ERP that makes daily operations instant and intelligent. No hardware lock-in, work from anywhere, and stay ready for change.
+           {copy2a}
             </p>
+            <p className="text-lg text-muted-foreground">{copy2b}</p>
 
-            <div className="space-y-4 pt-4">
+            {/* FLIPPED: featureCards as SMALL BULLETS */}
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3 pt-4">
               {featureCards.map((f, i) => (
-                <div
+                <BulletRow
                   key={`${f.title}-${i}`}
-                  className="p-6 bg-background rounded-xl shadow-md hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="text-xl font-bold mb-2">{f.title}</h3>
-                  <p className="text-muted-foreground">{f.copy}</p>
-                </div>
+                  title={f.title}
+                  copy={f.copy}
+                  index={i}
+                  visible={content2Visible}
+                />
               ))}
             </div>
 
@@ -238,29 +294,17 @@ const About: React.FC<AboutProps> = ({
               <button
                 className="inline-flex items-center rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 onClick={
-                  onPrimaryCta ??
-                  (() =>
-                    document
-                      .getElementById("contact")
-                      ?.scrollIntoView({ behavior: "smooth" }))
+                    onPrimaryCta ??
+                    (() =>
+                      document
+                        .getElementById("contact")
+                        ?.scrollIntoView({ behavior: "smooth" }))
                 }
                 aria-label={primaryCtaText}
               >
                 {primaryCtaText}
               </button>
-              <button
-                className="inline-flex items-center rounded-md border px-5 py-3 text-sm font-medium hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                onClick={
-                  onSecondaryCta ??
-                  (() =>
-                    document
-                      .getElementById("work")
-                      ?.scrollIntoView({ behavior: "smooth" }))
-                }
-                aria-label={secondaryCtaText}
-              >
-                {secondaryCtaText}
-              </button>
+             
             </div>
           </div>
         </div>
