@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion, useReducedMotion, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import heroImage from "@/assets/hero.png";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import Decoration from "@/sharedComponent/Decoration";
+
+import { PageModal } from "@/sharedComponent/PageModal";
+import { ContactUsForm } from "@/components/ContactUs/ContactUsForm"; 
 
 /* -------------------------------- types -------------------------------- */
 type HeroProps = {
@@ -21,7 +24,6 @@ type HeroProps = {
   locationBadge?: string;
 };
 
-/* ------------------------------- animation ------------------------------ */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const container: Variants = {
@@ -38,6 +40,9 @@ const fade: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.58, ease: EASE } },
 };
+
+/* ------------------------------- local ---------------------------------- */
+const FORM_ID = "hero-talk-to-us-form";
 
 /* --------------------------------- cmp ---------------------------------- */
 export default function Hero({
@@ -57,12 +62,23 @@ export default function Hero({
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
   const { ref: imageRef, isVisible: imageVisible } = useScrollAnimation();
 
+  /* Modal state */
+  const [open, setOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  const handleModalSend = () => {
+    const form = document.getElementById(FORM_ID) as HTMLFormElement | null;
+    if (!form) return;
+    if (typeof form.requestSubmit === "function") form.requestSubmit();
+    else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+  };
+  const handleFormSuccess = () => setOpen(false);
 
   // Safe fallbacks for CTAs
   const handlePrimary = () => {
     if (onPrimaryCta) return onPrimaryCta();
-    // default: scroll to contact section if exists
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // default: open contact modal
+    setOpen(true);
   };
   const handleSecondary = () => {
     if (onSecondaryCta) return onSecondaryCta();
@@ -115,7 +131,7 @@ export default function Hero({
       >
         <img
           src={heroImage}
-          alt="" // decorative
+          alt=""
           className="w-full h-full object-cover"
           onLoad={() => setImgLoaded(true)}
           loading="eager"
@@ -134,7 +150,7 @@ export default function Hero({
             animate={contentVisible ? "visible" : "hidden"}
             className="space-y-6 sm:space-y-8"
           >
-        {/* Location / trust badge with Google Maps link */}
+            {/* Location / trust badge with Google Maps link */}
             <motion.a
               variants={fadeUp}
               href="https://www.google.com/maps?q=SoftMachine,+Sahel+Alma,+Jounieh,+Lebanon"
@@ -146,7 +162,6 @@ export default function Hero({
               <span className="inline-block h-2 w-2 rounded-full bg-primary" />
               {locationBadge}
             </motion.a>
-
 
             <motion.h1
               variants={fadeUp}
@@ -174,12 +189,7 @@ export default function Hero({
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 420, damping: 22 }}
               >
-                <Button
-                  size="lg"
-                  className="text-base"
-                  onClick={handlePrimary}
-                  aria-label={primaryCtaText}
-                >
+                <Button size="lg" className="text-base" onClick={handlePrimary} aria-label={primaryCtaText}>
                   {primaryCtaText}
                 </Button>
               </motion.div>
@@ -233,7 +243,26 @@ export default function Hero({
           </motion.div>
         </div>
       </div>
+
+      {/* Modal + Contact form */}
+      <PageModal
+        open={open}
+        onOpenChange={setOpen}
+        title="Talk to us"
+        description="Tell us a bit about your needs—we’ll get back to you shortly."
+        size="lg"
+        scrollBody
+        showSend
+        onSend={handleModalSend}
+        isSending={isSending}
+      >
+        <ContactUsForm
+          formId={FORM_ID}
+          type="demo" // or "partner" (add "support" later if you make a template)
+          onSuccess={handleFormSuccess}
+          onSubmittingChange={setIsSending}
+        />
+      </PageModal>
     </motion.section>
   );
 }
-

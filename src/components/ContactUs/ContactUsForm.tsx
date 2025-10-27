@@ -18,9 +18,9 @@ const leadSchema = z.object({
 });
 export type LeadForm = z.infer<typeof leadSchema>;
 
-type SubmitType = "demo" | "partner";
+type SubmitType = "demo" | "partner"| "support";
 
-interface NavgationFormProps {
+interface ContactUsFormProps {
   formId?: string;
   type: SubmitType;
   onSuccess?: (result: unknown) => void;
@@ -33,9 +33,10 @@ interface NavgationFormProps {
 const SERVICE_ID = "service_f2p8z6e";
 const TEMPLATE_ID_PARTNER = "template_04sbrw7"; // Become a partner
 const TEMPLATE_ID_DEMO    = "template_ca4py7g"; // Schedule a demo
+const TEMPLATE_ID_SUPPORT = "template_support";// Contact SUPPORT 
 const PUBLIC_KEY          = "mxnMw5kD9r_8dLGMD"; // your EmailJS public key
 
-export const NavgationForm: React.FC<NavgationFormProps> = ({
+export const ContactUsForm: React.FC<ContactUsFormProps> = ({
   formId,
   type,
   onSuccess,
@@ -73,7 +74,9 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
       emailjs.init(PUBLIC_KEY);
 
       const TEMPLATE_ID =
-        type === "partner" ? TEMPLATE_ID_PARTNER : TEMPLATE_ID_DEMO;
+      type === "partner" ? TEMPLATE_ID_PARTNER
+      : type === "support" ? TEMPLATE_ID_SUPPORT
+      : TEMPLATE_ID_DEMO;
 
       const res = await emailjs.sendForm(
         SERVICE_ID,
@@ -166,4 +169,4 @@ export const NavgationForm: React.FC<NavgationFormProps> = ({
   );
 };
 
-export default NavgationForm;
+export default ContactUsForm;

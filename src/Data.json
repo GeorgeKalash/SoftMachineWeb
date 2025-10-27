@@ -1,0 +1,16 @@
+{
+    "globals": {
+      "company": "SoftMachine",
+      "phoneLabel": "+961 76 888 468",
+      "phoneHref": "tel:+96176888468",
+      "locationBadge": "Sahel Alma, Jounieh — Lebanon",
+      "mapsUrl": "https://www.google.com/maps?q=SoftMachine,+Sahel+Alma,+Jounieh,+Lebanon"
+    },
+    "hero": {
+      "title": "Software Smart by Design",
+      "description": "We design and build custom software—web, mobile, and business systems—that solve real problems and scale with your growth.",
+      "primaryCtaText": "Talk to Us",
+      "secondaryCtaText": "See Work"
+    }
+  }
+  

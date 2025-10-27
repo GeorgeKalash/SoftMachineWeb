@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
-import { NavgationForm } from "./NavigationForms/NavigationForm";
+import { ContactUsForm } from "../ContactUs/ContactUsForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../src/assets/softMachineLogo.png";
@@ -216,7 +216,7 @@ const Navigation = () => {
         isSending={isSending}
       >
         {modalType && (
-          <NavgationForm
+          <ContactUsForm
             formId={FORM_ID}
             type={modalType}
             onSuccess={handleFormSuccess}
