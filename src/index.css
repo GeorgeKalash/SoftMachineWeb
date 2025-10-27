@@ -42,7 +42,8 @@ All colors MUST be HSL.
     --feature-pink: 340 82% 68%;
     --feature-green: 142 71% 45%;
     --feature-orange: 24 95% 63%;
-
+    --feature-blue: 221 83% 53%;
+    --feature-purple: 262 80% 60%;
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -93,7 +94,9 @@ All colors MUST be HSL.
     
     --feature-pink: 340 82% 68%;
     --feature-green: 142 71% 45%;
-    --feature-orange: 24 95% 63%;
+    --feature-orange: 24 90% 56%;
+    --feature-blue: 221 85% 60%;
+    --feature-purple: 262 82% 66%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

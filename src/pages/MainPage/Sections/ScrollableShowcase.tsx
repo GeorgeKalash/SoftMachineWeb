@@ -1,11 +1,13 @@
+// src/sharedComponent/ScrollableShowcase.tsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sparkles, PlayCircle } from "lucide-react";
+import siteData from "@/data.json";
 
-/* ---------------- assets ---------------- */
+/* ---------------- assets in code ---------------- */
 import cat from "@/assets/cat.gif";
 import giphy from "@/assets/giphy-1.gif";
 import workcomputer from "@/assets/workcomputer.gif";
@@ -33,98 +35,30 @@ type ShowcaseItem = {
   primary?: ShowcaseAction;
   secondary?: ShowcaseAction;
   tag?: string;
-  anchorId: string; // used to scroll
+  anchorId: string;
 };
 
 type ScrollableShowcaseProps = {
   id?: string;
   className?: string;
-  topOffsetPx?: number; // sticky offset (e.g., navbar height)
+  topOffsetPx?: number; // sticky offset override (navbar height)
 };
 
-/* ---------------- data (EXACT CONTENT) ---------------- */
-const items: ShowcaseItem[] = [
-  {
-    key: "analysis",
-    tag: "Segment",
-    title: "Business Process Analysis & Requirement Gathering",
-    body:
-      "Every Argus ERP implementation begins with a deep dive into your business operations. Our consultants analyze workflows, challenges, and objectives to design a system that perfectly fits your organization. This stage ensures Argus ERP supports process optimization, data accuracy, and improved decision-making across all departments.",
-    image: cat,
-    imageAlt: "Business analysis and discovery",
-    anchorId: "analysis",
-    primary: {
-      label: "Start Assessment",
-      icon: <Sparkles className="h-4 w-4" />,
-    },
-    secondary: {
-      label: "See methodology",
-      variant: "outline",
-      href: "#analysis",
-    },
-  },
-  {
-    key: "configuration",
-    tag: "Deployment",
-    title: "Tailored Configuration & Phased Deployment",
-    body:
-      "At SoftMachine, we follow a structured, phased approach to ERP deployment. We configure Argus ERP based on your industry-specific needs, integrating modules such as Accounting, Inventory, Sales, and HR. This phased rollout minimizes operational disruption, reduces risk, and ensures a smooth digital transformation journey.",
-    image: workcomputer,
-    imageAlt: "Configuration and deployment",
-    anchorId: "configuration",
-    primary: {
-      label: "Explore Modules",
-      icon: <PlayCircle className="h-4 w-4" />,
-    },
-    secondary: {
-      label: "Implementation plan",
-      variant: "outline",
-      href: "#configuration",
-    },
-  },
-  {
-    key: "training",
-    tag: "Adoption",
-    title: "User Training & Change Management",
-    body:
-      "We believe that successful ERP projects depend on user adoption. Our experts deliver personalized training sessions to equip your team with the skills needed to fully leverage Argus ERP. Through effective change management and hands-on guidance, we help your employees adapt quickly and confidently to the new system.",
-    image: giphy,
-    imageAlt: "User training",
-    anchorId: "training",
-    primary: {
-      label: "Schedule Training",
-      icon: <Sparkles className="h-4 w-4" />,
-    },
-    secondary: {
-      label: "Training overview",
-      variant: "outline",
-      href: "#training",
-    },
-  },
-  {
-    key: "support",
-    tag: "Success",
-    title: "Continuous Improvement & Ongoing Support",
-    body:
-      "After go-live, SoftMachine remains your trusted ERP partner. We provide continuous system monitoring, updates, and technical support to ensure Argus ERP evolves with your business. Our goal is to drive long-term success through scalability, efficiency, and continuous improvement of your digital operations.",
-    image: path,
-    imageAlt: "Ongoing support and optimization",
-    anchorId: "support",
-    primary: {
-      label: "Contact Support",
-      icon: <PlayCircle className="h-4 w-4" />,
-    },
-    secondary: {
-      label: "Success roadmap",
-      variant: "outline",
-      href: "#support",
-    },
-  },
-];
+/* ---------------- JSON → runtime maps ---------------- */
+const IMAGE_MAP: Record<string, string> = {
+  cat,
+  giphy,
+  workcomputer,
+  path,
+};
+
+const ICON_MAP: Record<string, JSX.Element> = {
+  sparkles: <Sparkles className="h-4 w-4" />,
+  play: <PlayCircle className="h-4 w-4" />,
+};
 
 /* ---------------- hooks ---------------- */
 
-/** IntersectionObserver with hysteresis (prevents jitter) */
 function useActiveStepObserver(stepCount: number, rootMargin = "-25% 0px -55% 0px") {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -133,8 +67,7 @@ function useActiveStepObserver(stepCount: number, rootMargin = "-25% 0px -55% 0p
   useEffect(() => {
     const nodes = sectionsRef.current.filter(Boolean) as HTMLElement[];
     if (!nodes.length) return;
-
-    const visible = new Map<number, number>(); // idx -> intersectionRatio
+    const visible = new Map<number, number>();
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -145,7 +78,6 @@ function useActiveStepObserver(stepCount: number, rootMargin = "-25% 0px -55% 0p
           else visible.delete(idx);
         }
         if (visible.size) {
-          // pick the most visible section
           let bestIdx = lastStable.current;
           let bestRatio = -1;
           for (const [idx, ratio] of visible.entries()) {
@@ -154,7 +86,6 @@ function useActiveStepObserver(stepCount: number, rootMargin = "-25% 0px -55% 0p
               bestRatio = ratio;
             }
           }
-          // hysteresis: only switch if new is clearly more visible
           if (bestIdx !== lastStable.current && bestRatio > 0.12) {
             lastStable.current = bestIdx;
             setActive(bestIdx);
@@ -184,7 +115,6 @@ function usePreloadImages(urls: string[]) {
   }, [urls]);
 }
 
-/** Step height = viewport - sticky offset (keeps left & right in sync) */
 function useViewportStepHeight(offset: number) {
   const [h, setH] = useState(0);
   useEffect(() => {
@@ -293,7 +223,6 @@ function MediaPanel({ src, alt, progress }: { src: string; alt: string; progress
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
         <div className="h-1 bg-primary/70 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
       </div>
@@ -307,15 +236,61 @@ export default function ScrollableShowcase({
   className,
   topOffsetPx = 96,
 }: ScrollableShowcaseProps) {
+  // pull from JSON (no casts)
+  const showcase = siteData.showcase;
+  const rawItems = (showcase?.items ?? []) as Array<{
+    key: string;
+    tag?: string;
+    title: string;
+    body: string;
+    imageKey: keyof typeof IMAGE_MAP | string;
+    imageAlt?: string;
+    anchorId: string;
+    primary?: { label: string; icon?: keyof typeof ICON_MAP | string; variant?: ShowcaseAction["variant"]; href?: string };
+    secondary?: { label: string; variant?: ShowcaseAction["variant"]; href?: string };
+  }>;
+
+  // map JSON -> runtime items
+  const items: ShowcaseItem[] = useMemo(
+    () =>
+      rawItems.map((ri) => ({
+        key: ri.key,
+        tag: ri.tag,
+        title: ri.title,
+        body: ri.body,
+        image: IMAGE_MAP[ri.imageKey as string] ?? cat, // fallback
+        imageAlt: ri.imageAlt,
+        anchorId: ri.anchorId,
+        primary: ri.primary
+          ? {
+              label: ri.primary.label,
+              icon: ri.primary.icon ? ICON_MAP[ri.primary.icon as string] : undefined,
+              href: ri.primary.href,
+              variant: ri.primary.variant,
+            }
+          : undefined,
+        secondary: ri.secondary
+          ? {
+              label: ri.secondary.label,
+              href: ri.secondary.href,
+              variant: ri.secondary.variant,
+            }
+          : undefined,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [siteData]
+  );
+
+  const offset = showcase?.topOffsetPx ?? topOffsetPx;
+
   const { sectionsRef, active, setActive } = useActiveStepObserver(items.length);
   usePreloadImages(items.map((i) => toSrc(i.image)));
 
-  const stepHeight = useViewportStepHeight(topOffsetPx);
+  const stepHeight = useViewportStepHeight(offset);
   const isLg = useMediaQuery("(min-width: 1024px)");
-
   const activeItem = items[active];
 
-  // Keyboard navigation + hash sync (↑/↓/PgUp/PgDn)
+  // Keyboard nav + hash sync
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (["ArrowDown", "PageDown"].includes(e.key)) {
@@ -331,12 +306,13 @@ export default function ScrollableShowcase({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [active, items.length]);
 
   useEffect(() => {
+    if (!items.length) return;
     const hash = `#${items[active].anchorId}`;
     if (history.replaceState) history.replaceState(null, "", hash);
-  }, [active]);
+  }, [active, items]);
 
   const jumpTo = (idx: number) => {
     const clamped = Math.max(0, Math.min(items.length - 1, idx));
@@ -349,6 +325,8 @@ export default function ScrollableShowcase({
     setActive(clamped);
   };
 
+  if (!items.length) return null;
+
   return (
     <section id={id} className={cn("bg-background py-20 md:py-24", className)}>
       <div className="container mx-auto max-w-6xl px-4">
@@ -356,7 +334,7 @@ export default function ScrollableShowcase({
           {/* TEXT COLUMN (left) */}
           <div className="lg:order-1">
             <div className="rounded-2xl bg-card">
-              {/* Mobile helper: sticky step dots */}
+              {/* Mobile dots */}
               <div className="lg:hidden sticky top-0 z-10 -mt-4 mb-2 flex justify-center">
                 <div className="rounded-full bg-background/80 backdrop-blur px-3 py-1">
                   <nav aria-label="Progress" className="flex gap-1.5">
@@ -376,14 +354,7 @@ export default function ScrollableShowcase({
                 </div>
               </div>
 
-              <div
-                className={cn(
-                  // mobile: scroll-snap for smooth section paging
-                  "px-5 py-6 md:px-8 md:py-10",
-                  "lg:px-8 lg:py-12",
-                  "snap-y snap-mandatory lg:snap-none"
-                )}
-              >
+              <div className={cn("px-5 py-6 md:px-8 md:py-10", "lg:px-8 lg:py-12", "snap-y snap-mandatory lg:snap-none")}>
                 <div className="space-y-8 md:space-y-12">
                   {items.map((item, idx) => (
                     <StepBlock
@@ -391,7 +362,7 @@ export default function ScrollableShowcase({
                       refArticle={(el) => (sectionsRef.current[idx] = el)}
                       item={item}
                       isActive={idx === active}
-                      topOffsetPx={topOffsetPx}
+                      topOffsetPx={offset}
                       matchHeight={stepHeight}
                       isLast={idx === items.length - 1}
                       isLg={isLg}
@@ -405,7 +376,7 @@ export default function ScrollableShowcase({
 
           {/* STICKY MEDIA (right) — desktop only */}
           <div className="lg:order-2">
-            <div className="lg:sticky" style={{ top: topOffsetPx }}>
+            <div className="lg:sticky" style={{ top: offset }}>
               <div className="hidden lg:flex items-center justify-center" style={{ minHeight: stepHeight }}>
                 <div className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
                   <MediaPanel
@@ -444,14 +415,13 @@ function StepBlock({
   isLg: boolean;
   onJumpNext: () => void;
 }) {
-  const onPrimary = () => {
-    fireContactEvent(item.key, "cta");
-  };
+  const onPrimary = () => fireContactEvent(item.key, "cta");
 
   const onSecondary = (e?: React.MouseEvent) => {
     if (item.anchorId) {
       e?.preventDefault();
-      smoothScrollToCenter(item.anchorId);
+      const href = item.secondary?.href as string | undefined;
+      smoothScrollToCenter(href?.replace("#", "") || item.anchorId);
     }
   };
 
@@ -459,10 +429,7 @@ function StepBlock({
     <article
       id={item.anchorId}
       ref={refArticle}
-      className={cn(
-        "relative grid items-center transition-all duration-300 snap-start",
-        isActive ? "opacity-100" : "opacity-90"
-      )}
+      className={cn("relative grid items-center transition-all duration-300 snap-start", isActive ? "opacity-100" : "opacity-90")}
       style={isLg ? { minHeight: Math.max(360, Math.round((matchHeight ?? 620) * 0.7)) } : undefined}
       aria-current={isActive ? "true" : undefined}
       aria-label={item.title}
@@ -480,20 +447,10 @@ function StepBlock({
         />
       </div>
 
-      {/* content box */}
-      <div
-        className={cn(
-          "max-w-[68ch] pl-0 lg:pl-6",
-          "transform-gpu transition-all duration-300",
-          isActive ? "translate-y-0" : "translate-y-0.5",
-          isActive ? "scale-[1.00]" : "scale-[0.995]"
-        )}
-      >
+      <div className={cn("max-w-[68ch] pl-0 lg:pl-6", "transform-gpu transition-all duration-300", isActive ? "translate-y-0" : "translate-y-0.5")}>
         {item.tag ? (
           <div className="mb-2.5">
-            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">
-              {item.tag}
-            </div>
+            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">{item.tag}</div>
           </div>
         ) : null}
 
@@ -511,24 +468,15 @@ function StepBlock({
           </div>
         </div>
 
-        {/* headline */}
         <h2 className="text-2xl md:text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.15] text-foreground">
           {item.title}
         </h2>
 
-        {/* body */}
-        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">
-          {item.body}
-        </p>
+        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">{item.body}</p>
 
-        {/* CTAs */}
         <div className="mt-6 flex flex-wrap items-center gap-3">
           {item.primary ? (
-            <Button
-              onClick={onPrimary}
-              variant={item.primary.variant ?? "default"}
-              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm"
-            >
+            <Button onClick={onPrimary} variant={item.primary.variant ?? "default"} className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm">
               {item.primary.icon}
               <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
             </Button>
@@ -555,18 +503,11 @@ function StepBlock({
             )
           ) : null}
 
-          {/* Next step (mobile quality-of-life) */}
-          <Button
-            variant="ghost"
-            className="ml-auto h-10 px-3 text-sm text-muted-foreground lg:hidden"
-            onClick={onJumpNext}
-            aria-label="Next section"
-          >
+          <Button variant="ghost" className="ml-auto h-10 px-3 text-sm text-muted-foreground lg:hidden" onClick={onJumpNext} aria-label="Next section">
             Next →
           </Button>
         </div>
 
-        {/* divider between steps (not after last) */}
         {!isLast && <div className="mt-8 md:mt-10 h-px w-full bg-border/70" />}
       </div>
     </article>

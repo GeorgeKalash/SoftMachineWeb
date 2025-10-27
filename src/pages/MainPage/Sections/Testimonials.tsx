@@ -1,79 +1,39 @@
+// src/sections/TestimonialsTeaserCarousel.tsx
+"use client";
+
 import React, { useMemo } from "react";
-import { ChevronLeft, ChevronRight, ExternalLink, FolderGit2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useNavigate } from "react-router-dom";
 import SharedButton from "@/sharedComponent/Button";
-/* ---------- Add these imports ---------- */
-import MGLogo from "../../../assets/Clients/MGLogo.jpeg";
-import BYCLogo from "../../../assets/Clients/BYCLogo.png";
-import HyundaiLogo from "../../../assets/Clients/HyundaiLogo.png";
-import NEGLogo from "../../../assets/Clients/NEGLogo.jpg";
-import CILLogo from "../../../assets/Clients/CILLogo.jpeg";
+import siteData from "@/data.json";
 
+/* ---- logos kept in code; JSON uses logoKey ---- */
+import MGLogo from "@/assets/Clients/MGLogo.jpeg";
+import MasagLogo from "@/assets/Clients/MasagLogo.jpeg";
+import BYCLogo from "@/assets/Clients/BYCLogo.png";
+import NEGLogo from "@/assets/Clients/NEGLogo.jpg";
+import CILLogo from "@/assets/Clients/CILLogo.jpeg";
+import HyundaiLogo from "@/assets/Clients/HyundaiLogo.png";
+import TamkeenLogo from "@/assets/Clients/TamkeenLogo.png";
+import KorristarLogo from "@/assets/Clients/KorristarLogo.jpeg";
+import GDKLogo from "@/assets/Clients/GDKLogo.jpeg";
 
-
-/* ---------- Types ---------- */
-type Project = {
-  title: string;
-  client: string;
-  image: string;
-  summary: string;
-  tags: string[];
-  href?: string; // optional project case study link
+const LOGOS: Record<string, string> = {
+  MGLogo,
+  MasagLogo,
+  BYCLogo,
+  NEGLogo,
+  CILLogo,
+  HyundaiLogo,
+  TamkeenLogo,
+  KorristarLogo,
+  GDKLogo,
 };
 
-/* ---------- Add these imports ---------- */
-
-
-const PROJECTS: Project[] = [
-  {
-    title: "Retail ERP Rollout (40 Stores)",
-    client: "Mansour Group — Lebanon",
-    image: MGLogo,
-    summary:
-      "Centralized inventory and sales across 40 stores with Argus ERP for better control and multi-location insights.",
-    tags: ["ERP", "Retail", "Multi-store"],
-  },
-  {
-    title: "Remittance Operations Platform",
-    client: "Bin Yaala Exchange — KSA",
-    image: BYCLogo,
-    summary:
-      "Streamlined remittance workflows with higher accuracy and customizable features for day-to-day operations.",
-    tags: ["Fintech", "Remittance", "ERP"],
-  },
-  {
-    title: "Dealer Ops & Services Enablement",
-    client: "Hyundai — Lebanon",
-    image: HyundaiLogo,
-    summary:
-      "Delivered precise services and product fit for dealer operations and after-sales needs.",
-    tags: ["Automotive", "Services", "Ops"],
-  },
-  {
-    title: "Jewelry Manufacturing & Retail",
-    client: "New Egypt Gold — Egypt",
-    image: NEGLogo,
-    summary:
-      "Optimized production and retail visibility with ongoing partnership and measurable operational gains.",
-    tags: ["Manufacturing", "Retail", "ERP"],
-  },
-  {
-    title: "Enterprise Systems Support",
-    client: "CIL — Ivory Coast",
-    image: CILLogo,
-    summary:
-      "Long-term reliable support with strong communication and delivery on critical business workflows.",
-    tags: ["Enterprise", "Support", "ERP"],
-  },
-
-
-];
-
-/* ---------- tiny carousel (unchanged) ---------- */
+/* ---------------- carousel utils ---------------- */
 function useCarousel() {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const scrollBy = (dir: "prev" | "next") => {
@@ -84,18 +44,7 @@ function useCarousel() {
     const step = child ? child.offsetWidth + gap : el.clientWidth * 0.9;
     el.scrollBy({ left: dir === "next" ? step : -step, behavior: "smooth" });
   };
-
-  const toIndex = (i: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const slides = Array.from(el.querySelectorAll<HTMLElement>("[data-slide]"));
-    const target = slides[i];
-    if (target) {
-      el.scrollTo({ left: target.offsetLeft - 16, behavior: "smooth" });
-    }
-  };
-
-  return { ref, scrollBy, toIndex };
+  return { ref, scrollBy };
 }
 
 function Carousel<T>({
@@ -110,11 +59,7 @@ function Carousel<T>({
     <div className="relative">
       <div
         ref={ref}
-        className={cn(
-          "flex snap-x snap-mandatory overflow-x-auto pb-2",
-          "gap-6 scroll-pl-4 pr-4 pl-4",
-          "no-scrollbar"
-        )}
+        className={cn("flex snap-x snap-mandatory overflow-x-auto pb-2", "gap-6 scroll-pl-4 pr-4 pl-4", "no-scrollbar")}
         onWheel={(e) => {
           const el = ref.current;
           if (!el) return;
@@ -123,20 +68,12 @@ function Carousel<T>({
         }}
       >
         {items.map((t, i) => (
-          <div
-            key={i}
-            data-slide
-            className={cn(
-              "snap-start shrink-0",
-              "w-[88%] sm:w-[60%] md:w-[48%] lg:w-[32%]"
-            )}
-          >
+          <div key={i} data-slide className={cn("snap-start shrink-0", "w-[88%] sm:w-[60%] md:w-[48%] lg:w-[32%]")}>
             {renderItem(t, i)}
           </div>
         ))}
       </div>
 
-      {/* arrows */}
       <button
         type="button"
         aria-label="Previous"
@@ -170,85 +107,90 @@ function Carousel<T>({
   );
 }
 
-/* ---------- Project card (replaces TestimonialCard) ---------- */
-function ProjectCard({ p }: { p: Project }) {
+/* ---------------- card ---------------- */
+function TestimonialCard({
+  quote,
+  name,
+  role,
+  company,
+  logoSrc,
+  index,
+}: {
+  quote: string;
+  name: string;
+  role?: string;
+  company?: string;
+  logoSrc?: string;
+  index: number;
+}) {
   const { ref, isVisible } = useScrollAnimation();
-
   return (
     <Card
       ref={ref}
       className={cn(
-        "group h-full overflow-hidden rounded-2xl border border-border/60 bg-background",
-        "transition-all duration-700 hover:shadow-xl"
+        "group relative h-full overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-background/70 to-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/40",
+        "p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col"
       )}
       style={{
         transform: isVisible ? "translateY(0px)" : "translateY(10px)",
         opacity: isVisible ? 1 : 0,
+        transitionDelay: `${Math.min(index, 6) * 40}ms`,
       }}
     >
-      {/* thumbnail - UNIFORM LOGO FRAME */}
-      <div className="relative w-full overflow-hidden">
-        {/* Fixed aspect keeps every card identical height */}
-        <div className="aspect-[16/9] w-full bg-card flex items-center justify-center">
-          <img
-            src={p.image}
-            alt={`${p.title} thumbnail`}
-            /* PERFECT FIT FOR LOGOS: no crop, centered, padded */
-            className="max-h-full max-w-full object-contain p-6 sm:p-8 transition-transform duration-500 group-hover:scale-[1.03]"
-            loading="lazy"
-            decoding="async"
-          />
+      <p className="mb-8 text-base leading-relaxed text-foreground/90">“{quote}”</p>
+
+      <div className="mt-auto flex items-center gap-4 border-t border-border/70 pt-6">
+        <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full bg-white ring-2 ring-border/60 grid place-items-center">
+          {logoSrc ? (
+            <img src={logoSrc} alt={company || name} className="h-16 w-16 sm:h-20 sm:w-20 object-contain" loading="lazy" />
+          ) : (
+            <div className="text-xs text-muted-foreground">Logo</div>
+          )}
         </div>
-
-        {/* subtle top gradient to match your original vibe (optional) */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
-      </div>
-
-      {/* body */}
-      <div className="p-6">
-        <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
-          <FolderGit2 className="h-4 w-4" />
-          <span>{p.client}</span>
+        <div>
+          <div className="font-semibold tracking-tight">{name}</div>
+          <div className="text-sm text-muted-foreground">
+            {role ? `${role} · ` : ""}{company}
+          </div>
         </div>
-        <h3 className="text-lg font-semibold leading-tight">{p.title}</h3>
-        <p className="mt-2 line-clamp-3 text-sm text-foreground/80">{p.summary}</p>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {p.tags.map((t) => (
-            <span
-              key={t}
-              className="rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs text-foreground/80"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {p.href && (
-          <a
-            href={p.href}
-            className="mt-5 inline-flex items-center gap-2 text-sm text-primary hover:underline"
-          >
-            View case study <ExternalLink className="h-4 w-4" />
-          </a>
-        )}
       </div>
     </Card>
   );
 }
 
-
-/* ---------- Page ---------- */
-const ProjectsTeaserWithCarousel: React.FC = () => {
+/* ---------------- page/section ---------------- */
+const TestimonialsTeaserCarousel: React.FC = () => {
   const navigate = useNavigate();
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();
 
-  const items = useMemo(() => PROJECTS, []);
+  const tData = siteData.testimonials;
+  const items = tData?.items ?? [];
+  const teaser = tData?.teaser;
+
+  // pick which to show in the teaser
+  const selected = useMemo(() => {
+    if (!items.length) return [];
+    const ids: string[] = Array.isArray(teaser?.teaserIds) ? teaser!.teaserIds : [];
+    const byId = (id: string) => items.find((x) => x.id === id);
+    return (ids.length ? ids.map(byId).filter(Boolean) : items.slice(0, 9)).map((t) => ({
+      quote: t.content ?? "",
+      name: t.name ?? "",
+      role: t.role ?? "",
+      company: [t.company, t.location].filter(Boolean).join(" — "),
+      logoSrc: (t.logoKey && LOGOS[t.logoKey]) || undefined,
+    }));
+  }, [items, teaser]);
+
+  const badge = teaser?.badgeLabel ?? "What clients say";
+  const title = teaser?.title ?? "Trusted by teams worldwide";
+  const subtitle = teaser?.subtitle ?? "A few highlights from our clients.";
+  const viewAllCta = teaser?.viewAllCta ?? "View all testimonials";
+  const viewAllHref = teaser?.viewAllHref ?? "/testimonials";
 
   return (
     <section className="bg-muted/30 py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* header */}
         <div
           ref={headerRef}
           className={cn(
@@ -256,33 +198,36 @@ const ProjectsTeaserWithCarousel: React.FC = () => {
             headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px),linear-gradient(to_bottom,transparent_0,transparent_31px,rgba(120,119,198,0.08)_32px)] bg-[length:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_80%)]" />
           <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
-            Latest Projects
+            {badge}
           </div>
-          <h2 className="text-4xl font-bold lg:text-5xl">What we’ve been building</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">
-            A quick peek at recent work across mobile, web, and product engineering.
-          </p>
+          <h2 className="text-4xl font-bold lg:text-5xl">{title}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">{subtitle}</p>
         </div>
 
-        {/* Carousel */}
+        {/* carousel */}
         <Carousel
-          items={items}
-          renderItem={(p, i) => <ProjectCard p={p as Project} key={i} />}
+          items={selected}
+          renderItem={(p, i) => (
+            <TestimonialCard
+              key={`${p.name}-${i}`}
+              quote={p.quote}
+              name={p.name}
+              role={p.role}
+              company={p.company}
+              logoSrc={p.logoSrc}
+              index={i}
+            />
+          )}
         />
 
-        {/* Show more route */}
+        {/* view all */}
         <div className="mt-10 text-center">
-          <SharedButton
-            title="View all projects"
-            onClick={() => navigate("/allProjects")}
-            color="primary"
-          />
+          <SharedButton title={viewAllCta} onClick={() => navigate(viewAllHref)} color="primary" />
         </div>
       </div>
     </section>
   );
 };
 
-export default ProjectsTeaserWithCarousel;
+export default TestimonialsTeaserCarousel;

@@ -1,138 +1,65 @@
+// src/pages/ProjectList.tsx
+"use client";
+
 import React, { useMemo, useState } from "react";
-import { Star, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
-
-// logo imports
-import MGLogo from "../../../assets/Clients/MGLogo.jpeg";
-import MasagLogo from "../../../assets/Clients/MasagLogo.jpeg";
-import BYCLogo from "../../../assets/Clients/BYCLogo.png";
-import NEGLogo from "../../../assets/Clients/NEGLogo.jpg";
-import CILLogo from "../../../assets/Clients/CILLogo.jpeg";
-import HyundaiLogo from "../../../assets/Clients/HyundaiLogo.png";
-import TamkeenLogo from "../../../assets/Clients/TamkeenLogo.png";
-import KorristarLogo from "../../../assets/Clients/KorristarLogo.jpeg";
-import GDKLogo from "../../../assets/Clients/GDKLogo.jpeg";
+import { Sparkles } from "lucide-react";
+import siteData from "@/data.json";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import ClientsWorldwideSection from "@/sharedComponent/WorldPresenceMap";
 
-/* ---------------- types & data ---------------- */
-type T = {
-  name: string;
-  role: string;
-  image: string;
-  content: string;
+// logo imports kept in code (JSON only stores keys)
+import MGLogo from "@/assets/Clients/MGLogo.jpeg";
+import MasagLogo from "@/assets/Clients/MasagLogo.jpeg";
+import BYCLogo from "@/assets/Clients/BYCLogo.png";
+import NEGLogo from "@/assets/Clients/NEGLogo.jpg";
+import CILLogo from "@/assets/Clients/CILLogo.jpeg";
+import HyundaiLogo from "@/assets/Clients/HyundaiLogo.png";
+import TamkeenLogo from "@/assets/Clients/TamkeenLogo.png";
+import KorristarLogo from "@/assets/Clients/KorristarLogo.jpeg";
+import GDKLogo from "@/assets/Clients/GDKLogo.jpeg";
+
+/* --------------------------- logo key → src --------------------------- */
+const LOGOS: Record<string, string> = {
+  MGLogo,
+  MasagLogo,
+  BYCLogo,
+  NEGLogo,
+  CILLogo,
+  HyundaiLogo,
+  TamkeenLogo,
+  KorristarLogo,
+  GDKLogo,
 };
 
-// add sector only internally; keeps T intact elsewhere
-type Sector = "finance" | "manufacturing" | "auto_retail";
-type WithSector = T & { sector: Sector };
-
-const base: WithSector[] = [
-  {
-    name: "Sultan Bin Ghamiah",
-    role: "CEO · Mansour Group (Lebanon)",
-    image: MGLogo as unknown as string,
-    content:
-      "Argus ERP unified our 40 stores and improved inventory and sales visibility, giving us tighter control and better insights across locations.",
-     
-    sector: "auto_retail", // retail group
-  },
-  {
-    name: "Badr Al Amiri",
-    role: "CEO · MASAGH (KSA)",
-    image: MasagLogo as unknown as string,
-    content:
-      "Partnering with SoftMachine removed operational headaches. Dependable team with our back—highly reassuring.",
-     
-    sector: "finance", // services/solutions fit best here
-  },
-  {
-    name: "Khursan Bin Yaala",
-    role: "CEO · Bin Yaala Exchange (KSA)",
-    image: BYCLogo as unknown as string,
-    content:
-      "Argus ERP streamlined remittance workflows, boosting accuracy and efficiency. Custom features transformed day-to-day operations.",
-     
-    sector: "finance",
-  },
-  {
-    name: "Tarek Tarouti",
-    role: "CEO · New Egypt Gold (Egypt)",
-    image: NEGLogo as unknown as string,
-    content:
-      "Grateful for the tangible impact on our business and the ongoing support. Definitely recommended.",
-     
-    sector: "manufacturing",
-  },
-  {
-    name: "Khalil Ghassani",
-    role: "CEO · CIL (Ivory Coast)",
-    image: CILLogo as unknown as string,
-    content:
-      "Long-term, reliable, and thorough support with excellent communication. A high-performing partner for business solutions.",
-     
-    sector: "finance",
-  },
-  {
-    name: "Wissam Bazzoun",
-    role: "CIO · Hyundai (Lebanon)",
-    image: HyundaiLogo as unknown as string,
-    content:
-      "They consistently deliver—products and services precisely match our business needs.",
-     
-    sector: "auto_retail", // automotive
-  },
-  {
-    name: "Yahya Tahan",
-    role: "CEO · Tamkeen (KSA)",
-    image: TamkeenLogo as unknown as string,
-    content:
-      "Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively.",
-     
-    sector: "manufacturing",
-  },
-  {
-    name: "Ali Korri",
-    role: "CEO · Korristar (Lebanon)",
-    image: KorristarLogo as unknown as string,
-    content: "Exceeded expectations across product, service, and ongoing support.",
-     
-    sector: "auto_retail", // retail/services bucket
-  },
-  {
-    name: "Elie Ferzli",
-    role: "CEO · GDK (Ivory Coast)",
-    image: GDKLogo as unknown as string,
-    content:
-      "Seamless ERP integration with strong reporting improved compliance and transparency across operations.",
-     
-    sector: "finance", // services/compliance-oriented
-  },
-];
-
-// derive by filters
-const DATA: Record<"all" | "finance" | "manufacturing" | "autoRetail", T[]> = {
-  all: base,
-  finance: base.filter((x) => x.sector === "finance"),
-  manufacturing: base.filter((x) => x.sector === "manufacturing"),
-  autoRetail: base.filter((x) => x.sector === "auto_retail"),
+/* -------------------------------- types -------------------------------- */
+type SectorKey = "finance" | "manufacturing" | "auto_retail";
+type Testimonial = { name: string; role: string; content: string; image: string };
+type ProjectItem = {
+  id: string;
+  sector: SectorKey;
+  logoKey?: string;
+  testimonial?: { name: string; role: string; content: string };
 };
 
+type ProjectsJSON = {
+  sectorLabels?: Record<SectorKey, string>;
+  items: ProjectItem[];
+};
 
-
-/* ---------------- card ---------------- */
-function TestimonialCard({ t, index }: { t: T; index: number }) {
+/* ------------------------------- card ui ------------------------------- */
+function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
   const { ref, isVisible } = useScrollAnimation();
   return (
     <Card
       ref={ref}
       className={cn(
-        "group relative h-full overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-background/70 to-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/40",
-        "p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500",
-        "flex flex-col"
+        "group relative h-full overflow-hidden rounded-2xl border border-border/60",
+        "bg-gradient-to-b from-background/70 to-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/40",
+        "p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col"
       )}
       style={{
         transform: isVisible ? "translateY(0px)" : "translateY(10px)",
@@ -165,11 +92,11 @@ function TestimonialCard({ t, index }: { t: T; index: number }) {
   );
 }
 
-/* ---------------- component (single export) ---------------- */
+/* ------------------------------ main cmp ------------------------------ */
 type ProjectListProps = {
   id?: string;
   variant?: "teaser" | "full";
-  defaultTab?: "all" | "finance" | "manufacturing" | "autoRetail";
+  defaultTab?: "all" | SectorKey;
   initialCount?: number;
 };
 
@@ -181,21 +108,50 @@ export default function ProjectList({
 }: ProjectListProps) {
   const { ref: blockRef, isVisible } = useScrollAnimation();
 
+  // read once from JSON (no casting to any)
+  const proj: ProjectsJSON | undefined = siteData?.projects as unknown as ProjectsJSON;
+
+  // labels for tabs
+  const sectorLabels: Record<SectorKey, string> = {
+    finance: proj?.sectorLabels?.finance ?? "Finance & Services",
+    manufacturing: proj?.sectorLabels?.manufacturing ?? "Manufacturing & Industry",
+    auto_retail: proj?.sectorLabels?.auto_retail ?? "Automotive & Retail",
+  };
+
+  // build testimonial arrays by sector dynamically from JSON
+  const allItems: ProjectItem[] = proj?.items ?? [];
+
+  const toTestimonial = (p: ProjectItem): Testimonial | null => {
+    const t = p.testimonial;
+    if (!t) return null;
+    const img = (p.logoKey && LOGOS[p.logoKey]) || "";
+    return { name: t.name, role: t.role, content: t.content, image: img };
+    // images stay in code; JSON only passes the logoKey
+  };
+
+  const lists = {
+    all: allItems.map(toTestimonial).filter(Boolean) as Testimonial[],
+    finance: allItems.filter((i) => i.sector === "finance").map(toTestimonial).filter(Boolean) as Testimonial[],
+    manufacturing: allItems.filter((i) => i.sector === "manufacturing").map(toTestimonial).filter(Boolean) as Testimonial[],
+    auto_retail: allItems.filter((i) => i.sector === "auto_retail").map(toTestimonial).filter(Boolean) as Testimonial[],
+  };
+
   const tabs = useMemo(
     () => [
-      { key: "all", label: "All", data: DATA.all },
-      { key: "finance", label: "Finance & Services", data: DATA.finance },
-      { key: "manufacturing", label: "Manufacturing & Industry", data: DATA.manufacturing },
-      { key: "autoRetail", label: "Automotive & Retail", data: DATA.autoRetail },
+      { key: "all" as const, label: "All", data: lists.all },
+      { key: "finance" as const, label: sectorLabels.finance, data: lists.finance },
+      { key: "manufacturing" as const, label: sectorLabels.manufacturing, data: lists.manufacturing },
+      { key: "auto_retail" as const, label: sectorLabels.auto_retail, data: lists.auto_retail },
     ],
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [proj] // recompute if JSON changes at runtime (hot reload)
   );
 
   const [counts] = useState<Record<string, number>>(
     Object.fromEntries(
       tabs.map((t) => [
         t.key,
-        variant === "full" || t.key === "all" ? t.data.length : initialCount,
+        variant === "full" || t.key === "all" ? t.data.length : Math.min(initialCount, t.data.length),
       ])
     )
   );
@@ -233,7 +189,7 @@ export default function ProjectList({
             </p>
           </div>
 
-          <Tabs defaultValue={defaultTab} className="mx-auto max-w-6xl">
+          <Tabs defaultValue={defaultTab}>
             <div className="sticky top-0 z-10 -mx-4 mb-6 bg-background/70 px-4 py-3 backdrop-blur sm:static sm:bg-transparent sm:px-0 sm:py-0">
               <TabsList className="grid w-full grid-cols-4 overflow-auto sm:inline-flex sm:justify-center">
                 {tabs.map((t) => (
@@ -252,9 +208,9 @@ export default function ProjectList({
               const visible = counts[tab.key] ?? tab.data.length;
               return (
                 <TabsContent key={tab.key} value={tab.key} className="animate-in fade-in-50">
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
-                    {tab.data.slice(0, visible).map((item, i) => (
-                      <TestimonialCard key={`${item.name}-${i}`} t={item} index={i} />
+                  <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {tab.data.slice(0, visible).map((t, i) => (
+                      <TestimonialCard key={`${t.name}-${i}`} t={t} index={i} />
                     ))}
                   </div>
                 </TabsContent>
@@ -263,8 +219,8 @@ export default function ProjectList({
           </Tabs>
         </div>
       </div>
-      <ClientsWorldwideSection />
 
+      <ClientsWorldwideSection />
     </section>
   );
 }

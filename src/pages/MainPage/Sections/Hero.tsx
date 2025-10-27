@@ -10,6 +10,7 @@ import Decoration from "@/sharedComponent/Decoration";
 
 import { PageModal } from "@/sharedComponent/PageModal";
 import { ContactUsForm } from "@/components/ContactUs/ContactUsForm"; 
+import siteData from "@/data.json";
 
 /* -------------------------------- types -------------------------------- */
 type HeroProps = {
@@ -46,15 +47,15 @@ const FORM_ID = "hero-talk-to-us-form";
 
 /* --------------------------------- cmp ---------------------------------- */
 export default function Hero({
-  title = "Software Smart by Design",
-  description = "We design and build custom software—web, mobile, and business systems—that solve real problems and scale with your growth.",
-  primaryCtaText = "Talk to Us",
+  title = siteData.hero.title,
+  description = siteData.hero.description,
+  primaryCtaText = siteData.hero.primaryCtaText,
   onPrimaryCta,
-  secondaryCtaText = "See Work",
+  secondaryCtaText = siteData.hero.secondaryCtaText,
   onSecondaryCta,
-  phoneLabel = "+961 76 888 468",
-  phoneHref = "tel:+96176888468",
-  locationBadge = "Sahel Alma, Jounieh — Lebanon",
+  phoneLabel = siteData.globals.phoneLabel,
+  phoneHref = siteData.globals.phoneHref,
+  locationBadge = siteData.globals.locationBadge,
 }: HeroProps) {
   const prefersReducedMotion = useReducedMotion();
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -62,40 +63,43 @@ export default function Hero({
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
   const { ref: imageRef, isVisible: imageVisible } = useScrollAnimation();
 
-  /* Modal state */
+  // Modal state
   const [open, setOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   const handleModalSend = () => {
     const form = document.getElementById(FORM_ID) as HTMLFormElement | null;
     if (!form) return;
-    if (typeof form.requestSubmit === "function") form.requestSubmit();
-    else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    if (typeof form.requestSubmit === "function") {
+      form.requestSubmit();
+    } else {
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
   };
+
   const handleFormSuccess = () => setOpen(false);
 
   // Safe fallbacks for CTAs
   const handlePrimary = () => {
     if (onPrimaryCta) return onPrimaryCta();
-    // default: open contact modal
     setOpen(true);
   };
+
   const handleSecondary = () => {
     if (onSecondaryCta) return onSecondaryCta();
-    // default: scroll to work/portfolio if exists
     document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <motion.section
-      aria-label="SoftMachine hero"
+      aria-label={`${siteData.globals.company} hero`}
       role="region"
       className="relative isolate pt-28 sm:pt-32 pb-16 sm:pb-24 overflow-hidden bg-gradient-to-br from-background via-background to-primary/5"
       initial="hidden"
       animate="visible"
       variants={container}
     >
-      {/* Decorative shapes (random per mount) */}
+      {/* Decorative shapes */}
       <Decoration
         minCount={6}
         maxCount={14}
@@ -105,7 +109,7 @@ export default function Hero({
         avoidCenter={{ xPct: 50, yPct: 42, radiusPct: 22 }}
       />
 
-      {/* Top-right circular hero image (lg+) under shapes */}
+      {/* Desktop circular hero image */}
       <motion.div
         ref={imageRef}
         aria-hidden
@@ -153,7 +157,7 @@ export default function Hero({
             {/* Location / trust badge with Google Maps link */}
             <motion.a
               variants={fadeUp}
-              href="https://www.google.com/maps?q=SoftMachine,+Sahel+Alma,+Jounieh,+Lebanon"
+              href={siteData.globals.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground hover:text-primary transition-colors"
@@ -234,7 +238,7 @@ export default function Hero({
           >
             <img
               src={heroImage}
-              alt="SoftMachine — custom software development"
+              alt={`${siteData.globals.company} — custom software development`}
               className="rounded-3xl shadow-2xl w-full"
               onLoad={() => setImgLoaded(true)}
               loading="lazy"
@@ -258,7 +262,7 @@ export default function Hero({
       >
         <ContactUsForm
           formId={FORM_ID}
-          type="demo" // or "partner" (add "support" later if you make a template)
+          type="demo"
           onSuccess={handleFormSuccess}
           onSubmittingChange={setIsSending}
         />

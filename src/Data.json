@@ -1,4 +1,5 @@
 {
+      
     "globals": {
       "company": "SoftMachine",
       "phoneLabel": "+961 76 888 468",
@@ -6,11 +7,852 @@
       "locationBadge": "Sahel Alma, Jounieh — Lebanon",
       "mapsUrl": "https://www.google.com/maps?q=SoftMachine,+Sahel+Alma,+Jounieh,+Lebanon"
     },
+    "terms": {
+          "lastUpdated": "Nov 14, 2024",
+          "intro": {
+            "heading": "Terms of Service",
+            "summary": "Welcome to Argus, provided by SoftMachine (“Company,” “we,” “our,” or “us”). By using the Argus mobile app and website, you agree to these Terms of Service. Please read them carefully.",
+            "badges": ["Argus", "SoftMachine", "Legal"]
+          },
+          "stickyAsideNote": "Welcome to Argus by SoftMachine.",
+          "toc": [
+            { "id": "acceptance",   "title": "1. Acceptance of Terms",      "iconKey": "fileText" },
+            { "id": "accounts",     "title": "2. User Accounts",            "iconKey": "shield" },
+            { "id": "restrictions", "title": "3. Restrictions on Use",      "iconKey": "info" },
+            { "id": "liability",    "title": "4. Liability & Disclaimer",   "iconKey": "shield" },
+            { "id": "updates",      "title": "5. Updates to Terms",         "iconKey": "refreshCw" },
+            { "id": "contact",      "title": "6. Contact Information",      "iconKey": "mail" }
+          ],
+          "sections": [
+            {
+              "id": "acceptance",
+              "title": "1. Acceptance of Terms",
+              "iconKey": "fileText",
+              "body": [
+                "By using the Argus app or website, you agree to abide by these Terms. If you do not agree, please refrain from using our services."
+              ]
+            },
+            {
+              "id": "accounts",
+              "title": "2. User Accounts",
+              "iconKey": "shield",
+              "body": [
+                "Users must create an account on the Argus website to access the app. Account security is managed through secure credentials and JWT tokens to protect user data."
+              ]
+            },
+            {
+              "id": "restrictions",
+              "title": "3. Restrictions on Use",
+              "iconKey": "info",
+              "body": [
+                "Use the app only for lawful purposes and within its intended functionality. Unauthorized interference or modification is prohibited."
+              ]
+            },
+            {
+              "id": "liability",
+              "title": "4. Liability and Disclaimer",
+              "iconKey": "shield",
+              "body": [
+                "The Argus app and website are provided “as is” without warranties. SoftMachine disclaims liability for damages arising from app usage, to the extent permitted by law."
+              ]
+            },
+            {
+              "id": "updates",
+              "title": "5. Updates to Terms",
+              "iconKey": "refreshCw",
+              "body": [
+                "We may periodically update these Terms. Changes will be notified to users via email."
+              ]
+            },
+            {
+              "id": "contact",
+              "title": "6. Contact Information",
+              "iconKey": "mail",
+              "body": [
+                "For questions, refer to our contact page at SoftMachine.co/contact."
+              ]
+            }
+          ],
+          "contactUrl": "https://SoftMachine.co/contact"
+    },      
+    "sales": {
+        "hero": {
+          "title": "Sales Order Processing",
+          "subtitle": "Streamline Your Sales Cycle and Empower Your Team",
+          "body": "Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in one seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.",
+          "primaryCta": { "label": "Explore Capabilities", "href": "#features" },
+          "secondaryCta": { "label": "Why Argus?", "href": "#why" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Sales overview" },
+          { "imageKey": "hero",      "alt": "Argus platform visual" },
+          { "imageKey": "logo",      "alt": "Brand identity" }
+        ],
+        "features": [
+          {
+            "title": "Quotation & Order Management",
+            "desc": "Create professional quotations in seconds, manage approvals, and convert them directly into sales orders without duplication.",
+            "preview": "quote2order",
+            "iconKey": "fileText"
+          },
+          {
+            "title": "Price Lists & Discount Rules",
+            "desc": "Set up flexible pricing strategies, volume discounts, and customer-specific rates to stay competitive.",
+            "preview": "pricing",
+            "iconKey": "calculator"
+          },
+          {
+            "title": "Sales Workflow Automation",
+            "desc": "Standardize your sales cycle with predefined steps, approval limits, and document generation to minimize manual errors.",
+            "preview": "pipeline",
+            "iconKey": "layers"
+          },
+          {
+            "title": "Customer Database",
+            "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in one place.",
+            "preview": "crm",
+            "iconKey": "database"
+          },
+          {
+            "title": "Invoice Integration",
+            "desc": "Automatically generate invoices from confirmed sales orders, ensuring accurate billing and faster payments.",
+            "preview": "invoice",
+            "iconKey": "link2"
+          },
+          {
+            "title": "Reporting & Analytics",
+            "desc": "Access real-time sales data, product performance insights, and profitability reports to support data-driven decision-making.",
+            "preview": "analytics",
+            "iconKey": "fileText"
+          },
+          {
+            "title": "Multi-Currency & Multi-Branch Support",
+            "desc": "Manage sales operations across branches or countries with unified control and accurate reporting.",
+            "preview": "multicurrency",
+            "iconKey": "layers"
+          }
+        ],
+        "why": {
+          "title": "Why Argus Sales:",
+          "description": "By centralizing your quote-to-cash flow, Argus helps sales teams respond faster, reduce errors, and improve margins — all with integrated invoicing and live analytics.",
+          "bullets": [
+            "Single source of truth for customers & pricing",
+            "Faster quote-to-cash with automation",
+            "Fewer errors via approvals and templates",
+            "Real-time insights on margins & performance",
+            "Integrated invoicing and collections"
+          ],
+          "mediaItems": [
+            { "imageKey": "heroImage", "alt": "Centralized sales dashboard" },
+            { "imageKey": "hero",      "alt": "Quote-to-order flow" }
+          ],
+          "ctas": [{ "label": "Talk to an Expert", "href": "#contact" }]
+        },
+        "cta": {
+          "title": "Ready to streamline your sales cycle?",
+          "body": "We can tailor Argus Sales Management to your workflows, approvals, and reporting needs.",
+          "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+          "secondary": { "label": "Contact Sales", "href": "/#contact" }
+        }
+    },
+    "privacyPolicy": {
+        "pageTitle": "Privacy Policy",
+        "topBadge": "Legal",
+        "lastUpdated": "Nov 14, 2024",
+        "intro": {
+          "body": "Argus (“App”), developed by SoftMachine, values your privacy. This Privacy Policy outlines our data collection, use, and security practices for both the Argus app and website.",
+          "badges": ["Privacy", "Security", "Compliance"]
+        },
+        "sections": [
+          {
+            "id": "collection",
+            "title": "1. Information Collection",
+            "iconKey": "fileText",
+            "body": "Argus does not collect personal data. The app requests access to your device's camera solely for in-app functionality, such as scanning barcodes for job orders. This access is limited to on-device use and is neither stored nor shared by Argus."
+          },
+          {
+            "id": "use",
+            "title": "2. Use of Information",
+            "iconKey": "info",
+            "body": "Argus does not use any data for personalization, marketing, analytics, or third-party sharing. There are no analytics tools or third-party services involved in the Argus app or website."
+          },
+          {
+            "id": "sharing",
+            "title": "3. Data Sharing",
+            "iconKey": "fileText",
+            "body": "Argus does not share user data with any third parties. The app connects solely to the Argus website without integrating any third-party services."
+          },
+          {
+            "id": "security",
+            "title": "4. Data Security",
+            "iconKey": "shield",
+            "body": "Although Argus does not collect personal data, we use JWT tokens and secure protocols to protect account integrity for users accessing the app and website."
+          },
+          {
+            "id": "rights",
+            "title": "5. User Rights",
+            "iconKey": "info",
+            "body": "Users manage account data through their Argus website accounts. SoftMachine imposes no restrictions on data retrieval, but data management is available solely through the website, not the mobile app."
+          },
+          {
+            "id": "cookies",
+            "title": "6. Cookies and Tracking",
+            "iconKey": "info",
+            "body": "Argus does not use cookies or other tracking technologies on the website or app."
+          },
+          {
+            "id": "age",
+            "title": "7. Age Restrictions",
+            "iconKey": "info",
+            "body": "No age restrictions are imposed, though users must comply with local age requirements when creating an account on the Argus website."
+          },
+          {
+            "id": "updates",
+            "title": "8. Policy Updates",
+            "iconKey": "refreshCw",
+            "body": "We may update this Privacy Policy periodically. Users will be notified of updates via email linked to their Argus account."
+          },
+          {
+            "id": "contact",
+            "title": "9. Contact Information",
+            "iconKey": "mail",
+            "body": "For privacy inquiries, please visit SoftMachine.co/contact."
+          }
+        ],
+        "footerNote": "Argus is designed with privacy-by-default. If you introduce new features that alter data flows (e.g., analytics or cloud storage), remember to revise this policy accordingly."
+    },
     "hero": {
       "title": "Software Smart by Design",
       "description": "We design and build custom software—web, mobile, and business systems—that solve real problems and scale with your growth.",
       "primaryCtaText": "Talk to Us",
       "secondaryCtaText": "See Work"
+    },
+    "about": {
+      "stats": [
+        { "value": "40+", "label": "Projects delivered" },
+        { "value": "10+", "label": "Years building" },
+        { "value": "12+", "label": "Industries served" }
+      ],
+      "benefits": [
+        "Standard operationg procedure for our multi-industry workspace",
+        "SoftMachine is expanding to become a phenomenally thriving company with clients all over the globe in the same product and line by giving sufficient value to our clients, and employees.",
+        "Providing technological solutions that exceed clients expectations"
+      ],
+      "pill1": "Who We Are",
+      "heading1": "3 decades of ERP—Software",
+      "copy1a": "Just over 30 years ago, we started as an erp software company that offers business solutions at its best! We grew with creativity and determination, creating out first windows erp software back in 1995.",
+        "copy1b": "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is one of the leading software companies across industries and regions still aiming high, still reaching there!",
+      "pill2": "About Argus",
+      "heading2": "Argus ERP Cloud",
+      "copy2a": "Argus is an erp software product that enables businesses to plan and manage their operations more successfully and efficiently. It enables you to function smoothly, instantly, and intelligently.",
+      "copy2b": "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud. You operate with desktop computers and don't rely on hardware. Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data.",
+      "featureCards": [
+        {
+          "title": "Cloud ERP, zero hardware",
+          "copy": "Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data."
+        },
+        {
+          "title": "secutites ",
+          "copy": "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud."
+        }
+      ],
+      "primaryCtaText": "Talk to us",
+      "images": {
+        "teamAlt": "SoftMachine team collaborating",
+        "dashboardAlt": "Argus ERP dashboard interface"
+      }
+    },
+    "faq": {
+  "header": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Have questions? We’ve got answers. If you can’t find what you’re looking for, feel free to contact our support team."
+  },
+  "items": [
+    {
+      "q": "Can Argus integrate with my existing systems (POS, website, etc.)?",
+      "a": "Yes. Argus is designed to seamlessly integrate with existing POS systems, websites, accounting platforms, and other third-party tools through secure APIs and connectors. Our team can also assist with any custom integration you need."
+    },
+    {
+      "q": "Is it customizable to our business needs?",
+      "a": "Absolutely. Argus is fully modular and customizable. You can enable only the modules you need and tailor workflows, reports, and user roles to match your business operations precisely."
+    },
+    {
+      "q": "Is it subscription-based or a one-time license?",
+      "a": "Argus is offered on a subscription-based model. There is no option for a one-time or perpetual license. This ensures you always have access to the latest updates and support."
+    },
+    {
+      "q": "How long does implementation take?",
+      "a": "The implementation duration varies depending on your business size, complexity, and the modules you choose. We work closely with each client to provide a tailored timeline that ensures a smooth and effective deployment."
+    },
+    {
+      "q": "How secure is our data?",
+      "a": "Data security is one of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards."
+    },
+    {
+      "q": "Can we import data from existing systems?",
+      "a": "Yes. Our onboarding team assists with importing and migrating data from your current systems, ensuring a smooth and lossless transition to Argus."
+    },
+    {
+      "q": "Does Argus have a mobile app for reporting, approvals, etc.?",
+      "a": "Argus is a web-based ERP, and all approvals, reports, and other functionalities are accessible through a web browser. The system is fully responsive for mobile use."
+    },
+    {
+      "q": "What type of customer support does SoftMachine offer?",
+      "a": "SoftMachine provides multi-channel support including email, live chat, and phone. Enterprise clients also benefit from a dedicated account manager and on-site assistance when needed."
     }
+  ],
+  "cta": {
+    "title": "Still have questions?",
+    "subtitle": "Can’t find the answer you’re looking for? Our support team is here to help.",
+    "label": "Contact Support →"
+  },
+  "modal": {
+    "title": "Contact support",
+    "description": "Tell us what you need help with and we’ll get back to you."
   }
+    },
+    "features": {
+      "heading": "What we do",
+      "subheading": "Design & build custom software with the right architecture, integrations, and support.",
+      "items": [
+        { "icon": "Code2", "title": "Custom Software", "description": "Tailored web & backend solutions designed around your business logic and workflows." },
+        { "icon": "MonitorSmartphone", "title": "Web & Mobile Apps", "description": "Modern, performant apps with clean UX that scale from MVP to thousands of users." },
+        { "icon": "Workflow", "title": "ERP & Business Systems", "description": "Process-aware implementations, data flows, and UI for finance, operations, and beyond." },
+        { "icon": "PlugZap", "title": "Integrations & APIs", "description": "Connect billing, auth, analytics, and third-party platforms with robust, well-tested APIs." },
+        { "icon": "ShieldCheck", "title": "Secure & Reliable", "description": "Best practices for auth, data protection, and observability baked into every delivery." },
+        { "icon": "LifeBuoy", "title": "Ongoing Support", "description": "Roadmapping, enhancements, and SLA support to keep your product healthy and evolving." }
+      ]
+    }, 
+    "projects": {
+          "header": {
+            "title": "Our Latest Projects",
+            "subtitle": "Real work across finance, manufacturing, automotive, and retail."
+          },
+          "categories": [
+            { "key": "all", "label": "All" },
+            { "key": "branding", "label": "Branding Strategy" },
+            { "key": "digital", "label": "Digital Experiences" },
+            { "key": "ecom", "label": "Ecommerce" }
+          ],
+          "sectorLabels": {
+            "finance": "Finance & Services",
+            "manufacturing": "Manufacturing & Industry",
+            "auto_retail": "Automotive & Retail"
+          },
+          "items": [
+            {
+              "id": "mansour-group",
+              "title": "Mansour Group",
+              "subtitle": "Multi-store automotive retail operations",
+              "href": "/work/mansour-group",
+              "categories": ["branding", "digital"],
+              "sector": "auto_retail",
+              "imgKey": "mansour",
+              "logoKey": "MGLogo",
+              "testimonial": {
+                "name": "Sultan Bin Ghamiah",
+                "role": "CEO · Mansour Group (Lebanon)",
+                "content": "Argus ERP unified our 40 stores and improved inventory and sales visibility, giving us tighter control and better insights across locations."
+              }
+            },
+            {
+              "id": "masagh",
+              "title": "MASAGH",
+              "subtitle": "Services & solutions platform",
+              "href": "/work/masagh",
+              "categories": ["digital"],
+              "sector": "finance",
+              "imgKey": "masagh",
+              "logoKey": "MasagLogo",
+              "testimonial": {
+                "name": "Badr Al Amiri",
+                "role": "CEO · MASAGH (KSA)",
+                "content": "Partnering with SoftMachine removed operational headaches. Dependable team with our back—highly reassuring."
+              }
+            },
+            {
+              "id": "byc",
+              "title": "Bin Yaala Exchange",
+              "subtitle": "Remittance & FX platform",
+              "href": "/work/byc",
+              "categories": ["digital", "ecom"],
+              "sector": "finance",
+              "imgKey": "byc",
+              "logoKey": "BYCLogo",
+              "testimonial": {
+                "name": "Khursan Bin Yaala",
+                "role": "CEO · Bin Yaala Exchange (KSA)",
+                "content": "Argus ERP streamlined remittance workflows, boosting accuracy and efficiency. Custom features transformed day-to-day operations."
+              }
+            },
+            {
+              "id": "neg",
+              "title": "New Egypt Gold",
+              "subtitle": "Manufacturing & retail visibility",
+              "href": "/work/new-egypt-gold",
+              "categories": ["ecom", "branding"],
+              "sector": "manufacturing",
+              "imgKey": "neg",
+              "logoKey": "NEGLogo",
+              "testimonial": {
+                "name": "Tarek Tarouti",
+                "role": "CEO · New Egypt Gold (Egypt)",
+                "content": "Grateful for the tangible impact on our business and the ongoing support. Definitely recommended."
+              }
+            },
+            {
+              "id": "cil",
+              "title": "CIL",
+              "subtitle": "Financial services suite",
+              "href": "/work/cil",
+              "categories": ["digital"],
+              "sector": "finance",
+              "imgKey": "cil",
+              "logoKey": "CILLogo",
+              "testimonial": {
+                "name": "Khalil Ghassani",
+                "role": "CEO · CIL (Ivory Coast)",
+                "content": "Long-term, reliable, and thorough support with excellent communication. A high-performing partner for business solutions."
+              }
+            },
+            {
+              "id": "hyundai",
+              "title": "Hyundai Lebanon",
+              "subtitle": "Automotive DMS integrations",
+              "href": "/work/hyundai-lebanon",
+              "categories": ["digital"],
+              "sector": "auto_retail",
+              "imgKey": "hyundai",
+              "logoKey": "HyundaiLogo",
+              "testimonial": {
+                "name": "Wissam Bazzoun",
+                "role": "CIO · Hyundai (Lebanon)",
+                "content": "They consistently deliver—products and services precisely match our business needs."
+              }
+            },
+            {
+              "id": "tamkeen",
+              "title": "Tamkeen",
+              "subtitle": "Production, inventory & logistics",
+              "href": "/work/tamkeen",
+              "categories": ["ecom", "digital"],
+              "sector": "manufacturing",
+              "imgKey": "tamkeen",
+              "logoKey": "TamkeenLogo",
+              "testimonial": {
+                "name": "Yahya Tahan",
+                "role": "CEO · Tamkeen (KSA)",
+                "content": "Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
+              }
+            },
+            {
+              "id": "korristar",
+              "title": "Korristar",
+              "subtitle": "Retail & services operations",
+              "href": "/work/korristar",
+              "categories": ["branding"],
+              "sector": "auto_retail",
+              "imgKey": "korristar",
+              "logoKey": "KorristarLogo",
+              "testimonial": {
+                "name": "Ali Korri",
+                "role": "CEO · Korristar (Lebanon)",
+                "content": "Exceeded expectations across product, service, and ongoing support."
+              }
+            },
+            {
+              "id": "gdk",
+              "title": "GDK",
+              "subtitle": "ERP & reporting for compliance",
+              "href": "/work/gdk",
+              "categories": ["digital"],
+              "sector": "finance",
+              "imgKey": "gdk",
+              "logoKey": "GDKLogo",
+              "testimonial": {
+                "name": "Elie Ferzli",
+                "role": "CEO · GDK (Ivory Coast)",
+                "content": "Seamless ERP integration with strong reporting improved compliance and transparency across operations."
+              }
+            }
+          ]
+    },      
+    "showcase": {
+              "topOffsetPx": 96,
+              "items": [
+                {
+                  "key": "analysis",
+                  "tag": "Segment",
+                  "title": "Business Process Analysis & Requirement Gathering",
+                  "body": "Every Argus ERP implementation begins with a deep dive into your business operations. Our consultants analyze workflows, challenges, and objectives to design a system that perfectly fits your organization. This stage ensures Argus ERP supports process optimization, data accuracy, and improved decision-making across all departments.",
+                  "imageKey": "cat",
+                  "imageAlt": "Business analysis and discovery",
+                  "anchorId": "analysis",
+                  "primary": { "label": "Start Assessment", "icon": "sparkles" },
+                  "secondary": { "label": "See methodology", "variant": "outline", "href": "#analysis" }
+                },
+                {
+                  "key": "configuration",
+                  "tag": "Deployment",
+                  "title": "Tailored Configuration & Phased Deployment",
+                  "body": "At SoftMachine, we follow a structured, phased approach to ERP deployment. We configure Argus ERP based on your industry-specific needs, integrating modules such as Accounting, Inventory, Sales, and HR. This phased rollout minimizes operational disruption, reduces risk, and ensures a smooth digital transformation journey.",
+                  "imageKey": "workcomputer",
+                  "imageAlt": "Configuration and deployment",
+                  "anchorId": "configuration",
+                  "primary": { "label": "Explore Modules", "icon": "play" },
+                  "secondary": { "label": "Implementation plan", "variant": "outline", "href": "#configuration" }
+                },
+                {
+                  "key": "training",
+                  "tag": "Adoption",
+                  "title": "User Training & Change Management",
+                  "body": "We believe that successful ERP projects depend on user adoption. Our experts deliver personalized training sessions to equip your team with the skills needed to fully leverage Argus ERP. Through effective change management and hands-on guidance, we help your employees adapt quickly and confidently to the new system.",
+                  "imageKey": "giphy",
+                  "imageAlt": "User training",
+                  "anchorId": "training",
+                  "primary": { "label": "Schedule Training", "icon": "sparkles" },
+                  "secondary": { "label": "Training overview", "variant": "outline", "href": "#training" }
+                },
+                {
+                  "key": "support",
+                  "tag": "Success",
+                  "title": "Continuous Improvement & Ongoing Support",
+                  "body": "After go-live, SoftMachine remains your trusted ERP partner. We provide continuous system monitoring, updates, and technical support to ensure Argus ERP evolves with your business. Our goal is to drive long-term success through scalability, efficiency, and continuous improvement of your digital operations.",
+                  "imageKey": "path",
+                  "imageAlt": "Ongoing support and optimization",
+                  "anchorId": "support",
+                  "primary": { "label": "Contact Support", "icon": "play" },
+                  "secondary": { "label": "Success roadmap", "variant": "outline", "href": "#support" }
+                }
+              ]
+    }, 
+    "testimonials": {
+
+                "teaser": {
+                  "badgeLabel": "What clients say",
+                  "title": "Trusted by teams worldwide",
+                  "subtitle": "A few highlights from 89 testimonials.",
+                  "viewAllCta": "View all testimonials",
+                  "viewAllHref": "/testimonials",
+                  "teaserIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
+                },
+                "items": [
+                  {
+                    "id": "mansour",
+                    "name": "Sultan Bin Ghamiah",
+                    "company": "Mansour Group",
+                    "location": "Lebanon",
+                    "role": "CEO",
+                    "logoKey": "MGLogo",
+                    "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
+                  },
+                  {
+                    "id": "masagh",
+                    "name": "Badr Al Amiri",
+                    "company": "MASAGH",
+                    "location": "KSA",
+                    "role": "CEO",
+                    "logoKey": "MasagLogo",
+                    "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
+                  },
+                  {
+                    "id": "byc",
+                    "name": "Khursan Bin Yaala",
+                    "company": "Bin Yaala Exchange",
+                    "location": "KSA",
+                    "role": "CEO",
+                    "logoKey": "BYCLogo",
+                    "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
+                  },
+                  {
+                    "id": "neg",
+                    "name": "Tarek Tarouti",
+                    "company": "New Egypt Gold",
+                    "location": "Egypt",
+                    "role": "CEO",
+                    "logoKey": "NEGLogo",
+                    "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
+                  },
+                  {
+                    "id": "cil",
+                    "name": "Khalil Ghassani",
+                    "company": "CIL",
+                    "location": "Ivory Coast",
+                    "role": "CEO",
+                    "logoKey": "CILLogo",
+                    "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
+                  },
+                  {
+                    "id": "hyundai",
+                    "name": "Wissam Bazzoun",
+                    "company": "Hyundai",
+                    "location": "Lebanon",
+                    "role": "CIO",
+                    "logoKey": "HyundaiLogo",
+                    "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
+                  },
+                  {
+                    "id": "tamkeen",
+                    "name": "Yahya Tahan",
+                    "company": "Tamkeen",
+                    "location": "KSA",
+                    "role": "",
+                    "logoKey": "TamkeenLogo",
+                    "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
+                  },
+                  {
+                    "id": "korristar",
+                    "name": "Ali Korri",
+                    "company": "Korristar",
+                    "location": "Lebanon",
+                    "role": "CEO",
+                    "logoKey": "KorristarLogo",
+                    "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
+                  },
+                  {
+                    "id": "gdk",
+                    "name": "Elie Ferzli",
+                    "company": "GDK",
+                    "location": "Ivory Coast",
+                    "role": "CEO",
+                    "logoKey": "GDKLogo",
+                    "content": "Implementing Argus ERP was a game changer. Seamless integration and robust reporting improved compliance and transparency across operations."
+                  }
+                ]
+    },
+    "financials": {
+    "hero": {
+      "title": "Financials (Accounting & Finance Management)",
+      "subtitle": "Simplify Accounting and Strengthen Financial Decision-Making",
+      "body": "Argus Financials provides a unified, accurate, and compliant accounting solution that helps businesses maintain financial clarity and control. It automates complex accounting tasks, integrates with other modules, and offers real-time insights into your company’s financial performance — ensuring smarter, faster decision-making.",
+      "primaryCta": { "label": "Explore Features", "href": "#features" },
+      "secondaryCta": { "label": "Business Impact", "href": "#impact" }
+    },
+    "carousel": [
+      { "imageKey": "heroImage", "alt": "Financials overview 1" },
+      { "imageKey": "hero", "alt": "Financials overview 2" },
+      { "imageKey": "logo", "alt": "Brand identity" }
+    ],
+    "features": [
+      {
+        "title": "General Ledger & Journal Entries:",
+        "desc": "Keep track of every transaction and maintain a clear audit trail.",
+        "iconKey": "fileText",
+        "preview": "typing"
+      },
+      {
+        "title": "Accounts Payable & Receivable:",
+        "desc": "Manage supplier invoices, customer payments, and aging reports effortlessly.",
+        "iconKey": "wallet",
+        "preview": "inbox"
+      },
+      {
+        "title": "Multi-Currency & Multi-Company Accounting:",
+        "desc": "Handle international operations with accurate currency conversions and consolidated reporting.",
+        "iconKey": "globe2",
+        "preview": "multicurrency"
+      },
+      {
+        "title": "Budgeting & Forecasting:",
+        "desc": "Plan and control expenses using dynamic budgets and predictive insights.",
+        "iconKey": "barChart3",
+        "preview": "analytics"
+      },
+      {
+        "title": "Tax Management:",
+        "desc": "Ensure compliance with local tax laws through automated tax computation and reporting.",
+        "iconKey": "percent",
+        "preview": "donut"
+      }
+    ],
+    "impact": {
+      "title": "Business Impact:",
+      "description": "Argus Financials allows management to make informed decisions based on live financial data, helping businesses improve cash flow, reduce risks, and maintain financial stability.",
+      "mediaKey": "heroImage"
+    },
+    "cta": {
+      "title": "Ready to modernize your financial operations?",
+      "body": "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.",
+      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+    },
+    "references": [
+      {
+        "logoKey": "logo",
+        "name": "SoftMachine",
+        "industry": "Software",
+        "sector": "ERP",
+        "description": "Trusted ERP partner with 30+ years of experience."
+      }
+    ]
+    },
+    "fixedAssets": {
+          "hero": {
+            "title": "Fixed Asset Management",
+            "subtitle": "Track, Control, and Optimize Your Assets with Confidence",
+            "body": "Argus Fixed Asset Management enables businesses to maintain full visibility and control over their tangible assets — from acquisition to depreciation and disposal. The system automates every step of asset tracking and accounting, helping you reduce manual errors, improve compliance, and make smarter financial decisions.",
+            "primaryCta": { "label": "Explore Capabilities", "href": "#features" },
+            "secondaryCta": { "label": "Why Argus?", "href": "#why" }
+          },
+          "carousel": [
+            { "imageKey": "heroImage", "alt": "Assets overview" },
+            { "imageKey": "hero", "alt": "Argus platform visual" },
+            { "imageKey": "logo", "alt": "Brand identity" }
+          ],
+          "features": [
+            { "title": "Asset Register", "desc": "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.", "preview": "cards", "iconKey": "database" },
+            { "title": "Depreciation Management", "desc": "Automatically calculate depreciation using customizable methods and schedules.", "preview": "timeline", "iconKey": "calculator" },
+            { "title": "Asset Lifecycle Tracking", "desc": "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.", "preview": "bubbles", "iconKey": "layers" },
+            { "title": "Integration with Financials", "desc": "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.", "preview": "link", "iconKey": "link2" },
+            { "title": "Maintenance Scheduling", "desc": "Plan preventive maintenance to extend asset life and minimize downtime.", "preview": "gear", "iconKey": "wrench" },
+            { "title": "Reporting & Audit Support", "desc": "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.", "preview": "scroll", "iconKey": "fileText" }
+          ],
+          "why": {
+            "title": "Why Argus Fixed Asset Management",
+            "description": "By centralizing all asset data, Argus helps finance and operations teams save time, stay compliant, and make data-driven asset management decisions.",
+            "bullets": [
+              "Single source of truth for every asset",
+              "Automatic, compliant depreciation postings",
+              "Stronger audit readiness with clean reporting",
+              "Lower downtime via planned maintenance",
+              "Seamless handoff to Argus Financials"
+            ],
+            "ctas": [{ "label": "Talk to an Expert", "href": "#contact" }],
+            "mediaKey": "heroImage"
+          },
+          "cta": {
+            "title": "Ready to simplify asset control & reporting?",
+            "body": "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.",
+            "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+            "secondary": { "label": "Contact Sales", "href": "/#contact" }
+          }
+    },
+    "hr": {
+            "hero": {
+              "title": "Human Resources (HR Management)",
+              "subtitle": "Empower Your People, Simplify HR Operations",
+              "body": "Argus Human Resources is a powerful and user-friendly module designed to manage the entire employee lifecycle — from recruitment to retirement. It helps organizations automate HR processes, centralize employee data, and create a culture of transparency and performance. Whether you’re managing a small team or a large workforce, Argus HR gives you complete visibility and control over your human capital.",
+              "primaryCta": { "label": "Explore Benefits", "href": "#benefits" },
+              "secondaryCta": { "label": "Why Argus?", "href": "#why" }
+            },
+            "carousel": [
+              { "imageKey": "heroImage", "alt": "HR overview 1" },
+              { "imageKey": "hero", "alt": "HR overview 2" },
+              { "imageKey": "logo", "alt": "Brand identity" }
+            ],
+            "features": [
+              {
+                "title": "Centralized Employee Information:",
+                "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in one place, accessible anytime.",
+                "preview": "crm",
+                "iconKey": "database"
+              },
+              {
+                "title": "Attendance & Time Tracking:",
+                "desc": "Monitor attendance using smart integrations like biometric devices or web check-ins, ensuring accurate payroll calculations.",
+                "preview": "timeline",
+                "iconKey": "clock"
+              },
+              {
+                "title": "Leave Management System:",
+                "desc": "Simplify leave requests, approvals, and balance tracking with automated workflows and notifications.",
+                "preview": "inbox",
+                "iconKey": "calendar"
+              },
+              {
+                "title": "Payroll Automation:",
+                "desc": "Calculate salaries, deductions, taxes, and benefits effortlessly with Argus Payroll integration.",
+                "preview": "invoice",
+                "iconKey": "calculator"
+              }
+            ],
+            "why": {
+              "title": "Why Businesses Choose Argus HR:",
+              "description": "With built-in analytics, employee self-service access, and complete compliance support, Argus HR helps HR teams save time, reduce manual work, and focus on building a motivated, productive workforce.",
+              "mediaKey": "heroImage",
+              "mediaCaption": "Employee self-service with real-time visibility."
+            },
+            "cta": {
+              "title": "Ready to empower your HR team?",
+              "body": "We can tailor Argus HR to your policies, approval chains, and payroll requirements.",
+              "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+              "secondary": { "label": "Contact Sales", "href": "/#contact" }
+            }
+    },     
+    "manufacturing": {
+    "hero": {
+      "title": "Manufacturing Management",
+      "subtitle": "Optimize Production Efficiency and Resource Planning",
+      "body": "Argus Manufacturing provides a complete solution for managing production operations — from planning and scheduling to cost tracking and reporting. Whether you manage discrete or batch manufacturing, Argus ensures visibility, control, and efficiency across your shop floor.",
+      "primaryCta": { "label": "Explore Key Features", "href": "#features" },
+      "secondaryCta": { "label": "Why Argus?", "href": "#why" }
+    },
+    "carousel": [
+      { "imageKey": "heroImage", "alt": "Manufacturing overview 1" },
+      { "imageKey": "hero",      "alt": "Manufacturing overview 2" },
+      { "imageKey": "logo",      "alt": "Brand identity" }
+    ],
+    "features": [
+      {
+        "title": "Bill of Materials (BOM):",
+        "desc": "Define components, quantities, and production steps for every finished product.",
+        "preview": "tiles",
+        "iconKey": "database"
+      },
+      {
+        "title": "Production Orders:",
+        "desc": "Create and manage work orders with live status updates and material availability checks.",
+        "preview": "pipeline",
+        "iconKey": "fileText"
+      },
+      {
+        "title": "Material Requirement Planning (MRP):",
+        "desc": "Automate material demand calculations based on production forecasts and stock levels.",
+        "preview": "spark",
+        "iconKey": "layers"
+      },
+      {
+        "title": "Work Center Management:",
+        "desc": "Monitor production performance, track downtime, and optimize capacity utilization.",
+        "preview": "gauge",
+        "iconKey": "wrench"
+      },
+      {
+        "title": "Costing & Analysis:",
+        "desc": "Capture labor, overhead, and material costs for precise production cost reporting.",
+        "preview": "donut",
+        "iconKey": "calculator"
+      },
+      {
+        "title": "Integration with Inventory & Purchase:",
+        "desc": "Ensure raw materials are always available through real-time links with stock and procurement data.",
+        "preview": "link",
+        "iconKey": "link2"
+      }
+    ],
+    "why": {
+      "title": "Why Argus Manufacturing:",
+      "description": "Argus connects planning, production, and inventory into one unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency.",
+      "mediaItems": [
+        { "imageKey": "heroImage", "alt": "Production planning" },
+        { "imageKey": "hero",      "alt": "Shop floor tracking" }
+      ],
+      "bullets": [
+        "reducing delays",
+        "minimizing waste",
+        "boosting overall production efficiency."
+      ]
+    },
+    "cta": {
+      "title": "Ready to optimize production?",
+      "body": "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.",
+      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+    }
+    }
+      
+      
+    
+
+}
   

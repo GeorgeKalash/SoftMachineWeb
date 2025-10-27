@@ -1,18 +1,12 @@
+// src/pages/HumanResourcesPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import {
-  ArrowRight,
-  Database,
-  Clock,
-  Calendar,
-  Calculator,
-  FileText,
-} from "lucide-react";
+import { ArrowRight, Database, Clock, Calendar, Calculator, type LucideIcon } from "lucide-react";
 
-// Images (reuse)
+// Images kept in code
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
@@ -21,104 +15,108 @@ import heroImage from "@/assets/hero-image.jpg";
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
+import siteData from "@/data.json";
+
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
+const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
 
-const container: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+/* ----------------------------- Runtime maps ----------------------------- */
+const IMG: Record<string, string> = {
+  logo: logo as unknown as string,
+  hero: hero as unknown as string,
+  heroImage: heroImage as unknown as string,
 };
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+/** If FeatureGrid expects ReactNode for `icon` (common) */
+const ICONS_NODE: Record<string, React.ReactNode> = {
+  database: <Database className="h-5 w-5 text-slate-900" />,
+  clock: <Clock className="h-5 w-5 text-slate-900" />,
+  calendar: <Calendar className="h-5 w-5 text-slate-900" />,
+  calculator: <Calculator className="h-5 w-5 text-slate-900" />,
 };
+/** If your FeatureGrid instead expects a component type, switch to this map and render inside FeatureGrid */
+// const ICONS_COMPONENT: Record<string, LucideIcon> = {
+//   database: Database,
+//   clock: Clock,
+//   calendar: Calendar,
+//   calculator: Calculator,
+// };
 
-/* ------------------------------- Types/Data ------------------------------ */
-type ReferenceItem = {
-  logo: string;
-  name: string;
-  industry: string;
-  sector: string;
-  description: string;
-};
-
-type CarouselItem = {
-  src: string;
-  alt: string;
-};
-
-const REFERENCES: ReferenceItem[] = [
-  {
-    logo: (logo as unknown as string),
-    name: "SoftMachine",
-    industry: "Software",
-    sector: "ERP",
-    description: "Trusted ERP partner with 30+ years of experience.",
-  },
-];
-
-const CAROUSEL: CarouselItem[] = [
-  { src: heroImage as unknown as string, alt: "HR overview 1" },
-  { src: hero as unknown as string, alt: "HR overview 2" },
-  { src: logo as unknown as string, alt: "Brand identity" },
-];
+/** Allowed previews (narrow unknown JSON to expected union) */
+const PREVIEWS = ["crm", "timeline", "inbox", "invoice"] as const;
+type PreviewKey = (typeof PREVIEWS)[number];
+const isPreview = (x: unknown): x is PreviewKey =>
+  typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
-
 export default function HumanResourcesPage() {
-  const items = useMemo(() => REFERENCES, []);
+  const data = siteData.hr;
+
+  // Hero
+  const heroTitle = data?.hero?.title ?? "Human Resources (HR Management)";
+  const heroSubtitle = data?.hero?.subtitle ?? "Empower Your People, Simplify HR Operations";
+  const heroBody =
+    data?.hero?.body ??
+    "Argus Human Resources helps organizations automate HR processes and centralize employee data.";
+  const heroPrimary = data?.hero?.primaryCta;
+  const heroSecondary = data?.hero?.secondaryCta;
+
+  // Carousel (from JSON keys → imported images)
+  const CAROUSEL = useMemo(
+    () =>
+      (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
+        src: (c?.imageKey && IMG[c.imageKey]) || IMG.heroImage,
+        alt: c?.alt ?? "",
+      })),
+    [data?.carousel]
+  );
 
   // Simple cross-fade carousel (respects reduced motion)
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
-    if (prefersReducedMotion) return;
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % CAROUSEL.length);
-    }, 3800);
+    if (prefersReducedMotion || CAROUSEL.length <= 1) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % CAROUSEL.length), 3800);
     return () => clearInterval(id);
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Build feature items (word-for-word)
-  const featureItems: FeatureItem[] = [
-    {
-      title: "Centralized Employee Information:",
-      desc: "Maintain accurate and up-to-date employee profiles, contracts, and records in one place, accessible anytime.",
-      preview: "crm",
-      icon: <Database className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Attendance & Time Tracking:",
-      desc: "Monitor attendance using smart integrations like biometric devices or web check-ins, ensuring accurate payroll calculations.",
-      preview: "timeline",
-      icon: <Clock className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Leave Management System:",
-      desc: "Simplify leave requests, approvals, and balance tracking with automated workflows and notifications.",
-      preview: "inbox",
-      icon: <Calendar className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Payroll Automation:",
-      desc: "Calculate salaries, deductions, taxes, and benefits effortlessly with Argus Payroll integration.",
-      preview: "invoice",
-      icon: <Calculator className="h-5 w-5 text-slate-900" />,
-    },
-  ];
+  // Benefits/Features grid
+  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  const featureItems = useMemo<FeatureItem[]>(() => {
+    const src = (data?.features ?? []) as JSONFeature[];
+    return src.map((f) => {
+      const preview = isPreview(f.preview) ? f.preview : "crm";
+      const icon = (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database;
+      return { title: f.title, desc: f.desc, preview, icon: icon as FeatureItem["icon"] };
+    });
+  }, [data?.features]);
+
+  // Why section
+  const whyTitle = data?.why?.title ?? "Why Businesses Choose Argus HR:";
+  const whyDesc =
+    data?.why?.description ??
+    "Built-in analytics and employee self-service reduce manual work and boost productivity.";
+  const whyMedia = IMG[data?.why?.mediaKey ?? "heroImage"];
+  const whyCaption = data?.why?.mediaCaption ?? undefined;
+
+  // CTA
+  const ctaTitle = data?.cta?.title ?? "Ready to empower your HR team?";
+  const ctaBody =
+    data?.cta?.body ?? "We can tailor Argus HR to your policies, approval chains, and payroll requirements.";
+  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
+  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
 
   return (
-      <section className="relative overflow-hidden z-0">
-
+    <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Back */}
         <div className="mb-6">
           <GoBackButton fallbackTo="/" />
         </div>
       </div>
 
-      {/* HERO — light section */}
+      {/* HERO */}
       <div className="relative overflow-hidden">
         <div
           aria-hidden
@@ -135,28 +133,30 @@ export default function HumanResourcesPage() {
             {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
-                Human Resources (HR Management)
+                {heroTitle}
               </h1>
-              <p className="mt-4 text-lg text-slate-600">
-                Empower Your People, Simplify HR Operations
-              </p>
-              <p className="mt-3 text-slate-600 leading-relaxed">
-                Argus Human Resources is a powerful and user-friendly module designed to manage the entire employee lifecycle — from recruitment to retirement. It helps organizations automate HR processes, centralize employee data, and create a culture of transparency and performance. Whether you’re managing a small team or a large workforce, Argus HR gives you complete visibility and control over your human capital.
-              </p>
+              <p className="mt-4 text-lg text-slate-600">{heroSubtitle}</p>
+              <p className="mt-3 text-slate-600 leading-relaxed">{heroBody}</p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a
-                  href="#benefits"
-                  className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-                >
-                  Explore Benefits <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-                <a
-                  href="#why"
-                  className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-                >
-                  Why Argus?
-                </a>
+                {heroPrimary?.href && (
+                  <a
+                    href={heroPrimary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
+                    aria-label={heroPrimary.label}
+                  >
+                    {heroPrimary.label} <ArrowRight className="ml-2 h-4 w-4" />
+                  </a>
+                )}
+                {heroSecondary?.href && (
+                  <a
+                    href={heroSecondary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
+                    aria-label={heroSecondary.label}
+                  >
+                    {heroSecondary.label}
+                  </a>
+                )}
               </div>
             </motion.div>
 
@@ -170,7 +170,7 @@ export default function HumanResourcesPage() {
               >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
-                    key={img.alt}
+                    key={`${img.src}-${i}`}
                     src={img.src}
                     alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
@@ -199,16 +199,10 @@ export default function HumanResourcesPage() {
         </div>
       </div>
 
-      {/* BENEFITS — Reusable grid */}
+      {/* BENEFITS / FEATURES */}
       <div id="benefits" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="space-y-10"
-          >
+          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
               Key Benefits:
             </motion.h2>
@@ -227,15 +221,15 @@ export default function HumanResourcesPage() {
         </div>
       </div>
 
-      {/* DARK SECTION — Why Argus HR */}
+      {/* WHY (dark) */}
       <SectionSplit
         id="why"
         navInk="light"
         tone="dark"
-        title="Why Businesses Choose Argus HR:"
-        description="With built-in analytics, employee self-service access, and complete compliance support, Argus HR helps HR teams save time, reduce manual work, and focus on building a motivated, productive workforce."
-        media={heroImage as unknown as string}
-        mediaCaption={<>Employee self-service with real-time visibility.</>}
+        title={whyTitle}
+        description={whyDesc}
+        media={whyMedia}
+        mediaCaption={whyCaption}
       />
 
       {/* CONTACT / CTA */}
@@ -243,25 +237,21 @@ export default function HumanResourcesPage() {
         <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
           <div className="grid md:grid-cols-2 items-center gap-8">
             <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">
-                Ready to empower your HR team?
-              </h3>
-              <p className="mt-2 text-slate-600">
-                We can tailor Argus HR to your policies, approval chains, and payroll requirements.
-              </p>
+              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
+              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
             </div>
             <div className="flex md:justify-end gap-3">
               <a
-                href="/#demo"
+                href={data?.cta?.primary?.href ?? ctaPrimary.href}
                 className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
               >
-                Schedule a Demo
+                {data?.cta?.primary?.label ?? ctaPrimary.label}
               </a>
               <a
-                href="/#contact"
+                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
                 className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
               >
-                Contact Sales
+                {data?.cta?.secondary?.label ?? ctaSecondary.label}
               </a>
             </div>
           </div>

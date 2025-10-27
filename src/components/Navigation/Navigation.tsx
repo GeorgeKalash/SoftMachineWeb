@@ -7,7 +7,8 @@ import { PageModal } from "@/sharedComponent/PageModal";
 import { ContactUsForm } from "../ContactUs/ContactUsForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../../../src/assets/softMachineLogo.png";
+import logo from "../../../src/assets/softMachineLogo.png"; // desktop (≥ 996px)
+import logosmall from "../../../src/assets/logo.png";       // small (≤ 995px)
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
@@ -15,11 +16,12 @@ import logo from "../../../src/assets/softMachineLogo.png";
 
 const NAV_LINKS = [
   { id: "home", label: "Home" },
-  { id: "about", label: "About" },
   { id: "features", label: "Features" },
-  { id: "pricing", label: "Pricing" },
-  { id: "faq", label: "faq" },
-];
+  { id: "about", label: "About" },
+  { id: "ScrollableShowcase", label: "Showcase" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "faq", label: "FAQ" },
+] as const;
 
 const FORM_ID = "lead-modal-form";
 
@@ -42,7 +44,8 @@ const Navigation = () => {
     if (modalType === "partner") {
       return {
         title: "Become a partner",
-        description: "Share your details and we'll reach out about partnership options.",
+        description:
+          "Share your details and we'll reach out about partnership options.",
         submitLabel: "Request partnership",
       };
     }
@@ -56,9 +59,7 @@ const Navigation = () => {
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const navHeight =
-      navRef.current?.getBoundingClientRect().height ??
-      70; // dynamic offset (fallback to 70)
+    const navHeight = navRef.current?.getBoundingClientRect().height ?? 70;
     const y = el.getBoundingClientRect().top + window.scrollY - navHeight;
     const prefersReduced =
       typeof window !== "undefined" &&
@@ -74,7 +75,6 @@ const Navigation = () => {
     }
     navigate({ pathname: "/", hash: `#${id}` });
     setIsOpen(false);
-    // Optional: ensure hash-scroll after route mount (implement effect on Home)
   };
 
   const handleModalSend = () => {
@@ -91,33 +91,45 @@ const Navigation = () => {
   return (
     <nav
       ref={navRef}
-      className="
-        fixed top-0 w-full z-50
-        bg-transparent                     /* allow blending with content behind */
+      className={`
+        fixed top-0 w-full z-50 transition-colors
+        ${isOpen ? "bg-white shadow-sm" : "bg-transparent"}   /* mobile → white when open */
+        md:bg-transparent
         supports-[backdrop-filter]:md:backdrop-blur-md
-      "
+      `}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* header */}
         <div className="flex items-center justify-between h-16">
-          {/* Logo: keep OUTSIDE the blending wrapper so it stays normal */}
+          {/* Logo (≤995px small, ≥996px large) */}
           <button
             onClick={() => handleNav("home")}
             className="flex items-center gap-2"
             aria-label="Go to Home"
           >
-            <div className="rounded-lg p-1">
-              <img
-                src={logo}
-                alt="Company logo"
-                className="h-10 w-auto"
-                loading="eager"
-                decoding="async"
-              />
-            </div>
+            {/* small logo up to 995px */}
+            <img
+              src={logosmall}
+              alt="SoftMachine"
+              className="block min-[996px]:hidden h-8 w-auto"
+              loading="eager"
+              decoding="async"
+              width={120}
+              height={32}
+            />
+            {/* desktop logo from 996px and up */}
+            <img
+              src={logo}
+              alt="SoftMachine"
+              className="hidden min-[996px]:block h-10 w-auto"
+              loading="eager"
+              decoding="async"
+              width={160}
+              height={40}
+            />
           </button>
 
-          {/* desktop nav (text + icons should be inside .nav-dfg) */}
+          {/* desktop nav */}
           <div className="hidden md:flex items-center gap-6 nav-dfg">
             {NAV_LINKS.map(({ id, label }) => (
               <button
@@ -131,7 +143,7 @@ const Navigation = () => {
             <SolutionsMenu variant="desktop" />
           </div>
 
-          {/* desktop CTAs — make them text-only to blend cleanly */}
+          {/* desktop CTAs */}
           <div className="hidden md:flex items-center gap-3 nav-dfg">
             <Button
               variant="ghost"
@@ -146,7 +158,7 @@ const Navigation = () => {
             </Button>
           </div>
 
-          {/* mobile toggle (not blended, keep visible on all backgrounds) */}
+          {/* mobile toggle */}
           <button
             onClick={() => setIsOpen((v) => !v)}
             className="md:hidden p-2 rounded-lg hover:bg-secondary/30 transition-colors"
@@ -157,10 +169,22 @@ const Navigation = () => {
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
+      </div>
 
-        {/* mobile menu — wrap text in .nav-dfg; avoid solid fills */}
-        {isOpen && (
-          <div id="mobile-nav" className="md:hidden py-4 space-y-3 animate-in slide-in-from-top">
+      {/* mobile scrim + panel */}
+      {isOpen && (
+        <>
+          {/* scrim behind the panel */}
+          <div
+            className="md:hidden fixed inset-0 top-16 bg-black/20 z-40"
+            onClick={() => setIsOpen(false)}
+            aria-hidden
+          />
+          {/* white panel */}
+          <div
+            id="mobile-nav"
+            className="md:hidden fixed left-0 right-0 top-16 z-50 bg-white border-t shadow-sm py-4 space-y-3 animate-in slide-in-from-top"
+          >
             <div className="nav-dfg space-y-3">
               {NAV_LINKS.map(({ id, label }) => (
                 <button
@@ -200,10 +224,10 @@ const Navigation = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
-      {/* Modal: Send button submits the form; form handles API + success */}
+      {/* Modal */}
       <PageModal
         open={isModalOpen}
         onOpenChange={(open) => setModalType(open ? (modalType ?? "demo") : null)}

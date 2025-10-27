@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   LifeBuoy,
 } from "lucide-react";
+import siteData from "@/data.json";
 
 /* ----------------------------- types & tokens ---------------------------- */
 
@@ -20,15 +21,15 @@ type FeatureColor =
   | "feature-orange"
   | "feature-blue"
   | "feature-purple"
-  | string; // allow custom tokens too
+  | string;
 
 export type FeatureItem = {
   icon: LucideIcon;
   title: string;
   description: string;
-  color?: FeatureColor;      // optional: will be auto-assigned if missing
-  href?: string;             // optional: makes the card clickable
-  ariaLabel?: string;        // optional: accessible label for link target
+  color?: FeatureColor;
+  href?: string;
+  ariaLabel?: string;
 };
 
 type FeaturesProps = {
@@ -38,7 +39,7 @@ type FeaturesProps = {
   className?: string;
 };
 
-/* Auto color cycle so you don’t have to specify a color for every item */
+/* Auto color cycle */
 const COLOR_CYCLE: FeatureColor[] = [
   "feature-pink",
   "feature-green",
@@ -47,46 +48,27 @@ const COLOR_CYCLE: FeatureColor[] = [
   "feature-purple",
 ];
 
-/* ------------------------------- defaults -------------------------------- */
+/* ----------------------------- JSON → UI map ----------------------------- */
 
-const DEFAULT_ITEMS: FeatureItem[] = [
-  {
-    icon: Code2,
-    title: "Custom Software",
-    description:
-      "Tailored web & backend solutions designed around your business logic and workflows.",
-  },
-  {
-    icon: MonitorSmartphone,
-    title: "Web & Mobile Apps",
-    description:
-      "Modern, performant apps with clean UX that scale from MVP to thousands of users.",
-  },
-  {
-    icon: Workflow,
-    title: "ERP & Business Systems",
-    description:
-      "Process-aware implementations, data flows, and UI for finance, operations, and beyond.",
-  },
-  {
-    icon: PlugZap,
-    title: "Integrations & APIs",
-    description:
-      "Connect billing, auth, analytics, and third-party platforms with robust, well-tested APIs.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure & Reliable",
-    description:
-      "Best practices for auth, data protection, and observability baked into every delivery.",
-  },
-  {
-    icon: LifeBuoy,
-    title: "Ongoing Support",
-    description:
-      "Roadmapping, enhancements, and SLA support to keep your product healthy and evolving.",
-  },
-];
+/** Map string icon names from JSON to Lucide components */
+const ICON_MAP: Record<string, LucideIcon> = {
+  Code2,
+  MonitorSmartphone,
+  Workflow,
+  PlugZap,
+  ShieldCheck,
+  LifeBuoy,
+};
+
+const itemsFromJson: FeatureItem[] =
+  (siteData.features?.items ?? []).map((it, i) => ({
+    icon: ICON_MAP[it.icon as keyof typeof ICON_MAP] ?? Code2,
+    title: it.title,
+    description: it.description,
+    color: COLOR_CYCLE[i % COLOR_CYCLE.length],
+    href:"",
+    ariaLabel: "",
+  })) ?? [];
 
 /* ------------------------------- components ------------------------------ */
 
@@ -97,17 +79,14 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
   const { ref, isVisible } = useScrollAnimation();
   const Icon = feature.icon;
 
-  // assign color if not provided
   const colorToken =
     feature.color ?? COLOR_CYCLE[index % COLOR_CYCLE.length];
 
-  // Inline HSL variables so tokens like --feature-pink work in both light/dark.
   const bg = `hsl(var(--${colorToken}) / 0.12)`;
   const fg = `hsl(var(--${colorToken}))`;
 
   const CardInner = (
     <>
-      {/* subtle gradient ring */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-2xl"
@@ -118,8 +97,6 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
             "radial-gradient(80% 70% at 50% -10%, #000 50%, transparent 70%)",
         }}
       />
-
-      {/* Icon bubble */}
       <div
         className={[
           "relative mb-6 grid place-items-center",
@@ -135,7 +112,6 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
         }}
       >
         <Icon className="size-10" />
-        {/* glow */}
         <span
           aria-hidden="true"
           className="absolute inset-0 rounded-full"
@@ -185,12 +161,7 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
           aria-label={feature.ariaLabel ?? feature.title}
         />
       ) : (
-        // focus target for keyboard users (keeps same layout when no link)
-        <span
-          className="absolute inset-0 rounded-2xl"
-          aria-hidden="true"
-          tabIndex={-1}
-        />
+        <span className="absolute inset-0 rounded-2xl" aria-hidden="true" tabIndex={-1} />
       )}
       {CardInner}
     </article>
@@ -198,15 +169,13 @@ const FeatureCard: React.FC<{ feature: FeatureItem; index: number }> = ({
 };
 
 const Features: React.FC<FeaturesProps> = ({
-  items = DEFAULT_ITEMS,
-  heading = "What we do",
-  subheading = "Design & build custom software with the right architecture, integrations, and support.",
+  items = itemsFromJson,
+  heading = siteData.features?.heading ?? "What we do",
+  subheading = siteData.features?.subheading ?? "Design & build custom software with the right architecture, integrations, and support.",
   className,
 }) => {
   return (
-    <section
-      className={["py-20 bg-background", className].filter(Boolean).join(" ")}
-    >
+    <section className={["py-20 bg-background", className].filter(Boolean).join(" ")}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center mb-12">

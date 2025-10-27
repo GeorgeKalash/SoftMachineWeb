@@ -41,6 +41,6 @@
   color: #888;
 }
 .nav-dynamic-fg {
-  color: #fff;              /* base color */
+  color: #fff;            
   mix-blend-mode: difference;
 }

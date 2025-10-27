@@ -1,18 +1,12 @@
+// src/pages/FinancialsPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import {
-  ArrowRight,
-  FileText,
-  Wallet,
-  Globe2,
-  BarChart3,
-  Percent,
-} from "lucide-react";
+import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent, type LucideIcon } from "lucide-react";
 
-// Images (reuse)
+// Images kept in code
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
@@ -20,6 +14,8 @@ import heroImage from "@/assets/hero-image.jpg";
 // Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
+
+import siteData from "@/data.json";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -34,89 +30,107 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
-/* ------------------------------- Types/Data ------------------------------ */
-type ReferenceItem = {
-  logo: string;
-  name: string;
-  industry: string;
-  sector: string;
-  description: string;
+/* ----------------------------- Runtime maps ----------------------------- */
+const IMG: Record<string, string> = {
+  logo: logo as unknown as string,
+  hero: hero as unknown as string,
+  heroImage: heroImage as unknown as string,
 };
 
-type CarouselItem = {
-  src: string;
-  alt: string;
+/** If FeatureItem.icon is a component type */
+const ICONS_COMPONENT: Record<string, LucideIcon> = {
+  fileText: FileText,
+  wallet: Wallet,
+  globe2: Globe2,
+  barChart3: BarChart3,
+  percent: Percent,
+};
+/** If FeatureItem.icon is a ReactNode (common) */
+const ICONS_NODE: Record<string, React.ReactNode> = {
+  fileText: <FileText className="h-5 w-5 text-slate-900" />,
+  wallet: <Wallet className="h-5 w-5 text-slate-900" />,
+  globe2: <Globe2 className="h-5 w-5 text-slate-900" />,
+  barChart3: <BarChart3 className="h-5 w-5 text-slate-900" />,
+  percent: <Percent className="h-5 w-5 text-slate-900" />,
 };
 
-const REFERENCES: ReferenceItem[] = [
-  {
-    logo: (logo as unknown as string),
-    name: "SoftMachine",
-    industry: "Software",
-    sector: "ERP",
-    description: "Trusted ERP partner with 30+ years of experience.",
-  },
-];
-
-const CAROUSEL: CarouselItem[] = [
-  { src: heroImage as unknown as string, alt: "Financials overview 1" },
-  { src: hero as unknown as string, alt: "Financials overview 2" },
-  { src: logo as unknown as string, alt: "Brand identity" },
-];
+/** Allowed previews (narrow unknown JSON to the union expected by FeatureItem.preview) */
+const PREVIEWS = ["typing", "inbox", "multicurrency", "analytics", "donut"] as const;
+type PreviewKey = (typeof PREVIEWS)[number];
+const isPreview = (x: unknown): x is PreviewKey => typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
-
 export default function FinancialsPage() {
-  const items = useMemo(() => REFERENCES, []);
+  const data = siteData.financials;
+
+  // Hero
+  const heroTitle = data?.hero?.title ?? "Financials (Accounting & Finance Management)";
+  const heroSubtitle = data?.hero?.subtitle ?? "Simplify Accounting and Strengthen Financial Decision-Making";
+  const heroBody =
+    data?.hero?.body ??
+    "Argus Financials provides a unified, accurate, and compliant accounting solution that helps businesses maintain financial clarity and control.";
+  const heroPrimary = data?.hero?.primaryCta;
+  const heroSecondary = data?.hero?.secondaryCta;
+
+  // Carousel (from JSON keys → imported images)
+  const CAROUSEL = useMemo(
+    () =>
+      (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
+        src: (c?.imageKey && IMG[c.imageKey]) || IMG.heroImage,
+        alt: c?.alt ?? "",
+      })),
+    [data?.carousel]
+  );
 
   // Simple cross-fade carousel (respects reduced motion)
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
-    if (prefersReducedMotion) return;
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % CAROUSEL.length);
-    }, 3800);
+    if (prefersReducedMotion || CAROUSEL.length <= 1) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % CAROUSEL.length), 3800);
     return () => clearInterval(id);
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Core Features (word-for-word)
-  const featureItems: FeatureItem[] = [
-    {
-      title: "General Ledger & Journal Entries:",
-      desc: "Keep track of every transaction and maintain a clear audit trail.",
-      preview: "typing",
-      icon: <FileText className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Accounts Payable & Receivable:",
-      desc: "Manage supplier invoices, customer payments, and aging reports effortlessly.",
-      preview: "inbox",
-      icon: <Wallet className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Multi-Currency & Multi-Company Accounting:",
-      desc: "Handle international operations with accurate currency conversions and consolidated reporting.",
-      preview: "multicurrency",
-      icon: <Globe2 className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Budgeting & Forecasting:",
-      desc: "Plan and control expenses using dynamic budgets and predictive insights.",
-      preview: "analytics",
-      icon: <BarChart3 className="h-5 w-5 text-slate-900" />,
-    },
-    {
-      title: "Tax Management:",
-      desc: "Ensure compliance with local tax laws through automated tax computation and reporting.",
-      preview: "donut",
-      icon: <Percent className="h-5 w-5 text-slate-900" />,
-    },
-  ];
+  // Features (JSON → FeatureGrid items) — robust typing
+  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  const featureItems = useMemo<FeatureItem[]>(() => {
+    const src = (data?.features ?? []) as JSONFeature[];
+
+    return src.map((f) => {
+      // 1) narrow preview to the expected union (fallback to 'typing')
+      const preview = isPreview(f.preview) ? f.preview : "typing";
+
+      // 2) build icon in a way that satisfies either FeatureItem.icon = ReactNode OR component
+      //    We cast to FeatureItem['icon'] once to satisfy TS regardless of which it is.
+      const iconCandidate =
+        (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
+
+      return {
+        title: f.title,
+        desc: f.desc,
+        preview,
+        icon: iconCandidate as FeatureItem["icon"],
+      };
+    });
+  }, [data?.features]);
+
+  // Impact section
+  const impactTitle = data?.impact?.title ?? "Business Impact:";
+  const impactDesc =
+    data?.impact?.description ??
+    "Argus Financials allows management to make informed decisions based on live financial data, helping businesses improve cash flow, reduce risks, and maintain financial stability.";
+  const impactMedia = IMG[data?.impact?.mediaKey ?? "heroImage"];
+
+  // CTA block
+  const ctaTitle = data?.cta?.title ?? "Ready to modernize your financial operations?";
+  const ctaBody =
+    data?.cta?.body ??
+    "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.";
+  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
+  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
 
   return (
-      <section className="relative overflow-hidden z-0">
-
+    <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Back */}
         <div className="mb-6">
@@ -138,31 +152,33 @@ export default function FinancialsPage() {
             viewport={{ once: true, amount: 0.2 }}
             className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
           >
-            {/* Copy (word-for-word) */}
+            {/* Copy from JSON */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
-                Financials (Accounting & Finance Management)
+                {heroTitle}
               </h1>
-              <p className="mt-4 text-lg text-slate-600">
-                Simplify Accounting and Strengthen Financial Decision-Making
-              </p>
-              <p className="mt-3 text-slate-600 leading-relaxed">
-                Argus Financials provides a unified, accurate, and compliant accounting solution that helps businesses maintain financial clarity and control. It automates complex accounting tasks, integrates with other modules, and offers real-time insights into your company’s financial performance — ensuring smarter, faster decision-making.
-              </p>
+              <p className="mt-4 text-lg text-slate-600">{heroSubtitle}</p>
+              <p className="mt-3 text-slate-600 leading-relaxed">{heroBody}</p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a
-                  href="#features"
-                  className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-                >
-                  Explore Features <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-                <a
-                  href="#impact"
-                  className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-                >
-                  Business Impact
-                </a>
+                {heroPrimary?.href && (
+                  <a
+                    href={heroPrimary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
+                    aria-label={heroPrimary.label}
+                  >
+                    {heroPrimary.label} <ArrowRight className="ml-2 h-4 w-4" />
+                  </a>
+                )}
+                {heroSecondary?.href && (
+                  <a
+                    href={heroSecondary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
+                    aria-label={heroSecondary.label}
+                  >
+                    {heroSecondary.label}
+                  </a>
+                )}
               </div>
             </motion.div>
 
@@ -176,7 +192,7 @@ export default function FinancialsPage() {
               >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
-                    key={img.alt}
+                    key={`${img.src}-${i}`}
                     src={img.src}
                     alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
@@ -238,9 +254,9 @@ export default function FinancialsPage() {
         id="impact"
         navInk="light"
         tone="dark"
-        title="Business Impact:"
-        description="Argus Financials allows management to make informed decisions based on live financial data, helping businesses improve cash flow, reduce risks, and maintain financial stability."
-        media={heroImage as unknown as string}
+        title={impactTitle}
+        description={impactDesc}
+        media={impactMedia}
       />
 
       {/* CONTACT / CTA */}
@@ -248,25 +264,21 @@ export default function FinancialsPage() {
         <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
           <div className="grid md:grid-cols-2 items-center gap-8">
             <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">
-                Ready to modernize your financial operations?
-              </h3>
-              <p className="mt-2 text-slate-600">
-                We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.
-              </p>
+              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
+              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
             </div>
             <div className="flex md:justify-end gap-3">
               <a
-                href="/#demo"
+                href={data?.cta?.primary?.href ?? ctaPrimary.href}
                 className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
               >
-                Schedule a Demo
+                {data?.cta?.primary?.label ?? ctaPrimary.label}
               </a>
               <a
-                href="/#contact"
+                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
                 className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
               >
-                Contact Sales
+                {data?.cta?.secondary?.label ?? ctaSecondary.label}
               </a>
             </div>
           </div>

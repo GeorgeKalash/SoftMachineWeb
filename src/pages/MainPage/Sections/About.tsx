@@ -2,14 +2,15 @@
 
 import React, { useState } from "react";
 import { Check, Target, TrendingUp, Users } from "lucide-react";
-import { type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import aboutTeam from "@/assets/about-team.jpg";
 import aboutDashboard from "@/assets/about-dashboard.jpg";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import Decoration from "@/sharedComponent/Decoration";
 
 import { PageModal } from "@/sharedComponent/PageModal";
-import { ContactUsForm } from "@/components/ContactUs/ContactUsForm"; 
+import { ContactUsForm } from "@/components/ContactUs/ContactUsForm";
+import siteData from "@/data.json";
 
 /* ------------------------------- types ---------------------------------- */
 type Stat = { icon: LucideIcon; value: string; label: string };
@@ -27,35 +28,27 @@ type AboutProps = {
   featureCards?: { title: string; copy: string }[];
   primaryCtaText?: string;
   onPrimaryCta?: () => void;
-  secondaryCtaText?: string;
-  onSecondaryCta?: () => void;
 };
 
-/* ------------------------------ defaults -------------------------------- */
-const DEFAULT_STATS: Stat[] = [
-  { icon: Users, value: "40+", label: "Projects delivered" },
-  { icon: Target, value: "10+", label: "Years building" },
-  { icon: TrendingUp, value: "12+", label: "Industries served" },
-];
+/* ------------------------------ data -> ui ------------------------------ */
+/** map JSON stats (value/label) to UI stats (with icons in order) */
+const ICONS: LucideIcon[] = [Users, Target, TrendingUp];
+const jsonStats = siteData?.about?.stats ?? [];
+const STATS_FROM_DATA: Stat[] = jsonStats.map(
+  (s: { value: string; label: string }, i: number) => ({
+    icon: ICONS[i] ?? Users,
+    value: s.value,
+    label: s.label,
+  })
+);
 
-const DEFAULT_BENEFITS = [
-  "Standard operationg procedure for our multi-industry workspace",
-  "SoftMachine is expanding to become a phenomenally thriving company with clients all over the globe in the same product and line by giving sufficient value to our clients, and employees.",
-  "Providing technological solutions that exceed clients expectations",
-];
+const BENEFITS_FROM_DATA: string[] = siteData?.about?.benefits ?? [];
+const FEATURE_CARDS_FROM_DATA:
+  | { title: string; copy: string }[]
+  = siteData?.about?.featureCards ?? [];
 
-const DEFAULT_FEATURE_CARDS = [
-  {
-    title: "Cloud ERP, zero hardware",
-    copy:
-      "Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data.",
-  },
-  {
-    title: "secutites ",
-    copy:
-      "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud.",
-  },
-];
+/* --------------------------- local constants ---------------------------- */
+const FORM_ID = "about-talk-to-us-form";
 
 /* ------------------------------ helpers/ui ------------------------------ */
 const StatCard = ({ stat, index, visible }: { stat: Stat; index: number; visible: boolean }) => {
@@ -115,23 +108,20 @@ const BulletRow = ({
   </div>
 );
 
-/* --------------------------- local constants ---------------------------- */
-const FORM_ID = "about-talk-to-us-form";
-
 /* --------------------------------- ui ----------------------------------- */
 const About: React.FC<AboutProps> = ({
-  stats = DEFAULT_STATS,
-  benefits = DEFAULT_BENEFITS,
-  pill1 = "Who We Are",
-  heading1 = "3 decades of ERP—Software",
-  copy1a = "Just over 30 years ago, we started as an erp software company that offers business solutions at its best! We grew with creativity and determination, creating out first windows erp software back in 1995.",
-  copy1b = "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is one of the leading software companies across industries and regions still aiming high, still reaching there!",
-  pill2 = "About Argus",
-  heading2 = "Argus ERP Cloud",
-  copy2a = "Argus is an erp software product that enables businesses to plan and manage their operations more successfully and efficiently. It enables you to function smoothly, instantly, and intelligently.",
-  copy2b = "Businesses can become more flexible, scalable, and ready for any unexpected event with Argus ERP Cloud. You operate with desktop computers and don't rely on hardware. Because they are portable, you can work remotely and while you're on the move and still have immediate access to all of your data.",
-  featureCards = DEFAULT_FEATURE_CARDS,
-  primaryCtaText = "Talk to us",
+  stats = STATS_FROM_DATA,
+  benefits = BENEFITS_FROM_DATA,
+  pill1 = siteData?.about?.pill1,
+  heading1 = siteData?.about?.heading1,
+  copy1a = siteData?.about?.copy1a,
+  copy1b = siteData?.about?.copy1b,
+  pill2 = siteData?.about?.pill2,
+  heading2 = siteData?.about?.heading2,
+  copy2a = siteData?.about?.copy2a,
+  copy2b = siteData?.about?.copy2b,
+  featureCards = FEATURE_CARDS_FROM_DATA,
+  primaryCtaText = siteData?.about?.primaryCtaText,
   onPrimaryCta,
 }) => {
   const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation();
@@ -140,7 +130,6 @@ const About: React.FC<AboutProps> = ({
   const { ref: image2Ref, isVisible: image2Visible } = useScrollAnimation();
   const { ref: content2Ref, isVisible: content2Visible } = useScrollAnimation();
 
-  /* Modal state (same pattern as Navigation / FAQ) */
   const [open, setOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
@@ -157,7 +146,7 @@ const About: React.FC<AboutProps> = ({
     <section
       id="about"
       className="relative isolate overflow-hidden py-20 bg-gradient-to-br from-background via-background to-primary/5"
-      aria-label="About SoftMachine"
+      aria-label={`About ${siteData?.globals?.company ?? "SoftMachine"}`}
       role="region"
     >
       <Decoration
@@ -208,7 +197,7 @@ const About: React.FC<AboutProps> = ({
             <div className="relative">
               <img
                 src={aboutTeam}
-                alt="SoftMachine team collaborating"
+                alt={siteData?.about?.images?.teamAlt ?? "SoftMachine team collaborating"}
                 className="rounded-3xl shadow-2xl w-full"
                 loading="lazy"
                 decoding="async"
@@ -229,7 +218,7 @@ const About: React.FC<AboutProps> = ({
             <div className="relative">
               <img
                 src={aboutDashboard}
-                alt="Argus ERP dashboard interface"
+                alt={siteData?.about?.images?.dashboardAlt ?? "Argus ERP dashboard interface"}
                 className="rounded-3xl shadow-2xl w-full"
                 loading="lazy"
                 decoding="async"
@@ -261,11 +250,7 @@ const About: React.FC<AboutProps> = ({
             <div className="pt-2 flex flex-wrap gap-4">
               <button
                 className="inline-flex items-center rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                onClick={
-                  onPrimaryCta
-                    ? onPrimaryCta
-                    : () => setOpen(true) // ⟵ open modal instead of scrolling
-                }
+                onClick={onPrimaryCta ? onPrimaryCta : () => setOpen(true)}
                 aria-label={primaryCtaText}
               >
                 {primaryCtaText}
@@ -286,11 +271,10 @@ const About: React.FC<AboutProps> = ({
         showSend
         onSend={handleModalSend}
         isSending={isSending}
-        // sendLabel="Send" // optional
       >
         <ContactUsForm
           formId={FORM_ID}
-          type="demo" // or "partner" (or add a new "support" template later)
+          type="demo"
           onSuccess={handleFormSuccess}
           onSubmittingChange={setIsSending}
         />
