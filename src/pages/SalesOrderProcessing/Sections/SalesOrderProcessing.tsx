@@ -117,8 +117,7 @@ export default function SalesOrderProcessingPage() {
   const ctaTitle = data?.cta?.title ?? "Ready to streamline your sales cycle?";
   const ctaBody =
     data?.cta?.body ?? "We can tailor Argus Sales Management to your workflows, approvals, and reporting needs.";
-  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
-  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
+
 
   return (
     <section className="relative overflow-hidden z-0">

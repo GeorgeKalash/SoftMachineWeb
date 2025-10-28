@@ -79,7 +79,7 @@
         "hero": {
           "title": "Sales Order Processing",
           "subtitle": "Streamline Your Sales Cycle and Empower Your Team",
-          "body": "Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in one seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.",
+          "body": "Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in bagWithX seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.",
           "primaryCta": { "label": "Explore Capabilities", "href": "#features" },
           "secondaryCta": { "label": "Why Argus?", "href": "#why" }
         },
@@ -109,7 +109,7 @@
           },
           {
             "title": "Customer Database",
-            "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in one place.",
+            "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in bagWithX place.",
             "preview": "crm",
             "iconKey": "database"
           },
@@ -241,7 +241,7 @@
       "pill1": "Who We Are",
       "heading1": "3 decades of ERP—Software",
       "copy1a": "Just over 30 years ago, we started as an erp software company that offers business solutions at its best! We grew with creativity and determination, creating out first windows erp software back in 1995.",
-        "copy1b": "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is one of the leading software companies across industries and regions still aiming high, still reaching there!",
+        "copy1b": "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is bagWithX of the leading software companies across industries and regions still aiming high, still reaching there!",
       "pill2": "About Argus",
       "heading2": "Argus ERP Cloud",
       "copy2a": "Argus is an erp software product that enables businesses to plan and manage their operations more successfully and efficiently. It enables you to function smoothly, instantly, and intelligently.",
@@ -277,8 +277,8 @@
       "a": "Absolutely. Argus is fully modular and customizable. You can enable only the modules you need and tailor workflows, reports, and user roles to match your business operations precisely."
     },
     {
-      "q": "Is it subscription-based or a one-time license?",
-      "a": "Argus is offered on a subscription-based model. There is no option for a one-time or perpetual license. This ensures you always have access to the latest updates and support."
+      "q": "Is it subscription-based or a bagWithX-time license?",
+      "a": "Argus is offered on a subscription-based model. There is no option for a bagWithX-time or perpetual license. This ensures you always have access to the latest updates and support."
     },
     {
       "q": "How long does implementation take?",
@@ -286,7 +286,7 @@
     },
     {
       "q": "How secure is our data?",
-      "a": "Data security is one of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards."
+      "a": "Data security is bagWithX of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards."
     },
     {
       "q": "Can we import data from existing systems?",
@@ -487,7 +487,7 @@
                   "body": "Every Argus ERP implementation begins with a deep dive into your business operations. Our consultants analyze workflows, challenges, and objectives to design a system that perfectly fits your organization. This stage ensures Argus ERP supports process optimization, data accuracy, and improved decision-making across all departments.",
                   "imageKey": "cat",
                   "imageAlt": "Business analysis and discovery",
-                  "anchorId": "analysis",
+                  "anchorId": "",
                   "primary": { "label": "Start Assessment", "icon": "sparkles" },
                   "secondary": { "label": "See methodology", "variant": "outline", "href": "" }
                 },
@@ -498,7 +498,7 @@
                   "body": "At SoftMachine, we follow a structured, phased approach to ERP deployment. We configure Argus ERP based on your industry-specific needs, integrating modules such as Accounting, Inventory, Sales, and HR. This phased rollout minimizes operational disruption, reduces risk, and ensures a smooth digital transformation journey.",
                   "imageKey": "workcomputer",
                   "imageAlt": "Configuration and deployment",
-                  "anchorId": "configuration",
+                  "anchorId": "",
                   "primary": { "label": "Explore Modules", "icon": "play" },
                   "secondary": { "label": "Implementation plan", "variant": "outline", "href": "" }
                 },
@@ -509,7 +509,7 @@
                   "body": "We believe that successful ERP projects depend on user adoption. Our experts deliver personalized training sessions to equip your team with the skills needed to fully leverage Argus ERP. Through effective change management and hands-on guidance, we help your employees adapt quickly and confidently to the new system.",
                   "imageKey": "giphy",
                   "imageAlt": "User training",
-                  "anchorId": "training",
+                  "anchorId": "",
                   "primary": { "label": "Schedule Training", "icon": "sparkles" },
                   "secondary": { "label": "Training overview", "variant": "outline", "href": "" }
                 },
@@ -520,7 +520,7 @@
                   "body": "After go-live, SoftMachine remains your trusted ERP partner. We provide continuous system monitoring, updates, and technical support to ensure Argus ERP evolves with your business. Our goal is to drive long-term success through scalability, efficiency, and continuous improvement of your digital operations.",
                   "imageKey": "path",
                   "imageAlt": "Ongoing support and optimization",
-                  "anchorId": "support",
+                  "anchorId": "",
                   "primary": { "label": "Contact Support", "icon": "play" },
                   "secondary": { "label": "Success roadmap", "variant": "outline", "href": "" }
                 }
@@ -535,90 +535,7 @@
                   "viewAllCta": "View all Projects",
                   "viewAllHref": "/allProjects",
                   "teaserIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
-                },
-                "items": [
-                  {
-                    "id": "mansour",
-                    "name": "Sultan Bin Ghamiah",
-                    "company": "Mansour Group",
-                    "location": "Lebanon",
-                    "role": "CEO",
-                    "logoKey": "MGLogo",
-                    "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
-                  },
-                  {
-                    "id": "masagh",
-                    "name": "Badr Al Amiri",
-                    "company": "MASAGH",
-                    "location": "KSA",
-                    "role": "CEO",
-                    "logoKey": "MasagLogo",
-                    "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
-                  },
-                  {
-                    "id": "byc",
-                    "name": "Khursan Bin Yaala",
-                    "company": "Bin Yaala Exchange",
-                    "location": "KSA",
-                    "role": "CEO",
-                    "logoKey": "BYCLogo",
-                    "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
-                  },
-                  {
-                    "id": "neg",
-                    "name": "Tarek Tarouti",
-                    "company": "New Egypt Gold",
-                    "location": "Egypt",
-                    "role": "CEO",
-                    "logoKey": "NEGLogo",
-                    "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
-                  },
-                  {
-                    "id": "cil",
-                    "name": "Khalil Ghassani",
-                    "company": "CIL",
-                    "location": "Ivory Coast",
-                    "role": "CEO",
-                    "logoKey": "CILLogo",
-                    "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
-                  },
-                  {
-                    "id": "hyundai",
-                    "name": "Wissam Bazzoun",
-                    "company": "Hyundai",
-                    "location": "Lebanon",
-                    "role": "CIO",
-                    "logoKey": "HyundaiLogo",
-                    "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
-                  },
-                  {
-                    "id": "tamkeen",
-                    "name": "Yahya Tahan",
-                    "company": "Tamkeen",
-                    "location": "KSA",
-                    "role": "",
-                    "logoKey": "TamkeenLogo",
-                    "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
-                  },
-                  {
-                    "id": "korristar",
-                    "name": "Ali Korri",
-                    "company": "Korristar",
-                    "location": "Lebanon",
-                    "role": "CEO",
-                    "logoKey": "KorristarLogo",
-                    "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
-                  },
-                  {
-                    "id": "gdk",
-                    "name": "Elie Ferzli",
-                    "company": "GDK",
-                    "location": "Ivory Coast",
-                    "role": "CEO",
-                    "logoKey": "GDKLogo",
-                    "content": "Implementing Argus ERP was a game changer. Seamless integration and robust reporting improved compliance and transparency across operations."
-                  }
-                ]
+                }
     },
     "financials": {
     "hero": {
@@ -739,7 +656,7 @@
             "features": [
               {
                 "title": "Centralized Employee Information:",
-                "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in one place, accessible anytime.",
+                "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in bagWithX place, accessible anytime.",
                 "preview": "crm",
                 "iconKey": "database"
               },
@@ -826,7 +743,7 @@
     ],
     "why": {
       "title": "Why Argus Manufacturing:",
-      "description": "Argus connects planning, production, and inventory into one unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency.",
+      "description": "Argus connects planning, production, and inventory into bagWithX unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency.",
       "mediaItems": [
         { "imageKey": "heroImage", "alt": "Production planning" },
         { "imageKey": "hero",      "alt": "Shop floor tracking" }
@@ -921,32 +838,32 @@
           {
             "title": "Delivery Order Management:",
             "desc": "Automatically generate delivery orders from confirmed sales or transfer requests.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "accounting"
+
           },
           {
             "title": "Route & Driver Assignment:",
             "desc": "Assign drivers, vehicles, and delivery routes for efficient transportation planning.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "bagWithX"
+
           },
           {
             "title": "Proof of Delivery:",
             "desc": "Record digital signatures and confirmations for verified deliveries.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "Box"
+
           },
           {
             "title": "Integration with Inventory:",
             "desc": "Automatically update stock levels and item movement upon delivery completion.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "media"
+
           },
           {
             "title": "Performance Reports:",
             "desc": "Analyze delivery times, costs, and driver performance for continuous improvement.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "bill"
+
           }
         ],
         "impact": {
@@ -1083,7 +1000,207 @@
           "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors."
         },
         "references": []
+    },
+
+
+
+
+    "clients": {
+  "header": {
+    "title": "Our Clients",
+    "subtitle": "Real work across finance, manufacturing, automotive, and retail."
+  },
+  "sectorLabels": {
+    "finance": "Finance & Services",
+    "manufacturing": "Manufacturing & Industry",
+    "auto_retail": "Automotive & Retail"
+  },
+  "categories": [
+    { "key": "all", "label": "All" },
+    { "key": "branding", "label": "Branding Strategy" },
+    { "key": "digital", "label": "Digital Experiences" },
+    { "key": "ecom", "label": "Ecommerce" }
+  ],
+  "teasers": {
+    "viewAllCta": "View all Projects",
+    "viewAllHref": "/allProjects",
+    "projectsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"],
+    "testimonialsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
+  },
+  "items": [
+    {
+      "id": "mansour",
+      "company": "Mansour Group",
+      "sector": "auto_retail",
+      "logoKey": "MGLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Mansour Group",
+        "subtitle": "Multi-store automotive retail operations",
+        "href": "/work/mansour-group",
+        "categories": ["branding", "digital"],
+        "imgKey": "mansour"
+      },
+      "testimonial": {
+        "name": "Sultan Bin Ghamiah",
+        "role": "CEO · Mansour Group (Lebanon)",
+        "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
+      }
+    },
+    {
+      "id": "masagh",
+      "company": "MASAGH",
+      "sector": "finance",
+      "logoKey": "MasagLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "MASAGH",
+        "subtitle": "Services & solutions platform",
+        "href": "/work/masagh",
+        "categories": ["digital"],
+        "imgKey": "masagh"
+      },
+      "testimonial": {
+        "name": "Badr Al Amiri",
+        "role": "CEO · MASAGH (KSA)",
+        "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
+      }
+    },
+    {
+      "id": "byc",
+      "company": "Bin Yaala Exchange",
+      "sector": "finance",
+      "logoKey": "BYCLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "Bin Yaala Exchange",
+        "subtitle": "Remittance & FX platform",
+        "href": "/work/byc",
+        "categories": ["digital", "ecom"],
+        "imgKey": "byc"
+      },
+      "testimonial": {
+        "name": "Khursan Bin Yaala",
+        "role": "CEO · Bin Yaala Exchange (KSA)",
+        "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
+      }
+    },
+    {
+      "id": "neg",
+      "company": "New Egypt Gold",
+      "sector": "manufacturing",
+      "logoKey": "NEGLogo",
+      "locations": ["Egypt"],
+      "caseStudy": {
+        "title": "New Egypt Gold",
+        "subtitle": "Manufacturing & retail visibility",
+        "href": "/work/new-egypt-gold",
+        "categories": ["ecom", "branding"],
+        "imgKey": "neg"
+      },
+      "testimonial": {
+        "name": "Tarek Tarouti",
+        "role": "CEO · New Egypt Gold (Egypt)",
+        "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
+      }
+    },
+    {
+      "id": "cil",
+      "company": "CIL",
+      "sector": "finance",
+      "logoKey": "CILLogo",
+      "locations": ["Ivory Coast"],
+      "caseStudy": {
+        "title": "CIL",
+        "subtitle": "Financial services suite",
+        "href": "/work/cil",
+        "categories": ["digital"],
+        "imgKey": "cil"
+      },
+      "testimonial": {
+        "name": "Khalil Ghassani",
+        "role": "CEO · CIL (Ivory Coast)",
+        "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
+      }
+    },
+    {
+      "id": "hyundai",
+      "company": "Hyundai Lebanon",
+      "sector": "auto_retail",
+      "logoKey": "HyundaiLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Hyundai Lebanon",
+        "subtitle": "Automotive DMS integrations",
+        "href": "/work/hyundai-lebanon",
+        "categories": ["digital"],
+        "imgKey": "hyundai"
+      },
+      "testimonial": {
+        "name": "Wissam Bazzoun",
+        "role": "CIO · Hyundai (Lebanon)",
+        "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
+      }
+    },
+    {
+      "id": "tamkeen",
+      "company": "Tamkeen",
+      "sector": "manufacturing",
+      "logoKey": "TamkeenLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "Tamkeen",
+        "subtitle": "Production, inventory & logistics",
+        "href": "/work/tamkeen",
+        "categories": ["ecom", "digital"],
+        "imgKey": "tamkeen"
+      },
+      "testimonial": {
+        "name": "Yahya Tahan",
+        "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
+      }
+    },
+    {
+      "id": "korristar",
+      "company": "Korristar",
+      "sector": "auto_retail",
+      "logoKey": "KorristarLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Korristar",
+        "subtitle": "Retail & services operations",
+        "href": "/work/korristar",
+        "categories": ["branding"],
+        "imgKey": "korristar"
+      },
+      "testimonial": {
+        "name": "Ali Korri",
+        "role": "CEO · Korristar (Lebanon)",
+        "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
+      }
+    },
+    {
+      "id": "gdk",
+      "company": "GDK",
+      "sector": "finance",
+      "logoKey": "GDKLogo",
+      "locations": ["Ivory Coast"],
+      "caseStudy": {
+        "title": "GDK",
+        "subtitle": "ERP & reporting for compliance",
+        "href": "/work/gdk",
+        "categories": ["digital"],
+        "imgKey": "gdk"
+      },
+      "testimonial": {
+        "name": "Elie Ferzli",
+        "role": "CEO · GDK (Ivory Coast)",
+        "content": "Implementing Argus ERP was a game changer. Seamless integration and robust reporting improved compliance and transparency across operations."
+      }
     }
+  ]
+}
+
     
     
   

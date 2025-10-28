@@ -17,8 +17,14 @@ import {
   useSpring,
 } from "framer-motion";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
+
+/* ------------------------------ Lottie assets --------------------------- */
 import successful from "@/assets/lottee/successful.json";
 import accounting from "@/assets/lottee/accounting_black.json";
+import bagWithX from "@/assets/lottee/1.json";
+import Box from "@/assets/lottee/2.json";
+import bill from "@/assets/lottee/3.json";
+import media from "@/assets/lottee/4.json";
 
 /* ------------------------------- Defaults ------------------------------- */
 
@@ -34,39 +40,29 @@ const defaultFadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: DEFAULT_EASE } },
 };
 
-/* --------------------------------- Types -------------------------------- */
+/* ---------------------------- Lottie registry --------------------------- */
+/** Use lottie names as keys */
+const LOTTIES = {
+  successful,
+  accounting,
+  bagWithX,
+  Box,
+  bill, // keeping original name
+  three: bill, // optional alias for convenience
+  media,
+} as const;
 
-export type PreviewKind =
-  | "cards"
-  | "timeline"
-  | "bubbles"
-  | "link"
-  | "gear"
-  | "scroll"
-  | "radar"
-  | "spark"
-  | "tiles"
-  | "inbox"
-  | "gauge"
-  | "donut"
-  | "orbit"
-  | "wave"
-  | "typing"
-  | "quote2order"
-  | "pricing"
-  | "pipeline"
-  | "crm"
-  | "invoice"
-  | "analytics"
-  | "multicurrency"
-  | "branches";
+export type LottieKey = keyof typeof LOTTIES;
+
+/* --------------------------------- Types -------------------------------- */
 
 export type FeatureItem = {
   title: string;
   desc: string;
-  preview?: PreviewKind;
+  /** Choose which built-in lottie to use by name */
+  preview?: LottieKey;
   icon?: ReactNode;
-  /** Optional direct Lottie JSON override */
+  /** Optional direct Lottie JSON override (takes precedence over preview) */
   lottie?: object;
   "data-testid"?: string;
 };
@@ -87,21 +83,10 @@ export type FeatureGridProps = {
 
 /* ------------------------------ Helpers --------------------------------- */
 
-const PREVIEW_TO_ACCOUNTING: Partial<Record<PreviewKind, boolean>> = {
-  invoice: true,
-  pricing: true,
-  analytics: true,
-  multicurrency: true,
-  crm: true,
-  pipeline: true,
-};
-
-function resolveAnimationData(item: FeatureItem, index: number): object {
+function resolveAnimationData(item: FeatureItem): object {
   if (item.lottie) return item.lottie;
-  if (item.preview && PREVIEW_TO_ACCOUNTING[item.preview]) return accounting as object;
-  // Fallback: make the 2nd card (index 1) use accounting
-  if (index === 1) return accounting as object;
-  return successful as object;
+  if (item.preview) return LOTTIES[item.preview] as object;
+  return LOTTIES.successful as object; // default fallback
 }
 
 /* ------------------------------ Feature Grid ---------------------------- */
@@ -139,7 +124,7 @@ export function FeatureGrid({
           <FeatureCard
             key={`${item.title}-${i}`}
             {...item}
-            animationData={resolveAnimationData(item, i)}
+            animationData={resolveAnimationData(item)}
             ease={ease}
             variants={childVariants}
             onHoverStart={() => setHoverCount((c) => c + 1)}
@@ -245,7 +230,7 @@ export function FeatureCard({
       {...rest}
     >
       {/* Centered + padded preview box to prevent overflow */}
-      <div className="relative h-40 w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 to-white ring-1 ring-slate-100  flex items-center justify-center">
+      <div className="relative h-40 w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 to-white ring-1 ring-slate-100 flex items-center justify-center">
         <UnifiedLottiePreview active={active && !rm} animationData={animationData} />
       </div>
 
@@ -272,23 +257,19 @@ export function FeatureCard({
 function UnifiedLottiePreview({
   active,
   animationData,
-  sizePct = 1, // tweak 0.55–0.75 if needed
+  sizePct = 1,
 }: {
   active: boolean;
   animationData: object;
   sizePct?: number;
 }) {
-  // ✅ nullable ref + explicit if/else to satisfy TS/ESLint
   const lref = useRef<LottieRefCurrentProps | null>(null);
 
   useEffect(() => {
     const api = lref.current;
     if (!api) return;
-    if (active) {
-      api.play();
-    } else {
-      api.pause();
-    }
+    if (active) api.play();
+    else api.pause();
   }, [active]);
 
   return (
@@ -301,7 +282,6 @@ function UnifiedLottiePreview({
         animationData={animationData}
         autoplay={false}
         loop
-        // contain + center the vector inside its box
         rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
         style={{
           width: `${sizePct * 100}%`,

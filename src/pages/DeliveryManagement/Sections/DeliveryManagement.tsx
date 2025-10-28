@@ -1,10 +1,18 @@
-// src/pages/FinancialsPage.tsx
+// src/pages/DeliveryManagement.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent, type LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Wallet,
+  Globe2,
+  BarChart3,
+  Percent,
+  type LucideIcon,
+} from "lucide-react";
 
 // Images kept in code
 import logo from "@/assets/logo.png";
@@ -13,7 +21,11 @@ import heroImage from "@/assets/hero-image.jpg";
 
 // Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
-import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
+import {
+  FeatureGrid,
+  type FeatureItem,
+  type LottieKey, // ✅ import the new Lottie key union
+} from "@/sharedComponent/FeatureCards";
 
 import siteData from "@/data.json";
 import { ContactCTA } from "@/components/ContactUs/ContactCTA";
@@ -55,10 +67,20 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   percent: <Percent className="h-5 w-5 text-slate-900" />,
 };
 
-/** Allowed previews (narrow unknown JSON to the union expected by FeatureItem.preview) */
-const PREVIEWS = ["typing", "inbox", "multicurrency", "analytics", "donut"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey => typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
+/* --------------------------- Lottie key support -------------------------- */
+/** Valid keys exported by FeatureCards' LOTTIES registry */
+const LOTTIE_KEYS: readonly LottieKey[] = [
+  "successful",
+  "accounting",
+  "bagWithX",
+  "Box",
+  "bill",
+  "three",
+  "media",
+] as const;
+
+const isLottieKey = (x: unknown): x is LottieKey =>
+  typeof x === "string" && (LOTTIE_KEYS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
 export default function DeliveryManagement() {
@@ -66,9 +88,8 @@ export default function DeliveryManagement() {
 
   // Hero
   const heroTitle = data?.hero?.title;
-  const heroSubtitle = data?.hero?.subtitle ;
-  const heroBody =
-    data?.hero?.body;
+  const heroSubtitle = data?.hero?.subtitle;
+  const heroBody = data?.hero?.body;
   const heroPrimary = data?.hero?.primaryCta;
   const heroSecondary = data?.hero?.secondaryCta;
 
@@ -96,19 +117,21 @@ export default function DeliveryManagement() {
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
 
-    return src.map((f) => {
-      // 1) narrow preview to the expected union (fallback to 'typing')
-      const preview = isPreview(f.preview) ? f.preview : "typing";
+    // Fallback rotation if JSON preview is empty:
+    const DEFAULT_PREVIEWS: LottieKey[] = ["accounting", "bagWithX", "Box", "bill", "media"];
 
-      // 2) build icon in a way that satisfies either FeatureItem.icon = ReactNode OR component
-      //    We cast to FeatureItem['icon'] once to satisfy TS regardless of which it is.
+    return src.map((f, i) => {
+      const preview = isLottieKey(f.preview)
+        ? f.preview
+        : DEFAULT_PREVIEWS[i % DEFAULT_PREVIEWS.length];
+
       const iconCandidate =
         (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
 
       return {
         title: f.title,
         desc: f.desc,
-        preview,
+        preview, // ✅ this is now a Lottie key
         icon: iconCandidate as FeatureItem["icon"],
       };
     });
@@ -116,13 +139,12 @@ export default function DeliveryManagement() {
 
   // Impact section
   const impactTitle = data?.impact?.title;
-  const impactDesc =
-    data?.impact?.description ;
+  const impactDesc = data?.impact?.description;
   const impactMedia = IMG[data?.impact?.mediaKey];
 
   // CTA block
   const ctaTitle = data?.cta?.title;
-  const ctaBody =data?.cta?.body;
+  const ctaBody = data?.cta?.body;
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -183,7 +205,7 @@ export default function DeliveryManagement() {
                 className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
                 role="region"
                 aria-roledescription="carousel"
-                aria-label="Financials visuals"
+                aria-label="Delivery visuals"
               >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
@@ -204,7 +226,9 @@ export default function DeliveryManagement() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -232,7 +256,6 @@ export default function DeliveryManagement() {
 
             <FeatureGrid
               items={featureItems}
-
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
@@ -254,10 +277,7 @@ export default function DeliveryManagement() {
         media={impactMedia}
       />
 
-      <ContactCTA
-  title={data?.cta?.title ?? ctaTitle}
-  body={data?.cta?.body ?? ctaBody}
-/>   
- </section>
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
+    </section>
   );
 }

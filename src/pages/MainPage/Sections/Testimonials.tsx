@@ -159,33 +159,74 @@ function TestimonialCard({
 }
 
 /* ---------------- page/section ---------------- */
+type ClientsItem = {
+  id: string;
+  company: string;
+  locations?: string[];
+  logoKey?: string;
+  testimonial?: { name: string; role?: string; content: string };
+};
+
+type ClientsData = {
+  teaser?: {
+    badgeLabel?: string;
+    title?: string;
+    subtitle?: string;
+    teaserIds?: string[];
+    viewAllCta?: string;
+    viewAllHref?: string;
+  };
+  items?: ClientsItem[];
+};
+
+/** Fisher–Yates shuffle + take N */
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const copy = arr.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
+
 const TestimonialsTeaserCarousel: React.FC = () => {
   const navigate = useNavigate();
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();
 
-  const tData = siteData.testimonials;
-  const items = tData?.items ?? [];
-  const teaser = tData?.teaser;
+  // Prefer new unified clients data; fallback to legacy testimonials if needed
+  const cData = siteData.clients as ClientsData | undefined;
+  const legacyT = siteData.testimonials;
 
-  // pick which to show in the teaser
+  const items = cData?.items ?? [];
+  const teaser = cData?.teaser ?? legacyT?.teaser;
+
+  // --- RANDOM 5 each visit/mount ---
   const selected = useMemo(() => {
     if (!items.length) return [];
-    const ids: string[] = Array.isArray(teaser?.teaserIds) ? teaser!.teaserIds : [];
+
     const byId = (id: string) => items.find((x) => x.id === id);
-    return (ids.length ? ids.map(byId).filter(Boolean) : items.slice(0, 9)).map((t) => ({
-      quote: t.content ?? "",
-      name: t.name ?? "",
-      role: t.role ?? "",
-      company: [t.company, t.location].filter(Boolean).join(" — "),
+    const ids: string[] = Array.isArray(teaser?.teaserIds) ? (teaser?.teaserIds as string[]) : [];
+
+    const pool = (ids.length ? ids.map(byId).filter(Boolean) : items)
+      .filter((t): t is ClientsItem => !!t && !!t.testimonial);
+
+    // pick 5 random from pool on each mount (stable until deps change)
+    const chosen = pickRandom(pool, 5);
+
+    return chosen.map((t) => ({
+      quote: t.testimonial!.content,
+      name: t.testimonial!.name,
+      role: t.testimonial!.role,
+      company: [t.company, t.locations?.[0]].filter(Boolean).join(" — "),
       logoSrc: (t.logoKey && LOGOS[t.logoKey]) || undefined,
     }));
   }, [items, teaser]);
 
-  const badge = teaser?.badgeLabel ?? "What clients say";
-  const title = teaser?.title ?? "Trusted by teams worldwide";
-  const subtitle = teaser?.subtitle ?? "A few highlights from our clients.";
-  const viewAllCta = teaser?.viewAllCta ?? "View all testimonials";
-  const viewAllHref = teaser?.viewAllHref ?? "/testimonials";
+  const badge = teaser?.badgeLabel;
+  const title = teaser?.title;
+  const subtitle = teaser?.subtitle;
+  const viewAllCta = teaser?.viewAllCta;
+  const viewAllHref = teaser?.viewAllHref || "/clients";
 
   return (
     <section className="bg-muted/30 py-24">
@@ -198,11 +239,13 @@ const TestimonialsTeaserCarousel: React.FC = () => {
             headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}
         >
-          <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
-            {badge}
-          </div>
-          <h2 className="text-4xl font-bold lg:text-5xl">{title}</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">{subtitle}</p>
+          {badge && (
+            <div className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+              {badge}
+            </div>
+          )}
+          {title && <h2 className="text-4xl font-bold lg:text-5xl">{title}</h2>}
+          {subtitle && <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">{subtitle}</p>}
         </div>
 
         {/* carousel */}
@@ -222,9 +265,11 @@ const TestimonialsTeaserCarousel: React.FC = () => {
         />
 
         {/* view all */}
-        <div className="mt-10 text-center">
-          <SharedButton title={viewAllCta} onClick={() => navigate(viewAllHref)} color="primary" />
-        </div>
+        {viewAllCta && (
+          <div className="mt-10 text-center">
+            <SharedButton title={viewAllCta} onClick={() => navigate(viewAllHref)} color="primary" />
+          </div>
+        )}
       </div>
     </section>
   );

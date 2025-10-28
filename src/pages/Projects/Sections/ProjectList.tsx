@@ -37,21 +37,25 @@ const LOGOS: Record<string, string> = {
 
 /* -------------------------------- types -------------------------------- */
 type SectorKey = "finance" | "manufacturing" | "auto_retail";
-type Testimonial = { name: string; role: string; content: string; image: string };
-type ProjectItem = {
+
+type ClientTestimonial = { name: string; role?: string; content: string };
+type ClientItem = {
   id: string;
   sector: SectorKey;
   logoKey?: string;
-  testimonial?: { name: string; role: string; content: string };
+  testimonial?: ClientTestimonial;
+  // caseStudy exists in unified schema but not needed here
 };
 
-type ProjectsJSON = {
+type ClientsJSON = {
   sectorLabels?: Record<SectorKey, string>;
-  items: ProjectItem[];
+  items: ClientItem[];
 };
 
 /* ------------------------------- card ui ------------------------------- */
-function TestimonialCard({ t, index }: { t: Testimonial; index: number }) {
+type TestimonialCardModel = { name: string; role: string; content: string; image: string };
+
+function TestimonialCard({ t, index }: { t: TestimonialCardModel; index: number }) {
   const { ref, isVisible } = useScrollAnimation();
   return (
     <Card
@@ -108,32 +112,37 @@ export default function ProjectList({
 }: ProjectListProps) {
   const { ref: blockRef, isVisible } = useScrollAnimation();
 
-  // read once from JSON (no casting to any)
-  const proj: ProjectsJSON | undefined = siteData?.projects as unknown as ProjectsJSON;
+  // NEW: read from unified clients block
+  const clientsData: ClientsJSON | undefined = siteData?.clients as unknown as ClientsJSON;
 
   // labels for tabs
   const sectorLabels: Record<SectorKey, string> = {
-    finance: proj?.sectorLabels?.finance ?? "Finance & Services",
-    manufacturing: proj?.sectorLabels?.manufacturing ?? "Manufacturing & Industry",
-    auto_retail: proj?.sectorLabels?.auto_retail ?? "Automotive & Retail",
+    finance: clientsData?.sectorLabels?.finance,
+    manufacturing: clientsData?.sectorLabels?.manufacturing,
+    auto_retail: clientsData?.sectorLabels?.auto_retail,
   };
 
-  // build testimonial arrays by sector dynamically from JSON
-  const allItems: ProjectItem[] = proj?.items ?? [];
+  // source list
+  const allClients: ClientItem[] = clientsData?.items;
 
-  const toTestimonial = (p: ProjectItem): Testimonial | null => {
-    const t = p.testimonial;
+  // map client → testimonial card model (skip if no testimonial)
+  const toTestimonial = (c: ClientItem): TestimonialCardModel | null => {
+    const t = c.testimonial;
     if (!t) return null;
-    const img = (p.logoKey && LOGOS[p.logoKey]) || "";
-    return { name: t.name, role: t.role, content: t.content, image: img };
-    // images stay in code; JSON only passes the logoKey
+    const img = (c.logoKey && LOGOS[c.logoKey]) || "";
+    return {
+      name: t.name,
+      role: t.role,
+      content: t.content,
+      image: img,
+    };
   };
 
   const lists = {
-    all: allItems.map(toTestimonial).filter(Boolean) as Testimonial[],
-    finance: allItems.filter((i) => i.sector === "finance").map(toTestimonial).filter(Boolean) as Testimonial[],
-    manufacturing: allItems.filter((i) => i.sector === "manufacturing").map(toTestimonial).filter(Boolean) as Testimonial[],
-    auto_retail: allItems.filter((i) => i.sector === "auto_retail").map(toTestimonial).filter(Boolean) as Testimonial[],
+    all: allClients.map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
+    finance: allClients.filter((i) => i.sector === "finance").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
+    manufacturing: allClients.filter((i) => i.sector === "manufacturing").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
+    auto_retail: allClients.filter((i) => i.sector === "auto_retail").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
   };
 
   const tabs = useMemo(
@@ -143,7 +152,8 @@ export default function ProjectList({
       { key: "manufacturing" as const, label: sectorLabels.manufacturing, data: lists.manufacturing },
       { key: "auto_retail" as const, label: sectorLabels.auto_retail, data: lists.auto_retail },
     ],
-    [proj] 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clientsData] // recompute if JSON changes
   );
 
   const [counts] = useState<Record<string, number>>(
@@ -177,11 +187,9 @@ export default function ProjectList({
           )}
         >
           <div className="mx-auto mb-10 max-w-3xl text-center">
-
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Projects 
+              Projects
             </h2>
-
           </div>
 
           <Tabs defaultValue={defaultTab}>
@@ -200,7 +208,7 @@ export default function ProjectList({
             </div>
 
             {tabs.map((tab) => {
-              const visible = counts[tab.key] ?? tab.data.length;
+              const visible = counts[tab.key];
               return (
                 <TabsContent key={tab.key} value={tab.key} className="animate-in fade-in-50">
                   <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
