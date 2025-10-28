@@ -201,27 +201,30 @@ const Navigation = () => {
               </div>
 
               <div className="flex gap-3 px-4 pt-3">
-                <Button
-                  variant="ghost"
-                  className="flex-1 hover:bg-white/0"
-                  onClick={() => {
-                    setIsOpen(false);
-                    setModalType("demo");
-                  }}
-                >
-                  Schedule a demo
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="flex-1 hover:bg-white/0"
-                  onClick={() => {
-                    setIsOpen(false);
-                    setModalType("partner");
-                  }}
-                >
-                  Become a partner
-                </Button>
-              </div>
+  <Button
+    variant="ghost"
+    className="flex-1"
+    onClick={() => {
+      setIsOpen(false);
+      setModalType("demo");
+    }}
+  >
+    Schedule a demo
+  </Button>
+
+  {/* was variant="ghost" before */}
+  <Button
+    variant="default"
+    className="flex-1"
+    onClick={() => {
+      setIsOpen(false);
+      setModalType("partner");
+    }}
+  >
+    Become a partner
+  </Button>
+</div>
+
             </div>
           </div>
         </>

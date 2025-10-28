@@ -143,8 +143,7 @@ export default function ProjectList({
       { key: "manufacturing" as const, label: sectorLabels.manufacturing, data: lists.manufacturing },
       { key: "auto_retail" as const, label: sectorLabels.auto_retail, data: lists.auto_retail },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [proj] // recompute if JSON changes at runtime (hot reload)
+    [proj] 
   );
 
   const [counts] = useState<Record<string, number>>(
@@ -178,15 +177,11 @@ export default function ProjectList({
           )}
         >
           <div className="mx-auto mb-10 max-w-3xl text-center">
-            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              Trusted by leading teams
-            </p>
+
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Projects & Testimonials
+              Projects 
             </h2>
-            <p className="mt-3 text-pretty text-muted-foreground">
-              Real feedback from finance, manufacturing, automotive, and retail partners.
-            </p>
+
           </div>
 
           <Tabs defaultValue={defaultTab}>

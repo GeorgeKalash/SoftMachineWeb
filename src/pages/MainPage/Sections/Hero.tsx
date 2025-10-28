@@ -199,7 +199,7 @@ export default function Hero({
               </motion.div>
 
               {/* Secondary CTA */}
-              <Button
+              {/* <Button
                 size="lg"
                 variant="outline"
                 className="text-base"
@@ -207,7 +207,7 @@ export default function Hero({
                 aria-label={secondaryCtaText}
               >
                 {secondaryCtaText}
-              </Button>
+              </Button> */}
 
               {/* Phone */}
               <div className="flex items-start sm:items-center gap-3">

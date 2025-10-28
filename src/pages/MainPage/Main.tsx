@@ -30,11 +30,11 @@ const Main = () => {
         {/* <section id="projects" className="scroll-mt-24"><Projects /></section> */}
         <section id="testimonials" className="scroll-mt-24"><Testimonials /></section>
         {/* <section id="team" className="scroll-mt-24"><Team /></section> */}
-        <CaseStudyCarousel />
 
         <section id="faq" className="scroll-mt-24"><FAQ /></section>
         {/* <section id="cta" className="scroll-mt-24"><CTA /></section> */}
-        
+                <CaseStudyCarousel />
+
       </main>
       <Footer />
     </div>

@@ -16,6 +16,7 @@ import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
 import siteData from "@/data.json";
+import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -105,9 +106,7 @@ export default function ManufacturingManagementPage() {
   const ctaTitle = data?.cta?.title ?? "Ready to optimize production?";
   const ctaBody =
     data?.cta?.body ?? "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.";
-  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
-  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
-
+  
   return (
     <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -207,7 +206,6 @@ export default function ManufacturingManagementPage() {
 
             <FeatureGrid
               items={featureItems}
-              ambient
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
@@ -231,30 +229,10 @@ export default function ManufacturingManagementPage() {
       />
 
       {/* CONTACT / CTA */}
-      <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
-          <div className="grid md:grid-cols-2 items-center gap-8">
-            <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
-              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
-            </div>
-            <div className="flex md:justify-end gap-3">
-              <a
-                href={data?.cta?.primary?.href ?? ctaPrimary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-              >
-                {data?.cta?.primary?.label ?? ctaPrimary.label}
-              </a>
-              <a
-                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-              >
-                {data?.cta?.secondary?.label ?? ctaSecondary.label}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+       <ContactCTA
+              title={data?.cta?.title ?? ctaTitle}
+              body={data?.cta?.body ?? ctaBody}
+           />  
     </section>
   );
 }

@@ -489,7 +489,7 @@
                   "imageAlt": "Business analysis and discovery",
                   "anchorId": "analysis",
                   "primary": { "label": "Start Assessment", "icon": "sparkles" },
-                  "secondary": { "label": "See methodology", "variant": "outline", "href": "#analysis" }
+                  "secondary": { "label": "See methodology", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "configuration",
@@ -500,7 +500,7 @@
                   "imageAlt": "Configuration and deployment",
                   "anchorId": "configuration",
                   "primary": { "label": "Explore Modules", "icon": "play" },
-                  "secondary": { "label": "Implementation plan", "variant": "outline", "href": "#configuration" }
+                  "secondary": { "label": "Implementation plan", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "training",
@@ -511,7 +511,7 @@
                   "imageAlt": "User training",
                   "anchorId": "training",
                   "primary": { "label": "Schedule Training", "icon": "sparkles" },
-                  "secondary": { "label": "Training overview", "variant": "outline", "href": "#training" }
+                  "secondary": { "label": "Training overview", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "support",
@@ -522,18 +522,18 @@
                   "imageAlt": "Ongoing support and optimization",
                   "anchorId": "support",
                   "primary": { "label": "Contact Support", "icon": "play" },
-                  "secondary": { "label": "Success roadmap", "variant": "outline", "href": "#support" }
+                  "secondary": { "label": "Success roadmap", "variant": "outline", "href": "" }
                 }
               ]
     }, 
     "testimonials": {
 
                 "teaser": {
-                  "badgeLabel": "What clients say",
-                  "title": "Trusted by teams worldwide",
-                  "subtitle": "A few highlights from 89 testimonials.",
-                  "viewAllCta": "View all testimonials",
-                  "viewAllHref": "/testimonials",
+                  "badgeLabel": "Our Clients",
+                  "title": "Our Clients",
+                  "subtitle": "A quick peek at recent work across mobile, web, and product engineering.",
+                  "viewAllCta": "View all Projects",
+                  "viewAllHref": "/allProjects",
                   "teaserIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
                 },
                 "items": [
@@ -672,9 +672,7 @@
     },
     "cta": {
       "title": "Ready to modernize your financial operations?",
-      "body": "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.",
-      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+      "body": "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs."
     },
     "references": [
       {
@@ -722,9 +720,7 @@
           },
           "cta": {
             "title": "Ready to simplify asset control & reporting?",
-            "body": "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.",
-            "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-            "secondary": { "label": "Contact Sales", "href": "/#contact" }
+            "body": "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs."
           }
     },
     "hr": {
@@ -774,9 +770,7 @@
             },
             "cta": {
               "title": "Ready to empower your HR team?",
-              "body": "We can tailor Argus HR to your policies, approval chains, and payroll requirements.",
-              "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-              "secondary": { "label": "Contact Sales", "href": "/#contact" }
+              "body": "We can tailor Argus HR to your policies, approval chains, and payroll requirements."
             }
     },     
     "manufacturing": {
@@ -845,9 +839,7 @@
     },
     "cta": {
       "title": "Ready to optimize production?",
-      "body": "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.",
-      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+      "body": "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements."
     }
     },
     "RepairAndServicepage": {
@@ -908,9 +900,7 @@
       },
       "cta": {
         "title": "Ready to optimize your repair and service operations?",
-        "body": "We can tailor Argus Repair Management to your repair workflows, technician assignments, and service reporting needs.",
-        "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-        "secondary": { "label": "Contact Sales", "href": "/#contact" }
+        "body": "We can tailor Argus Repair Management to your repair workflows, technician assignments, and service reporting needs."
       },
       "references": []
     },
@@ -966,9 +956,7 @@
         },
         "cta": {
           "title": "Ensure Accurate and On-Time Deliveries Every Time",
-          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction.",
-          "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-          "secondary": { "label": "Contact Sales", "href": "/#contact" }
+          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction."
         },
         "references": []
     },
@@ -1030,9 +1018,7 @@
         },
         "cta": {
         "title": "Gain Real-Time Visibility and Control Over Your Stock",
-          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place.",
-          "primary": { "label": "Key Features:", "href": "" },
-          "secondary": { "label": "Why Argus Inventory Management:", "href": "" }
+          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place."
         },
         "references": []
     },
@@ -1094,12 +1080,10 @@
         },
         "cta": {
           "title": "Simplify Procurement and Strengthen Supplier Relationships",
-          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors.",
-          "primary": { "label": "Key Features:", "href": "" },
-          "secondary": { "label": "Why Argus Purchase:", "href": "" }
+          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors."
         },
         "references": []
-      }
+    }
     
     
   
