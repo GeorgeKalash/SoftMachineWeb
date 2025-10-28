@@ -7,6 +7,7 @@ import React, {
   type ReactNode,
   useCallback,
   useEffect,
+  memo,
 } from "react";
 import {
   motion,
@@ -21,13 +22,21 @@ import Lottie, { LottieRefCurrentProps } from "lottie-react";
 /* ------------------------------ Lottie assets --------------------------- */
 import successful from "@/assets/lottee/successful.json";
 import accounting from "@/assets/lottee/accounting_black.json";
-import bagWithX from "@/assets/lottee/1.json";
-import Box from "@/assets/lottee/2.json";
-import bill from "@/assets/lottee/3.json";
-import media from "@/assets/lottee/4.json";
+import bagWithX from "@/assets/lottee/bagWithX.json";
+import Box from "@/assets/lottee/Box.json";
+import bill from "@/assets/lottee/bill.json";
+import media from "@/assets/lottee/media.json";
+import MovingTruck from "@/assets/lottee/MovingTruck.json";
+import cart from "@/assets/lottee/cart.json";
+import report from "@/assets/lottee/report.json";
+import centralizedemployeeinfo from "@/assets/lottee/centralized_employee_info_lottie.json";
+import setting from "@/assets/lottee/setting.json";
+import criditCard from "@/assets/lottee/criditCard.json";
+import money from "@/assets/lottee/money.json";
+import money2 from "@/assets/lottee/money2.json";
+
 
 /* ------------------------------- Defaults ------------------------------- */
-
 const DEFAULT_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const defaultContainer: Variants = {
@@ -41,26 +50,48 @@ const defaultFadeUp: Variants = {
 };
 
 /* ---------------------------- Lottie registry --------------------------- */
-/** Use lottie names as keys */
 const LOTTIES = {
   successful,
   accounting,
   bagWithX,
   Box,
-  bill, // keeping original name
-  three: bill, // optional alias for convenience
+  bill,
+  three: bill, // alias
   media,
+  MovingTruck,
+  cart,
+  report,
+  centralizedemployeeinfo,
+  setting,
+  criditCard,
+  money,
+  money2
 } as const;
 
-export type LottieKey = keyof typeof LOTTIES;
+type LottieRegistry = Record<string, object>;
+const REGISTRY = LOTTIES as unknown as LottieRegistry;
+const DEFAULT_PREVIEWS: Array<keyof typeof LOTTIES> = [
+  "accounting",
+  "bagWithX",
+  "Box",
+  "bill",
+  "media",
+  "MovingTruck",
+  "cart",
+  "report",
+  "centralizedemployeeinfo",
+  "setting",
+  "criditCard",
+  "money",
+  "money2"
+];
 
 /* --------------------------------- Types -------------------------------- */
-
 export type FeatureItem = {
   title: string;
   desc: string;
-  /** Choose which built-in lottie to use by name */
-  preview?: LottieKey;
+  /** Name of the lottie in the registry (any string; validated internally) */
+  preview?: string;
   icon?: ReactNode;
   /** Optional direct Lottie JSON override (takes precedence over preview) */
   lottie?: object;
@@ -79,18 +110,22 @@ export type FeatureGridProps = {
   reducedMotionAware?: boolean;
   enableTilt?: boolean;
   tiltMaxDeg?: number;
+  previewClassName?: string;
+  previewScale?: number;
 };
 
 /* ------------------------------ Helpers --------------------------------- */
-
-function resolveAnimationData(item: FeatureItem): object {
+function resolveAnimationData(item: FeatureItem, index: number): object {
   if (item.lottie) return item.lottie;
-  if (item.preview) return LOTTIES[item.preview] as object;
-  return LOTTIES.successful as object; // default fallback
+
+  const key = typeof item.preview === "string" ? item.preview : "";
+  if (key && REGISTRY[key]) return REGISTRY[key];
+
+  const fallback = DEFAULT_PREVIEWS[index % DEFAULT_PREVIEWS.length];
+  return (LOTTIES)[fallback] as object;
 }
 
 /* ------------------------------ Feature Grid ---------------------------- */
-
 export function FeatureGrid({
   items,
   className = "",
@@ -103,6 +138,8 @@ export function FeatureGrid({
   reducedMotionAware = true,
   enableTilt = false,
   tiltMaxDeg = 6,
+  previewClassName = "h-44 md:h-52",
+  previewScale = 1,
 }: FeatureGridProps) {
   const [hoverCount, setHoverCount] = useState(0);
   const featuresActive = hoverCount > 0;
@@ -123,8 +160,11 @@ export function FeatureGrid({
         {items.map((item, i) => (
           <FeatureCard
             key={`${item.title}-${i}`}
-            {...item}
-            animationData={resolveAnimationData(item)}
+            title={item.title}
+            desc={item.desc}
+            icon={item.icon}
+            animationData={resolveAnimationData(item, i)}
+            dataTestId={item["data-testid"]}
             ease={ease}
             variants={childVariants}
             onHoverStart={() => setHoverCount((c) => c + 1)}
@@ -132,6 +172,8 @@ export function FeatureGrid({
             reducedMotionAware={reducedMotionAware}
             enableTilt={enableTilt}
             tiltMaxDeg={tiltMaxDeg}
+            previewClassName={previewClassName}
+            previewScale={previewScale}
           />
         ))}
       </motion.div>
@@ -140,8 +182,10 @@ export function FeatureGrid({
 }
 
 /* ---------------------------- Feature Card UI --------------------------- */
-
-type InternalCardProps = FeatureItem & {
+type InternalCardProps = {
+  title: string;
+  desc: string;
+  icon?: ReactNode;
   ease?: [number, number, number, number];
   variants?: Variants;
   onHoverStart?: () => void;
@@ -150,9 +194,12 @@ type InternalCardProps = FeatureItem & {
   enableTilt?: boolean;
   tiltMaxDeg?: number;
   animationData: object;
+  dataTestId?: string;
+  previewClassName?: string;
+  previewScale?: number;
 };
 
-export function FeatureCard({
+export const FeatureCard = memo(function FeatureCard({
   title,
   desc,
   icon,
@@ -164,13 +211,14 @@ export function FeatureCard({
   enableTilt = false,
   tiltMaxDeg = 6,
   animationData,
-  ...rest
+  dataTestId,
+  previewClassName = "h-44 md:h-52",
+  previewScale = 1,
 }: InternalCardProps) {
   const [active, setActive] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const rm = reducedMotionAware && prefersReducedMotion;
 
-  // Optional 3D tilt
   const ref = useRef<HTMLDivElement | null>(null);
   const nx = useMotionValue(0);
   const ny = useMotionValue(0);
@@ -178,7 +226,6 @@ export function FeatureCard({
 
   const rotateX = useSpring(useTransform(ny, [-0.5, 0.5], [tiltMaxDeg, -tiltMaxDeg]), springCfg);
   const rotateY = useSpring(useTransform(nx, [-0.5, 0.5], [-tiltMaxDeg, tiltMaxDeg]), springCfg);
-  const transZ = useSpring(useTransform(ny, [-0.5, 0.5], [0, 0]), springCfg);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -200,6 +247,7 @@ export function FeatureCard({
   return (
     <motion.div
       ref={ref}
+      data-testid={dataTestId}
       onMouseMove={handleMouseMove}
       onMouseLeave={resetTilt}
       variants={variants}
@@ -220,21 +268,21 @@ export function FeatureCard({
         enableTilt
           ? {
               transformStyle: "preserve-3d",
-              perspective: 1000,
+              transformPerspective: 1000,
               rotateX,
               rotateY,
-              translateZ: transZ,
             }
           : undefined
       }
-      {...rest}
+      role="article"
+      aria-label={title}
     >
-      {/* Centered + padded preview box to prevent overflow */}
-      <div className="relative h-40 w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 to-white ring-1 ring-slate-100 flex items-center justify-center">
-        <UnifiedLottiePreview active={active && !rm} animationData={animationData} />
+      <div
+        className={`relative w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 to-white ring-1 ring-slate-100 flex items-center justify-center ${previewClassName}`}
+      >
+        <UnifiedLottiePreview active={active && !rm} animationData={animationData} sizePct={previewScale} />
       </div>
 
-      {/* Text */}
       <div className="mt-4 flex items-start gap-4">
         {icon && (
           <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center">
@@ -250,10 +298,9 @@ export function FeatureCard({
       <span className="absolute left-0 bottom-0 h-0.5 w-0 bg-slate-900 transition-all duration-300 group-hover:w-full" />
     </motion.div>
   );
-}
+});
 
 /* ---------------------------- Unified Lottie ----------------------------- */
-
 function UnifiedLottiePreview({
   active,
   animationData,
@@ -273,10 +320,7 @@ function UnifiedLottiePreview({
   }, [active]);
 
   return (
-    <div
-      className="pointer-events-none flex items-center justify-center"
-      style={{ width: "100%", height: "100%" }}
-    >
+    <div className="pointer-events-none flex items-center justify-center w-full h-full" aria-hidden>
       <Lottie
         lottieRef={lref}
         animationData={animationData}

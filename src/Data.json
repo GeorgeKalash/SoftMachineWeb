@@ -554,32 +554,32 @@
       {
         "title": "General Ledger & Journal Entries:",
         "desc": "Keep track of every transaction and maintain a clear audit trail.",
-        "iconKey": "fileText",
-        "preview": "typing"
+        "preview": "setting"
+
       },
       {
         "title": "Accounts Payable & Receivable:",
         "desc": "Manage supplier invoices, customer payments, and aging reports effortlessly.",
-        "iconKey": "wallet",
-        "preview": "inbox"
+        "preview": "criditCard"
+
       },
       {
         "title": "Multi-Currency & Multi-Company Accounting:",
         "desc": "Handle international operations with accurate currency conversions and consolidated reporting.",
-        "iconKey": "globe2",
-        "preview": "multicurrency"
+        "preview": "money"
+
       },
       {
         "title": "Budgeting & Forecasting:",
         "desc": "Plan and control expenses using dynamic budgets and predictive insights.",
-        "iconKey": "barChart3",
-        "preview": "analytics"
+        "preview": "money2"
+
       },
       {
         "title": "Tax Management:",
         "desc": "Ensure compliance with local tax laws through automated tax computation and reporting.",
-        "iconKey": "percent",
-        "preview": "donut"
+        "preview": "bill"
+
       }
     ],
     "impact": {
@@ -657,26 +657,23 @@
               {
                 "title": "Centralized Employee Information:",
                 "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in bagWithX place, accessible anytime.",
-                "preview": "crm",
-                "iconKey": "database"
+                "preview": "centralizedemployeeinfo"
+
               },
               {
                 "title": "Attendance & Time Tracking:",
                 "desc": "Monitor attendance using smart integrations like biometric devices or web check-ins, ensuring accurate payroll calculations.",
-                "preview": "timeline",
-                "iconKey": "clock"
+                "preview": "setting"
               },
               {
                 "title": "Leave Management System:",
                 "desc": "Simplify leave requests, approvals, and balance tracking with automated workflows and notifications.",
-                "preview": "inbox",
-                "iconKey": "calendar"
+                "preview": "inbox"
               },
               {
                 "title": "Payroll Automation:",
                 "desc": "Calculate salaries, deductions, taxes, and benefits effortlessly with Argus Payroll integration.",
-                "preview": "invoice",
-                "iconKey": "calculator"
+                "preview": "invoice"
               }
             ],
             "why": {
@@ -838,13 +835,13 @@
           {
             "title": "Delivery Order Management:",
             "desc": "Automatically generate delivery orders from confirmed sales or transfer requests.",
-            "preview": "accounting"
+            "preview": "bill"
 
           },
           {
             "title": "Route & Driver Assignment:",
             "desc": "Assign drivers, vehicles, and delivery routes for efficient transportation planning.",
-            "preview": "bagWithX"
+            "preview": "MovingTruck"
 
           },
           {
@@ -856,13 +853,13 @@
           {
             "title": "Integration with Inventory:",
             "desc": "Automatically update stock levels and item movement upon delivery completion.",
-            "preview": "media"
+            "preview": "cart"
 
           },
           {
             "title": "Performance Reports:",
             "desc": "Analyze delivery times, costs, and driver performance for continuous improvement.",
-            "preview": "bill"
+            "preview": "accounting"
 
           }
         ],

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import { ArrowRight, Database, Clock, Calendar, Calculator, type LucideIcon } from "lucide-react";
+import { ArrowRight, Database, Clock, Calendar, Calculator } from "lucide-react";
 
 // Images kept in code
 import logo from "@/assets/logo.png";
@@ -14,14 +14,19 @@ import heroImage from "@/assets/hero-image.jpg";
 // Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
-
 import siteData from "@/data.json";
 import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
 
 /* ----------------------------- Runtime maps ----------------------------- */
 const IMG: Record<string, string> = {
@@ -30,26 +35,12 @@ const IMG: Record<string, string> = {
   heroImage: heroImage as unknown as string,
 };
 
-/** If FeatureGrid expects ReactNode for `icon` (common) */
 const ICONS_NODE: Record<string, React.ReactNode> = {
   database: <Database className="h-5 w-5 text-slate-900" />,
   clock: <Clock className="h-5 w-5 text-slate-900" />,
   calendar: <Calendar className="h-5 w-5 text-slate-900" />,
   calculator: <Calculator className="h-5 w-5 text-slate-900" />,
 };
-/** If your FeatureGrid instead expects a component type, switch to this map and render inside FeatureGrid */
-// const ICONS_COMPONENT: Record<string, LucideIcon> = {
-//   database: Database,
-//   clock: Clock,
-//   calendar: Calendar,
-//   calculator: Calculator,
-// };
-
-/** Allowed previews (narrow unknown JSON to expected union) */
-const PREVIEWS = ["crm", "timeline", "inbox", "invoice"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey =>
-  typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
 export default function HumanResourcesPage() {
@@ -64,7 +55,7 @@ export default function HumanResourcesPage() {
   const heroPrimary = data?.hero?.primaryCta;
   const heroSecondary = data?.hero?.secondaryCta;
 
-  // Carousel (from JSON keys → imported images)
+  // Carousel
   const CAROUSEL = useMemo(
     () =>
       (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
@@ -83,15 +74,16 @@ export default function HumanResourcesPage() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Benefits/Features grid
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Benefits/Features grid (no preview union/guards here)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-    return src.map((f) => {
-      const preview = isPreview(f.preview) ? f.preview : "crm";
-      const icon = (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database;
-      return { title: f.title, desc: f.desc, preview, icon: icon as FeatureItem["icon"] };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview, // plain string; FeatureGrid resolves/falls back
+      icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database,
+    }));
   }, [data?.features]);
 
   // Why section
@@ -106,7 +98,6 @@ export default function HumanResourcesPage() {
   const ctaTitle = data?.cta?.title ?? "Ready to empower your HR team?";
   const ctaBody =
     data?.cta?.body ?? "We can tailor Argus HR to your policies, approval chains, and payroll requirements.";
- 
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -187,7 +178,9 @@ export default function HumanResourcesPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -202,7 +195,13 @@ export default function HumanResourcesPage() {
       {/* BENEFITS / FEATURES */}
       <div id="benefits" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="space-y-10"
+          >
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
               Key Benefits:
             </motion.h2>
@@ -215,6 +214,9 @@ export default function HumanResourcesPage() {
               inViewOnce
               inViewAmount={0.2}
               enableTilt
+              // optional sizing knobs you can tweak per page:
+              // previewClassName="h-48 md:h-56"
+              // previewScale={1.06}
             />
           </motion.div>
         </div>
@@ -231,10 +233,7 @@ export default function HumanResourcesPage() {
         mediaCaption={whyCaption}
       />
 
-        <ContactCTA
-               title={data?.cta?.title ?? ctaTitle}
-               body={data?.cta?.body ?? ctaBody}
-            />  
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }
