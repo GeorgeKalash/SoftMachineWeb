@@ -14,7 +14,7 @@ import {
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import InventoryManagment from "./pages/InventoryManagment/InventoryManagment";
+import InventoryManagement from "./pages/InventoryManagement/InventoryManagement";
 import Projects from "./pages/Projects/Projects";
 import TermsOfService from "./pages/TermsOfService/TermsOfService";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy/PrivacyPolicy";
@@ -23,6 +23,9 @@ import SalesOrderProcessing from "./pages/SalesOrderProcessing/SalesOrderProcess
 import HumanResources from "./pages/HumanResources/HumanResources";
 import Financials from "./pages/Financials/Financials";
 import Manufacturing from "./pages/Manufacturing/Manufacturing";
+import RepairAndService from "./pages/RepairAndService/RepairAndService";
+import DeliveryManagement from "./pages/DeliveryManagement/DeliveryManagement";
+import PurhaseOcrderProcessing from "./pages/PurhaseOcrderProcessing/PurhaseOcrderProcessing";
 
 const queryClient = new QueryClient();
 
@@ -112,13 +115,17 @@ const App = () => (
         <ScrollManager />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/InventoryManagment" element={<InventoryManagment />} />
+          <Route path="/InventoryManagement" element={<InventoryManagement />} />
           <Route path="/FixedAssets" element={<FixedAssets />} />
           <Route path="/allProjects" element={<Projects />} />
           <Route path="/PrivacyPolicyPage" element={<PrivacyPolicyPage />} />
           <Route path="/SalesOrderProcessing" element={<SalesOrderProcessing />} />
           <Route path="/HumanResources" element={<HumanResources />} />
           <Route path="/Financials" element={<Financials />} />
+          <Route path="/RepairAndService" element={<RepairAndService />} />
+          <Route path="/DeliveryManagement" element={<DeliveryManagement />} />
+          <Route path="/PurhaseOcrderProcessing" element={<PurhaseOcrderProcessing />} />
+
           <Route path="/Manufacturing" element={<Manufacturing />} />
           
           <Route path="/TermsOfService" element={<TermsOfService />} />

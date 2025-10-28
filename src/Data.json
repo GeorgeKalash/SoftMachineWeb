@@ -849,7 +849,267 @@
       "primary": { "label": "Schedule a Demo", "href": "/#demo" },
       "secondary": { "label": "Contact Sales", "href": "/#contact" }
     }
-    }
+    },
+    "RepairAndServicepage": {
+      "hero": {
+        "title": "Repair Management",
+        "subtitle": "Streamline Repairs and Maximize Equipment Uptime",
+        "body": "Argus Repair Management helps businesses efficiently manage all repair and maintenance activities — whether for customer products, in-house equipment, or field service operations. It provides complete visibility over repair requests, work orders, spare parts, and service history, ensuring timely and cost-effective repairs.",
+        "primaryCta": { "label": "", "href": "" },
+        "secondaryCta": { "label": "", "href": "" }
+      },
+      "carousel": [
+        { "imageKey": "heroImage", "alt": "Repair Management" },
+        { "imageKey": "hero", "alt": "Streamline Repairs and Maximize Equipment Uptime" },
+        { "imageKey": "logo", "alt": "Argus Repair Management" }
+      ],
+      "features": [
+        {
+          "title": "Repair Requests & Ticketing:",
+          "desc": "Capture and track repair requests from customers or internal departments in a structured workflow.",
+          "iconKey": "",
+          "preview": ""
+        },
+        {
+          "title": "Work Order Management:",
+          "desc": "Generate work orders automatically, assign technicians, and monitor progress in real time.",
+          "iconKey": "",
+          "preview": ""
+        },
+        {
+          "title": "Spare Parts & Inventory Integration:",
+          "desc": "Track parts usage, manage stock availability, and automate reordering for seamless repairs.",
+          "iconKey": "",
+          "preview": ""
+        },
+        {
+          "title": "Repair History & Analytics:",
+          "desc": "Maintain detailed records of all repair activities for each product or equipment, enabling trend analysis and preventive maintenance.",
+          "iconKey": "",
+          "preview": ""
+        },
+        {
+          "title": "Cost Tracking & Billing:",
+          "desc": "Record labor and parts costs, generate invoices, and integrate with Argus Financials for accurate billing.",
+          "iconKey": "",
+          "preview": ""
+        },
+        {
+          "title": "Service SLA Management:",
+          "desc": "Monitor repair timelines and ensure service level agreements are met for improved customer satisfaction.",
+          "iconKey": "",
+          "preview": ""
+        }
+      ],
+      "impact": {
+        "title": "Why Argus Repair Management:",
+        "description": "By centralizing repair operations and integrating with inventory and finance, Argus helps businesses reduce downtime, optimize resource utilization, and deliver timely, high-quality service — keeping both equipment and customers satisfied.",
+        "mediaKey": "heroImage"
+      },
+      "cta": {
+        "title": "Ready to optimize your repair and service operations?",
+        "body": "We can tailor Argus Repair Management to your repair workflows, technician assignments, and service reporting needs.",
+        "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+        "secondary": { "label": "Contact Sales", "href": "/#contact" }
+      },
+      "references": []
+    },
+    "delivery": {
+        "hero": {
+          "title": "Delivery Management",
+          "subtitle": "Ensure Accurate and On-Time Deliveries Every Time",
+          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Delivery Management" },
+          { "imageKey": "hero", "alt": "Ensure Accurate and On-Time Deliveries Every Time" },
+          { "imageKey": "logo", "alt": "Argus Delivery Management" }
+        ],
+        "features": [
+          {
+            "title": "Delivery Order Management:",
+            "desc": "Automatically generate delivery orders from confirmed sales or transfer requests.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Route & Driver Assignment:",
+            "desc": "Assign drivers, vehicles, and delivery routes for efficient transportation planning.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Proof of Delivery:",
+            "desc": "Record digital signatures and confirmations for verified deliveries.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Integration with Inventory:",
+            "desc": "Automatically update stock levels and item movement upon delivery completion.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Performance Reports:",
+            "desc": "Analyze delivery times, costs, and driver performance for continuous improvement.",
+            "iconKey": "",
+            "preview": ""
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Delivery Management:",
+          "description": "Argus ensures every order is delivered accurately, efficiently, and on time — strengthening customer trust and optimizing logistics performance.",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+          "title": "Ensure Accurate and On-Time Deliveries Every Time",
+          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction.",
+          "primary": { "label": "Schedule a Demo", "href": "/#demo" },
+          "secondary": { "label": "Contact Sales", "href": "/#contact" }
+        },
+        "references": []
+    },
+   "inventory": {
+        "hero": {
+          "title": "Inventory Management",
+          "subtitle": "Gain Real-Time Visibility and Control Over Your Stock",
+          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Inventory Management" },
+          { "imageKey": "hero", "alt": "Gain Real-Time Visibility and Control Over Your Stock" },
+          { "imageKey": "logo", "alt": "Argus Inventory Management" }
+        ],
+        "features": [
+          {
+            "title": "Multi-Warehouse Management:",
+            "desc": "Manage stock across multiple locations, branches, or bins with full traceability.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Stock Movements & Adjustments:",
+            "desc": "Record receipts, internal transfers, and stock adjustments in real time.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Batch & Serial Number Tracking:",
+            "desc": "Monitor product traceability with batch numbers, expiry dates, and serial tracking.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Reorder Rules & Stock Alerts:",
+            "desc": "Automate reordering based on minimum stock levels or lead times.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Integration with Sales & Purchase:",
+            "desc": "Synchronize inventory with sales and procurement for accurate stock visibility.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Inventory Valuation & Reporting:",
+            "desc": "Get detailed insights into stock value, turnover, and aging to improve efficiency.",
+            "iconKey": "",
+            "preview": ""
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Inventory Management:",
+          "description": "With Argus, businesses can eliminate stock discrepancies, reduce carrying costs, and achieve full control over their supply chain operations.",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+        "title": "Gain Real-Time Visibility and Control Over Your Stock",
+          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place.",
+          "primary": { "label": "Key Features:", "href": "" },
+          "secondary": { "label": "Why Argus Inventory Management:", "href": "" }
+        },
+        "references": []
+    },
+   "PurhaseOcrderProcessing": {
+        "hero": {
+          "title": "Purhase Ocrder Processing",
+          "subtitle": "Simplify Procurement and Strengthen Supplier Relationships",
+          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Purchase Order Processing" },
+          { "imageKey": "hero", "alt": "Simplify Procurement and Strengthen Supplier Relationships" },
+          { "imageKey": "logo", "alt": "Argus Purchase" }
+        ],
+        "features": [
+          {
+            "title": "Purchase Requisitions & Approvals:",
+            "desc": "Automate internal purchase requests and multi-level approval workflows.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Supplier Management:",
+            "desc": "Maintain a complete database of approved suppliers with performance and pricing history.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "RFQs & Quotation Comparison:",
+            "desc": "Request, receive, and evaluate supplier quotations for informed decision-making.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Purchase Orders:",
+            "desc": "Generate and send purchase orders automatically based on stock levels or demand forecasts.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Integration with Inventory & Financials:",
+            "desc": "Automatically update stock quantities and create payable entries upon goods receipt.",
+            "iconKey": "",
+            "preview": ""
+          },
+          {
+            "title": "Procurement Reporting:",
+            "desc": "Gain insights into spending patterns, supplier reliability, and cost optimization.",
+            "iconKey": "",
+            "preview": ""
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Purchase:",
+          "description": "By reducing manual effort and providing real-time visibility into procurement activities, Argus enables smarter purchasing decisions and stronger supplier collaboration",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+          "title": "Simplify Procurement and Strengthen Supplier Relationships",
+          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors.",
+          "primary": { "label": "Key Features:", "href": "" },
+          "secondary": { "label": "Why Argus Purchase:", "href": "" }
+        },
+        "references": []
+      }
+    
+    
+  
+
+    
+    
+    
+
+
+    
       
       
     

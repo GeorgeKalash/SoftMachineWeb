@@ -64,13 +64,13 @@ type SolutionsMenuProps = {
 export const DEFAULT_SOLUTIONS: SolutionItem[] = [
   { imgSrc: HR, imgHoverSrc: HRRed, label: "Human Resources", href: "/HumanResources" },
   { imgSrc: Financials, imgHoverSrc: FinancialsRed, label: "Financials", href: "/Financials" },
-  { imgSrc: RepairAndService, imgHoverSrc: RepairAndServiceRed, label: "Repair And Service", href: "#repair-service" },
+  { imgSrc: RepairAndService, imgHoverSrc: RepairAndServiceRed, label: "Repair And Service", href: "/RepairAndService" },
   { imgSrc: SalesOrderProcessing, imgHoverSrc: SalesOrderProcessingRed, label: "Sales Order Processing", href: "/SalesOrderProcessing" },
   { imgSrc: FixedAssets, imgHoverSrc: FixedAssetsRed, label: "Fixed Assets", href: "/FixedAssets" },
   { imgSrc: Manufacturing, imgHoverSrc: ManufacturingRed, label: "Manufacturing", href: "/Manufacturing" },
-  { imgSrc: PurchaseOrderProcessing, imgHoverSrc: PurchaseOrderProcessingRed, label: "Purchase Order Processing", href: "#purchase-order-processing" },
-  { imgSrc: Delivery, imgHoverSrc: DeliveryRed, label: "Delivery", href: "#delivery" },
-  { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/InventoryManagment" },
+  { imgSrc: PurchaseOrderProcessing, imgHoverSrc: PurchaseOrderProcessingRed, label: "Purchase Order Processing", href: "/PurhaseOcrderProcessing"},
+  { imgSrc: Delivery, imgHoverSrc: DeliveryRed, label: "Delivery Management", href: "/DeliveryManagement" },
+  { imgSrc: InventoryManagement, imgHoverSrc: InventoryManagementRed, label: "Inventory Management",  href: "/InventoryManagement" },
 ];
 
 export function SolutionsMenu({
