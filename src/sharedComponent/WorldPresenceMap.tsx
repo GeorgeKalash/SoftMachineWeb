@@ -101,7 +101,7 @@ const RAW_CLIENTS: ClientRef[] = ((siteData?.clients as unknown as ClientsJSON)?
 /* ---------------------------- Map derivations --------------------------- */
 type CityMarker = {
   name: string;
-  coordinates: [number, number];
+  coordinates: [number, number]; // [lon, lat]
   count: number;
   pulse?: boolean;
   kind?: "hub" | "client";
@@ -124,6 +124,11 @@ const ISO3_BY_COUNTRY: Record<CountryName, string> = {
   Egypt: "EGY",
   "Ivory Coast": "CIV",
 };
+
+// NEW: reverse map to go from ISO3 to our CountryName
+const COUNTRY_BY_ISO3: Record<string, CountryName> = Object.fromEntries(
+  Object.entries(ISO3_BY_COUNTRY).map(([k, v]) => [v, k as CountryName])
+);
 
 function toMapCities(clients: ClientRef[]): CityMarker[] {
   const buckets = new Map<string, CityMarker>();
@@ -160,7 +165,7 @@ const ARCS =
       }))
     : [];
 
-/* -------- Center/zoom tuned to dots (not fully zoomed-out world) -------- */
+/* -------- Center helpers -------- */
 function computeCenter(markers: CityMarker[]): [number, number] {
   if (!markers.length) return [20, 20];
   const lonAvg = markers.reduce((s, m) => s + m.coordinates[0], 0) / markers.length;
@@ -168,7 +173,6 @@ function computeCenter(markers: CityMarker[]): [number, number] {
   return [lonAvg, latAvg];
 }
 const DEFAULT_CENTER: [number, number] = computeCenter(CITY_MARKERS);
-const DEFAULT_ZOOM = 1.85;
 
 /* --------------------------- Tooltip utilities -------------------------- */
 type TooltipState = { x: number; y: number; name: string } | null;
@@ -331,7 +335,6 @@ function CitySpotlight({ active }: { active: CityMarker }) {
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card">
-      {/* Wider, hero-like header; single logo per slide */}
       <div className="relative aspect-[21/9] w-full overflow-hidden">
         {logos.length ? (
           <SingleLogoSlider logos={logos} />
@@ -347,7 +350,6 @@ function CitySpotlight({ active }: { active: CityMarker }) {
         </div>
       </div>
 
-      {/* Body */}
       <div className="flex flex-1 flex-col gap-4 p-6">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">{active.name} spotlight</h3>
         <p className="text-sm leading-relaxed text-muted-foreground">{primaryQuote}</p>
@@ -365,7 +367,6 @@ function CitySpotlight({ active }: { active: CityMarker }) {
           </div>
         )}
 
-        {/* Stats */}
         <div className="mt-auto grid grid-cols-3 gap-2 text-center">
           <div className="rounded-lg border border-border bg-card p-3">
             <div className="text-xl font-semibold text-foreground">{RAW_CLIENTS.length}</div>
@@ -402,32 +403,70 @@ type Props = {
   zoom?: number;
 };
 
+const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+
 export default function ClientsWorldwideSection({
   title = "Our Clients Worldwide",
-  subtitle = "Click a city marker to see its clients; highlighted countries are active.",
+  subtitle = "Tap a country to open its spotlight (or tap a city dot). Use + / − to zoom.",
   highlightedCountries = HIGHLIGHTED_COUNTRIES,
   cities = CITY_MARKERS,
   arcs = ARCS,
   onCountryClick,
   onCityClick,
   center = DEFAULT_CENTER,
-  zoom = DEFAULT_ZOOM,
 }: Props) {
+  const mapRef = React.useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = React.useState<TooltipState>(null);
   const [activeCity, setActiveCity] = React.useState<CityMarker>(
     cities[0] ?? { name: "Beirut", coordinates: CITY_BY_COUNTRY.Lebanon.coordinates, count: 0, kind: "hub" }
   );
-  const mapRef = React.useRef<HTMLDivElement>(null);
+
+  const MAX_ZOOM = 5.5;
+  const MIN_ZOOM = 1.4;
+  const ZOOM_STEP = 0.6;
+
+  const isSmallScreen = typeof window !== "undefined" && window.matchMedia
+    ? window.matchMedia("(max-width: 640px)").matches
+    : false;
+
+  const [vpCenter, setVpCenter] = React.useState<[number, number]>(center);
+  const [vpZoom, setVpZoom] = React.useState<number>(MAX_ZOOM);
+
+  React.useEffect(() => {
+    const initialCenter = cities.length ? computeCenter(cities) : CITY_BY_COUNTRY.Lebanon.coordinates;
+    setVpCenter(initialCenter);
+    setVpZoom(MAX_ZOOM);
+  }, []); // mount only
 
   const isHighlighted = React.useCallback(
     (iso3?: string) => (iso3 ? highlightedCountries.includes(iso3) : false),
     [highlightedCountries]
   );
 
+  const focusCountry = (iso3: string) => {
+    const cn = COUNTRY_BY_ISO3[iso3];
+    if (!cn) return;
+    const base = CITY_BY_COUNTRY[cn];
+    // Try to find an existing marker for that country's primary city; fallback to a synthetic one
+    const found =
+      cities.find((c) => c.name === base.name) ||
+      ({ name: base.name, coordinates: base.coordinates, count: 0, kind: cn === "Lebanon" ? "hub" : "client" } as CityMarker);
+
+    setActiveCity(found);
+    onCityClick?.(found);
+    setVpCenter(found.coordinates);
+    setVpZoom(MAX_ZOOM);
+  };
+
   const handleCityClick = (c: CityMarker) => {
     setActiveCity(c);
     onCityClick?.(c);
+    setVpCenter(c.coordinates);
+    setVpZoom(MAX_ZOOM);
   };
+
+  const handleZoomIn = () => setVpZoom((z) => clamp(z + ZOOM_STEP, MIN_ZOOM, MAX_ZOOM));
+  const handleZoomOut = () => setVpZoom((z) => clamp(z - ZOOM_STEP, MIN_ZOOM, MAX_ZOOM));
 
   return (
     <section id="worldwide" className="scroll-mt-24 py-16">
@@ -438,7 +477,6 @@ export default function ClientsWorldwideSection({
         .arc { stroke-dasharray: 3 6; stroke-dashoffset: 120; animation: dash 6s linear infinite; }
       `}</style>
 
-      {/* Wider container: make the whole section breathe more */}
       <div className="mx-auto mb-8 w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
@@ -460,24 +498,50 @@ export default function ClientsWorldwideSection({
         </motion.p>
       </div>
 
-      {/* Spotlight (left) + Map (right) */}
       <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,640px),1fr] lg:grid-cols-[minmax(0,720px),1fr]">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,640px),1fr] lg:grid-cols-[minmax(0,720px),1fr]">
           <CitySpotlight active={activeCity} />
 
           <div
             ref={mapRef}
-            className="relative w-full overflow-hidden rounded-2xl border border-border shadow-sm"
+            className="relative w-full overflow-hidden rounded-2xl border border-border shadow-sm touch-pan-y"
             style={{
-              height: "clamp(420px, 58vw, 600px)",
+              height: isSmallScreen ? "68vh" : "clamp(420px, 58vw, 600px)",
               background: `radial-gradient(1100px 600px at 20% 10%, ${COLORS.oceanTo} 0%, transparent 45%),
                            linear-gradient(180deg, ${COLORS.oceanFrom}, ${COLORS.oceanTo})`,
             }}
             onMouseLeave={() => setTooltip(null)}
           >
+            {/* Zoom controls */}
+            <div className="absolute right-3 top-3 z-20 flex flex-col gap-2">
+              <button
+                aria-label="Zoom in"
+                onClick={handleZoomIn}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background/80 backdrop-blur text-2xl leading-none text-foreground shadow hover:bg-muted active:scale-95"
+              >
+                +
+              </button>
+              <button
+                aria-label="Zoom out"
+                onClick={handleZoomOut}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background/80 backdrop-blur text-2xl leading-none text-foreground shadow hover:bg-muted active:scale-95"
+              >
+                –
+              </button>
+            </div>
+
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="h-full w-full">
               <ComposableMap projectionConfig={{ scale: 160 }} style={{ width: "100%", height: "100%" }}>
-                <ZoomableGroup center={center} zoom={zoom} minZoom={1.4} maxZoom={5}>
+                <ZoomableGroup
+                  center={vpCenter}
+                  zoom={vpZoom}
+                  minZoom={MIN_ZOOM}
+                  maxZoom={MAX_ZOOM}
+                  onMoveEnd={(pos) => {
+                    setVpCenter(pos.coordinates as [number, number]);
+                    setVpZoom(clamp(Number(pos.zoom) || vpZoom, MIN_ZOOM, MAX_ZOOM));
+                  }}
+                >
                   <Sphere stroke="rgba(255,255,255,0.06)" fill="transparent" strokeWidth={0.6} />
                   <Graticule stroke="rgba(255,255,255,0.05)" strokeWidth={0.5} />
 
@@ -496,6 +560,19 @@ export default function ClientsWorldwideSection({
                               className="geo"
                               aria-label={name ?? "Country"}
                               tabIndex={0}
+                              // Mobile-friendly: tapping the whole country opens its spotlight (if we have clients there)
+                              onClick={() => {
+                                if (iso3 && active) {
+                                  focusCountry(iso3);
+                                  onCountryClick?.(iso3, name ?? iso3);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && iso3 && active) {
+                                  focusCountry(iso3);
+                                  onCountryClick?.(iso3, name ?? iso3);
+                                }
+                              }}
                               onMouseMove={(e) => {
                                 if (!mapRef.current || !name) return;
                                 const { x, y } = toLocalCoords(e, mapRef.current);
@@ -516,21 +593,18 @@ export default function ClientsWorldwideSection({
                                 setTooltip({ x, y, name });
                               }}
                               onBlur={() => setTooltip(null)}
-                              onClick={() => active && onCountryClick?.(iso3!, name ?? iso3!)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && active) onCountryClick?.(iso3!, name ?? iso3!);
-                              }}
                               style={{
                                 default: {
                                   fill: active ? COLORS.highlightMuted : COLORS.land,
                                   outline: "none",
                                   stroke: COLORS.landStroke,
                                   strokeWidth: 0.6,
+                                  cursor: active ? "pointer" as const : "default" as const,
                                 },
                                 hover: {
                                   fill: active ? "hsl(200 85% 58%)" : COLORS.hover,
                                   outline: "none",
-                                  cursor: active ? "pointer" : "default",
+                                  cursor: active ? "pointer" as const : "default" as const,
                                 },
                                 pressed: {
                                   fill: active ? "hsl(200 85% 58%)" : COLORS.hover,
@@ -555,10 +629,11 @@ export default function ClientsWorldwideSection({
                         ))}
 
                         {cities.map((city, i) => (
-                          <MarkerBadge key={`${city.name}-${i}`} city={city} onClick={(c) => {
-                            setActiveCity(c);
-                            onCityClick?.(c);
-                          }} />
+                          <MarkerBadge
+                            key={`${city.name}-${i}`}
+                            city={city}
+                            onClick={(c) => handleCityClick(c)}
+                          />
                         ))}
                       </>
                     )}

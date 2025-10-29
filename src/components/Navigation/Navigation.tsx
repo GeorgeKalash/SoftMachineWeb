@@ -8,7 +8,7 @@ import { ContactUsForm } from "../ContactUs/ContactUsForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../src/assets/softMachineLogo.png";
-import logosmall from "../../../src/assets/logo.png";      
+
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
@@ -93,7 +93,7 @@ const Navigation = () => {
       ref={navRef}
       className={`
         fixed top-0 w-full z-50 transition-colors
-        ${isOpen ? "bg-white shadow-sm" : "bg-transparent"}   /* mobile → white when open */
+        ${isOpen ? "bg-white shadow-sm" : "backdrop-blur-md"}   /* mobile → white when open */
         md:bg-transparent
         supports-[backdrop-filter]:md:backdrop-blur-md
       `}
@@ -109,7 +109,7 @@ const Navigation = () => {
           >
             {/* small logo up to 995px */}
             <img
-              src={logosmall}
+              src={logo}
               alt="SoftMachine"
               className="block min-[996px]:hidden h-8 w-auto"
               loading="eager"

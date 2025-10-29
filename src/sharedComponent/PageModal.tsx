@@ -18,6 +18,10 @@ import {
 } from "@/components/ui/sheet";
 import { SharedButton } from "@/sharedComponent/Button";
 
+/* -------------------------------------------------------------------------- */
+/* Utilities                                                                  */
+/* -------------------------------------------------------------------------- */
+
 function useMediaQuery(query: string) {
   const get = () =>
     typeof window !== "undefined" ? window.matchMedia(query).matches : false;
@@ -30,6 +34,24 @@ function useMediaQuery(query: string) {
   }, [query]);
   return matches;
 }
+
+/** Lock body scroll & tame iOS overscroll bounce while a modal/sheet is open. */
+function useBodyScrollLock(locked: boolean) {
+  React.useEffect(() => {
+    if (!locked || typeof document === "undefined") return;
+    const { overflow, overscrollBehaviorY } = document.body.style;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehaviorY = "contain";
+    return () => {
+      document.body.style.overflow = overflow || "";
+      document.body.style.overscrollBehaviorY = overscrollBehaviorY || "";
+    };
+  }, [locked]);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Types & Sizing                                                             */
+/* -------------------------------------------------------------------------- */
 
 type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
 
@@ -74,6 +96,10 @@ const sizeMap: Record<ModalSize, string> = {
   full: "sm:max-w-none w-[96vw] lg:w-[90vw]",
 };
 
+/* -------------------------------------------------------------------------- */
+/* Component                                                                  */
+/* -------------------------------------------------------------------------- */
+
 export function PageModal({
   open,
   onOpenChange,
@@ -97,10 +123,12 @@ export function PageModal({
   mobileHeightClassName,
 }: PageModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  useBodyScrollLock(open);
 
+  // Use stable viewport units to prevent iOS Safari jumps when the URL bar collapses/expands.
   const width = widthClassName ?? sizeMap[size];
-  const height = heightClassName ?? "max-h-[80vh]";
-  const mobileHeight = mobileHeightClassName ?? "h-[85svh]";
+  const height = heightClassName ?? "max-h-[min(80dvh,80svh)]";
+  const mobileHeight = mobileHeightClassName ?? "h-[min(92svh,92dvh)]";
 
   const handleClose = () => {
     onClose?.();
@@ -113,8 +141,10 @@ export function PageModal({
         <SheetContent
           side="bottom"
           className={cn(
-            "p-0 flex flex-col rounded-t-2xl overflow-hidden",
+            "p-0 flex flex-col rounded-t-2xl overflow-hidden will-change-transform",
             mobileHeight,
+            // Safe area for iOS home indicator:
+            "pb-[env(safe-area-inset-bottom)]",
             contentClassName
           )}
         >
@@ -177,10 +207,6 @@ export function PageModal({
           contentClassName
         )}
         onEscapeKeyDown={handleClose}
-        onPointerDownOutside={(e) => {
-          // keep outside-click close behavior aligned with handleClose if desired
-          // (shadcn already closes via onOpenChange)
-        }}
       >
         {(title || description || headerExtra) && (
           <DialogHeader className="border-b px-6 py-4 shrink-0">

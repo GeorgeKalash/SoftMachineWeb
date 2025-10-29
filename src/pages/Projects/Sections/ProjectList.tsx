@@ -4,6 +4,13 @@
 import React, { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { Sparkles } from "lucide-react";
@@ -37,6 +44,7 @@ const LOGOS: Record<string, string> = {
 
 /* -------------------------------- types -------------------------------- */
 type SectorKey = "finance" | "manufacturing" | "auto_retail";
+type TabKey = "all" | SectorKey;
 
 type ClientTestimonial = { name: string; role?: string; content: string };
 type ClientItem = {
@@ -44,16 +52,23 @@ type ClientItem = {
   sector: SectorKey;
   logoKey?: string;
   testimonial?: ClientTestimonial;
-  // caseStudy exists in unified schema but not needed here
 };
 
 type ClientsJSON = {
-  sectorLabels?: Record<SectorKey, string>;
-  items: ClientItem[];
+  sectorLabels?: Partial<Record<SectorKey, string>>;
+  items?: ClientItem[];
 };
 
+/* -------------------------- type guards/helpers ------------------------- */
+function isSectorKey(v: string): v is SectorKey {
+  return v === "finance" || v === "manufacturing" || v === "auto_retail";
+}
+function isTabKey(v: string): v is TabKey {
+  return v === "all" || isSectorKey(v);
+}
+
 /* ------------------------------- card ui ------------------------------- */
-type TestimonialCardModel = { name: string; role: string; content: string; image: string };
+type TestimonialCardModel = { name: string; role?: string; content: string; image: string };
 
 function TestimonialCard({ t, index }: { t: TestimonialCardModel; index: number }) {
   const { ref, isVisible } = useScrollAnimation();
@@ -87,7 +102,7 @@ function TestimonialCard({ t, index }: { t: TestimonialCardModel; index: number 
 
         <div>
           <div className="font-semibold tracking-tight">{t.name}</div>
-          <div className="text-sm text-muted-foreground">{t.role}</div>
+          {t.role ? <div className="text-sm text-muted-foreground">{t.role}</div> : null}
         </div>
       </div>
 
@@ -100,7 +115,7 @@ function TestimonialCard({ t, index }: { t: TestimonialCardModel; index: number 
 type ProjectListProps = {
   id?: string;
   variant?: "teaser" | "full";
-  defaultTab?: "all" | SectorKey;
+  defaultTab?: TabKey;
   initialCount?: number;
 };
 
@@ -112,18 +127,16 @@ export default function ProjectList({
 }: ProjectListProps) {
   const { ref: blockRef, isVisible } = useScrollAnimation();
 
-  // NEW: read from unified clients block
-  const clientsData: ClientsJSON | undefined = siteData?.clients as unknown as ClientsJSON;
+  // unified clients
+  const clientsData: ClientsJSON = (siteData?.clients as ClientsJSON) ?? {};
+  const allClients: ClientItem[] = clientsData.items ?? [];
 
-  // labels for tabs
+  // labels for tabs with fallbacks
   const sectorLabels: Record<SectorKey, string> = {
-    finance: clientsData?.sectorLabels?.finance,
-    manufacturing: clientsData?.sectorLabels?.manufacturing,
-    auto_retail: clientsData?.sectorLabels?.auto_retail,
+    finance: clientsData.sectorLabels?.finance ?? "Finance",
+    manufacturing: clientsData.sectorLabels?.manufacturing ?? "Manufacturing",
+    auto_retail: clientsData.sectorLabels?.auto_retail ?? "Auto Retail",
   };
-
-  // source list
-  const allClients: ClientItem[] = clientsData?.items;
 
   // map client → testimonial card model (skip if no testimonial)
   const toTestimonial = (c: ClientItem): TestimonialCardModel | null => {
@@ -138,32 +151,47 @@ export default function ProjectList({
     };
   };
 
-  const lists = {
-    all: allClients.map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
-    finance: allClients.filter((i) => i.sector === "finance").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
-    manufacturing: allClients.filter((i) => i.sector === "manufacturing").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
-    auto_retail: allClients.filter((i) => i.sector === "auto_retail").map(toTestimonial).filter(Boolean) as TestimonialCardModel[],
-  };
+  const lists = useMemo(() => {
+    const all = allClients.map(toTestimonial).filter(Boolean) as TestimonialCardModel[];
+    const finance = allClients.filter((i) => i.sector === "finance").map(toTestimonial).filter(Boolean) as TestimonialCardModel[];
+    const manufacturing = allClients.filter((i) => i.sector === "manufacturing").map(toTestimonial).filter(Boolean) as TestimonialCardModel[];
+    const auto_retail = allClients.filter((i) => i.sector === "auto_retail").map(toTestimonial).filter(Boolean) as TestimonialCardModel[];
+    return { all, finance, manufacturing, auto_retail };
+  }, [allClients]);
 
-  const tabs = useMemo(
+  const tabs: Array<{ key: TabKey; label: string; data: TestimonialCardModel[] }> = useMemo(
     () => [
-      { key: "all" as const, label: "All", data: lists.all },
-      { key: "finance" as const, label: sectorLabels.finance, data: lists.finance },
-      { key: "manufacturing" as const, label: sectorLabels.manufacturing, data: lists.manufacturing },
-      { key: "auto_retail" as const, label: sectorLabels.auto_retail, data: lists.auto_retail },
+      { key: "all", label: "All", data: lists.all },
+      { key: "finance", label: sectorLabels.finance, data: lists.finance },
+      { key: "manufacturing", label: sectorLabels.manufacturing, data: lists.manufacturing },
+      { key: "auto_retail", label: sectorLabels.auto_retail, data: lists.auto_retail },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [clientsData] // recompute if JSON changes
+    [lists, sectorLabels.finance, sectorLabels.manufacturing, sectorLabels.auto_retail]
   );
 
-  const [counts] = useState<Record<string, number>>(
-    Object.fromEntries(
-      tabs.map((t) => [
-        t.key,
-        variant === "full" || t.key === "all" ? t.data.length : Math.min(initialCount, t.data.length),
-      ])
-    )
-  );
+  const counts = useMemo(() => {
+    const initial: Record<TabKey, number> = {
+      all: 0,
+      finance: 0,
+      manufacturing: 0,
+      auto_retail: 0,
+    };
+    return tabs.reduce<Record<TabKey, number>>((acc, t) => {
+      const v = variant === "full" || t.key === "all" ? t.data.length : Math.min(initialCount, t.data.length);
+      acc[t.key] = v;
+      return acc;
+    }, initial);
+  }, [tabs, variant, initialCount]);
+
+  // controlled value so mobile dropdown + desktop tabs stay in sync
+  const [tabValue, setTabValue] = useState<TabKey>(defaultTab);
+
+  const handleTabChange = (value: string) => {
+    if (isTabKey(value)) setTabValue(value);
+  };
+  const handleSelectChange = (value: string) => {
+    if (isSectorKey(value)) setTabValue(value);
+  };
 
   return (
     <section
@@ -192,9 +220,51 @@ export default function ProjectList({
             </h2>
           </div>
 
-          <Tabs defaultValue={defaultTab}>
-            <div className="sticky top-0 z-10 -mx-4 mb-6 bg-background/70 px-4 py-3 backdrop-blur sm:static sm:bg-transparent sm:px-0 sm:py-0">
-              <TabsList className="grid w-full grid-cols-4 overflow-auto sm:inline-flex sm:justify-center">
+          <Tabs value={tabValue} onValueChange={handleTabChange}>
+          {/* Mobile: All chip + dropdown */}
+<div className="sm:hidden -mx-4 mb-4 px-4">
+  <div className="flex items-center gap-2">
+    <button
+      type="button"
+      aria-label="Show all projects"
+      data-active={tabValue === "all"}
+      onClick={() => setTabValue("all")}
+      className={cn(
+        "px-3 py-2 rounded-md border text-sm",
+        "data-[active=true]:bg-accent/15 data-[active=true]:text-foreground"
+      )}
+    >
+      All
+    </button>
+
+    <Select
+      /* Remount to clear selection when switching to All */
+      key={tabValue === "all" ? "reset" : tabValue}
+      /* When All is active, show placeholder (no value) */
+      value={isSectorKey(tabValue) ? tabValue : undefined}
+      onValueChange={handleSelectChange}
+    >
+      <SelectTrigger className="w-full" aria-label="Filter">
+        {/* <- shows "Filter" when All is selected */}
+        <SelectValue placeholder="Filter" />
+      </SelectTrigger>
+      <SelectContent>
+        {tabs
+          .filter((t) => t.key !== "all")
+          .map((t) => (
+            <SelectItem key={t.key} value={t.key}>
+              {t.label}
+            </SelectItem>
+          ))}
+      </SelectContent>
+    </Select>
+  </div>
+</div>
+
+
+            {/* Desktop: horizontal tabs */}
+            <div className="hidden sm:block sticky top-0 z-20 -mx-4 mb-6 bg-background/70 px-4 py-3 backdrop-blur">
+              <TabsList className="inline-flex max-w-full overflow-x-auto whitespace-nowrap gap-2">
                 {tabs.map((t) => (
                   <TabsTrigger
                     key={t.key}
