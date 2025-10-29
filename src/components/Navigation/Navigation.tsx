@@ -7,8 +7,8 @@ import { PageModal } from "@/sharedComponent/PageModal";
 import { ContactUsForm } from "../ContactUs/ContactUsForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../../../src/assets/softMachineLogo.png"; // desktop (≥ 996px)
-import logosmall from "../../../src/assets/logo.png";       // small (≤ 995px)
+import logo from "../../../src/assets/softMachineLogo.png";
+import logosmall from "../../../src/assets/logo.png";      
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
