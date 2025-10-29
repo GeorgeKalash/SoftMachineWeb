@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sparkles, PlayCircle } from "lucide-react";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* ---------------- assets in code ---------------- */
 import cat from "@/assets/cat.gif";

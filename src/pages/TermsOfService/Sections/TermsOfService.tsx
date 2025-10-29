@@ -14,7 +14,7 @@ import {
   Mail,
   Info,
 } from "lucide-react";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* FX */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

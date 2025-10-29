@@ -10,7 +10,7 @@ import {
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { PageModal } from "@/sharedComponent/PageModal";
 import { ContactUsForm } from "@/components/ContactUs/ContactUsForm";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 const FORM_ID = "faq-support-form";
 

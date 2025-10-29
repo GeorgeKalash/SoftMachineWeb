@@ -3,7 +3,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* ---- logos kept in code; JSON uses logoKey ---- */
 import MGLogo from "@/assets/Clients/MGLogo.jpeg";

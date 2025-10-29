@@ -10,7 +10,7 @@ import Decoration from "@/sharedComponent/Decoration";
 
 import { PageModal } from "@/sharedComponent/PageModal";
 import { ContactUsForm } from "@/components/ContactUs/ContactUsForm"; 
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* -------------------------------- types -------------------------------- */
 type HeroProps = {

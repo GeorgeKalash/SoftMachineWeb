@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 // fallback/thumbnail helpers (keep images in code)
 import heroFallback from "@/assets/hero.png";

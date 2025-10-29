@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useNavigate } from "react-router-dom";
 import SharedButton from "@/sharedComponent/Button";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* ---- logos kept in code; JSON uses logoKey ---- */
 import MGLogo from "@/assets/Clients/MGLogo.jpeg";

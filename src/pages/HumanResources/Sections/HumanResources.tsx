@@ -14,7 +14,7 @@ import heroImage from "@/assets/hero-image.jpg";
 // Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */

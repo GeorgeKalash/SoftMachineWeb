@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { Sparkles } from "lucide-react";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import ClientsWorldwideSection from "@/sharedComponent/WorldPresenceMap";
 

@@ -13,7 +13,7 @@ import {
   Sphere,
   Line,
 } from "react-simple-maps";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 import heroImage from "@/assets/hero-image.jpg";
 
 /* ---------------------------- Logos Registry ---------------------------- */

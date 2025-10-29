@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   LifeBuoy,
 } from "lucide-react";
-import siteData from "@/data.json";
+import siteData from "@/SiteData/SiteData.json";
 
 /* ----------------------------- types & tokens ---------------------------- */
 
