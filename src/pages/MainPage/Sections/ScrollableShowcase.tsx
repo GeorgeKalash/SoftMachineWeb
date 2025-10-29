@@ -427,7 +427,7 @@ function StepBlock({
 
   return (
     <article
-      id={item.anchorId}
+      id={item.anchorId ?? item.key}  
       ref={refArticle}
       className={cn("relative grid items-center transition-all duration-300 snap-start", isActive ? "opacity-100" : "opacity-90")}
       style={isLg ? { minHeight: Math.max(360, Math.round((matchHeight ?? 620) * 0.7)) } : undefined}

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent, type LucideIcon } from "lucide-react";
+import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent } from "lucide-react";
 
 // Images kept in code
 import logo from "@/assets/logo.png";
@@ -16,6 +16,7 @@ import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
 import siteData from "@/data.json";
+import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -37,15 +38,7 @@ const IMG: Record<string, string> = {
   heroImage: heroImage as unknown as string,
 };
 
-/** If FeatureItem.icon is a component type */
-const ICONS_COMPONENT: Record<string, LucideIcon> = {
-  fileText: FileText,
-  wallet: Wallet,
-  globe2: Globe2,
-  barChart3: BarChart3,
-  percent: Percent,
-};
-/** If FeatureItem.icon is a ReactNode (common) */
+/** Icons as ReactNodes (matches FeatureItem.icon usage) */
 const ICONS_NODE: Record<string, React.ReactNode> = {
   fileText: <FileText className="h-5 w-5 text-slate-900" />,
   wallet: <Wallet className="h-5 w-5 text-slate-900" />,
@@ -53,11 +46,6 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   barChart3: <BarChart3 className="h-5 w-5 text-slate-900" />,
   percent: <Percent className="h-5 w-5 text-slate-900" />,
 };
-
-/** Allowed previews (narrow unknown JSON to the union expected by FeatureItem.preview) */
-const PREVIEWS = ["typing", "inbox", "multicurrency", "analytics", "donut"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey => typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
 export default function FinancialsPage() {
@@ -72,7 +60,7 @@ export default function FinancialsPage() {
   const heroPrimary = data?.hero?.primaryCta;
   const heroSecondary = data?.hero?.secondaryCta;
 
-  // Carousel (from JSON keys → imported images)
+  // Carousel
   const CAROUSEL = useMemo(
     () =>
       (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
@@ -91,24 +79,18 @@ export default function FinancialsPage() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features (JSON → FeatureGrid items) — robust typing
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (no preview unions/guards here)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-
     return src.map((f) => {
-      // 1) narrow preview to the expected union (fallback to 'typing')
-      const preview = isPreview(f.preview) ? f.preview : "typing";
-
-      // 2) build icon in a way that satisfies either FeatureItem.icon = ReactNode OR component
-      //    We cast to FeatureItem['icon'] once to satisfy TS regardless of which it is.
       const iconCandidate =
         (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
 
       return {
         title: f.title,
         desc: f.desc,
-        preview,
+        preview: f.preview, // plain string; FeatureGrid validates/falls back
         icon: iconCandidate as FeatureItem["icon"],
       };
     });
@@ -126,8 +108,6 @@ export default function FinancialsPage() {
   const ctaBody =
     data?.cta?.body ??
     "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.";
-  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
-  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -237,13 +217,15 @@ export default function FinancialsPage() {
 
             <FeatureGrid
               items={featureItems}
-              ambient
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
               enableTilt
+              // optional per-page sizing tweaks:
+              // previewClassName="h-48 md:h-56"
+              // previewScale={1.06}
             />
           </motion.div>
         </div>
@@ -260,30 +242,7 @@ export default function FinancialsPage() {
       />
 
       {/* CONTACT / CTA */}
-      <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
-          <div className="grid md:grid-cols-2 items-center gap-8">
-            <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
-              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
-            </div>
-            <div className="flex md:justify-end gap-3">
-              <a
-                href={data?.cta?.primary?.href ?? ctaPrimary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-              >
-                {data?.cta?.primary?.label ?? ctaPrimary.label}
-              </a>
-              <a
-                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-              >
-                {data?.cta?.secondary?.label ?? ctaSecondary.label}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }

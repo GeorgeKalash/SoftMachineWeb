@@ -88,7 +88,6 @@ const Team: React.FC = () => {
             border: `${Math.max(2, Math.floor(s.size / 12))}px solid hsl(var(--primary)/0.35)`,
             boxShadow: "0 0 0 1px hsl(var(--background)/0.6) inset",
           }}
-          animate={animate}
         />
       );
     }
@@ -108,7 +107,6 @@ const Team: React.FC = () => {
             borderRadius: 999,
             rotate: s.rotate,
           }}
-          animate={animate}
         />
       );
     }
@@ -128,7 +126,6 @@ const Team: React.FC = () => {
           rotate: s.rotate,
           filter: "blur(0.2px)",
         }}
-        animate={animate}
       />
     );
   };
@@ -206,21 +203,18 @@ const Team: React.FC = () => {
                   {/* Social icons layer */}
                   <div className="relative z-10 flex items-center gap-6 text-primary-foreground">
                     <a
-                      href="#"
                       className="transition-transform hover:scale-110"
                       aria-label="Facebook"
                     >
                       <Facebook className="h-4 w-4" />
                     </a>
                     <a
-                      href="#"
                       className="transition-transform hover:scale-110"
                       aria-label="Twitter"
                     >
                       <Twitter className="h-4 w-4" />
                     </a>
                     <a
-                      href="#"
                       className="transition-transform hover:scale-110"
                       aria-label="LinkedIn"
                     >

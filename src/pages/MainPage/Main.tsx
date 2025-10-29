@@ -22,19 +22,12 @@ const Main = () => {
       <main > 
         <section id="home" className="scroll-mt-24"><Hero /></section>
         <section id="features" className="scroll-mt-24"><Features /></section>
-        {/* <section id="blog" className="scroll-mt-24"><Blog /></section> */}
         <section id="about" className="scroll-mt-24"><About /></section>
         <section id="ScrollableShowcase" className="scroll-mt-24"><ScrollableShowcase /></section>
-
-        {/* <section id="pricing" className="scroll-mt-24"><Pricing /></section> */}
-        {/* <section id="projects" className="scroll-mt-24"><Projects /></section> */}
         <section id="testimonials" className="scroll-mt-24"><Testimonials /></section>
-        {/* <section id="team" className="scroll-mt-24"><Team /></section> */}
-        <CaseStudyCarousel />
-
         <section id="faq" className="scroll-mt-24"><FAQ /></section>
-        {/* <section id="cta" className="scroll-mt-24"><CTA /></section> */}
-        
+         <CaseStudyCarousel />
+
       </main>
       <Footer />
     </div>

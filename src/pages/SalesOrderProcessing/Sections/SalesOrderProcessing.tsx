@@ -16,11 +16,18 @@ import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 import SectionSplit from "@/sharedComponent/SectionSplit";
 
 import siteData from "@/data.json";
+import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
 
 /* ----------------------------- Runtime maps ----------------------------- */
 const IMG: Record<string, string> = {
@@ -36,20 +43,6 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   layers: <Layers className="h-5 w-5 text-slate-900" />,
   link2: <Link2 className="h-5 w-5 text-slate-900" />,
 };
-
-/** Limit previews to what your FeatureGrid supports */
-const PREVIEWS = [
-  "quote2order",
-  "pricing",
-  "pipeline",
-  "crm",
-  "invoice",
-  "analytics",
-  "multicurrency",
-] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey =>
-  typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
 export default function SalesOrderProcessingPage() {
@@ -84,15 +77,16 @@ export default function SalesOrderProcessingPage() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, paused, CAROUSEL.length]);
 
-  // Features (JSON → FeatureGrid items)
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (no preview unions/guards; FeatureGrid validates/falls back)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-    return src.map((f) => {
-      const preview = isPreview(f.preview) ? f.preview : "pipeline";
-      const icon = (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
-      return { title: f.title, desc: f.desc, preview, icon: icon as FeatureItem["icon"] };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview, // plain string; resolved inside FeatureGrid
+      icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText,
+    }));
   }, [data?.features]);
 
   // Why section
@@ -115,9 +109,8 @@ export default function SalesOrderProcessingPage() {
   // CTA
   const ctaTitle = data?.cta?.title ?? "Ready to streamline your sales cycle?";
   const ctaBody =
-    data?.cta?.body ?? "We can tailor Argus Sales Management to your workflows, approvals, and reporting needs.";
-  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
-  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
+    data?.cta?.body ??
+    "We can tailor Argus Sales Management to your workflows, approvals, and reporting needs.";
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -200,7 +193,9 @@ export default function SalesOrderProcessingPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -215,19 +210,25 @@ export default function SalesOrderProcessingPage() {
       {/* FEATURES */}
       <div id="features" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="space-y-10"
+          >
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
               Key Features
             </motion.h2>
 
             <FeatureGrid
               items={featureItems}
-              ambient
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
+              // enableTilt // uncomment if you want tilt here too
             />
           </motion.div>
         </div>
@@ -246,30 +247,7 @@ export default function SalesOrderProcessingPage() {
       />
 
       {/* CONTACT / CTA */}
-      <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
-          <div className="grid md:grid-cols-2 items-center gap-8">
-            <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
-              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
-            </div>
-            <div className="flex md:justify-end gap-3">
-              <a
-                href={data?.cta?.primary?.href ?? ctaPrimary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-              >
-                {data?.cta?.primary?.label ?? ctaPrimary.label}
-              </a>
-              <a
-                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-              >
-                {data?.cta?.secondary?.label ?? ctaSecondary.label}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }

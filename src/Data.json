@@ -79,7 +79,7 @@
         "hero": {
           "title": "Sales Order Processing",
           "subtitle": "Streamline Your Sales Cycle and Empower Your Team",
-          "body": "Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in one seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.",
+          "body": "Argus Sales Management helps businesses automate and control their entire sales process — from quotation to invoice — in bagWithX seamless platform. Designed for efficiency, it enables sales teams to respond faster to customer requests, improve order accuracy, and enhance overall sales performance.",
           "primaryCta": { "label": "Explore Capabilities", "href": "#features" },
           "secondaryCta": { "label": "Why Argus?", "href": "#why" }
         },
@@ -92,44 +92,44 @@
           {
             "title": "Quotation & Order Management",
             "desc": "Create professional quotations in seconds, manage approvals, and convert them directly into sales orders without duplication.",
-            "preview": "quote2order",
-            "iconKey": "fileText"
+            "preview": "setting"
+
           },
           {
             "title": "Price Lists & Discount Rules",
             "desc": "Set up flexible pricing strategies, volume discounts, and customer-specific rates to stay competitive.",
-            "preview": "pricing",
-            "iconKey": "calculator"
+            "preview": "setting"
+
           },
           {
             "title": "Sales Workflow Automation",
             "desc": "Standardize your sales cycle with predefined steps, approval limits, and document generation to minimize manual errors.",
-            "preview": "pipeline",
-            "iconKey": "layers"
+            "preview": "setting"
+
           },
           {
             "title": "Customer Database",
-            "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in one place.",
-            "preview": "crm",
-            "iconKey": "database"
+            "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in bagWithX place.",
+            "preview": "setting"
+
           },
           {
             "title": "Invoice Integration",
             "desc": "Automatically generate invoices from confirmed sales orders, ensuring accurate billing and faster payments.",
-            "preview": "invoice",
-            "iconKey": "link2"
+            "preview": "setting"
+
           },
           {
             "title": "Reporting & Analytics",
             "desc": "Access real-time sales data, product performance insights, and profitability reports to support data-driven decision-making.",
-            "preview": "analytics",
-            "iconKey": "fileText"
+            "preview": "setting"
+
           },
           {
             "title": "Multi-Currency & Multi-Branch Support",
             "desc": "Manage sales operations across branches or countries with unified control and accurate reporting.",
-            "preview": "multicurrency",
-            "iconKey": "layers"
+            "preview": "setting"
+
           }
         ],
         "why": {
@@ -241,7 +241,7 @@
       "pill1": "Who We Are",
       "heading1": "3 decades of ERP—Software",
       "copy1a": "Just over 30 years ago, we started as an erp software company that offers business solutions at its best! We grew with creativity and determination, creating out first windows erp software back in 1995.",
-        "copy1b": "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is one of the leading software companies across industries and regions still aiming high, still reaching there!",
+        "copy1b": "Our aim was the sky and we reached the cloud erp world with our unique product. We're still expanding around the world with our hard working and professional team. Now SoftMachine is bagWithX of the leading software companies across industries and regions still aiming high, still reaching there!",
       "pill2": "About Argus",
       "heading2": "Argus ERP Cloud",
       "copy2a": "Argus is an erp software product that enables businesses to plan and manage their operations more successfully and efficiently. It enables you to function smoothly, instantly, and intelligently.",
@@ -277,8 +277,8 @@
       "a": "Absolutely. Argus is fully modular and customizable. You can enable only the modules you need and tailor workflows, reports, and user roles to match your business operations precisely."
     },
     {
-      "q": "Is it subscription-based or a one-time license?",
-      "a": "Argus is offered on a subscription-based model. There is no option for a one-time or perpetual license. This ensures you always have access to the latest updates and support."
+      "q": "Is it subscription-based or a bagWithX-time license?",
+      "a": "Argus is offered on a subscription-based model. There is no option for a bagWithX-time or perpetual license. This ensures you always have access to the latest updates and support."
     },
     {
       "q": "How long does implementation take?",
@@ -286,7 +286,7 @@
     },
     {
       "q": "How secure is our data?",
-      "a": "Data security is one of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards."
+      "a": "Data security is bagWithX of our top priorities. Argus uses 256-bit SSL encryption, multi-layered access control, and is hosted on secure, audited infrastructure. We also follow GDPR and ISO data protection standards."
     },
     {
       "q": "Can we import data from existing systems?",
@@ -487,9 +487,9 @@
                   "body": "Every Argus ERP implementation begins with a deep dive into your business operations. Our consultants analyze workflows, challenges, and objectives to design a system that perfectly fits your organization. This stage ensures Argus ERP supports process optimization, data accuracy, and improved decision-making across all departments.",
                   "imageKey": "cat",
                   "imageAlt": "Business analysis and discovery",
-                  "anchorId": "analysis",
+                  "anchorId": "",
                   "primary": { "label": "Start Assessment", "icon": "sparkles" },
-                  "secondary": { "label": "See methodology", "variant": "outline", "href": "#analysis" }
+                  "secondary": { "label": "See methodology", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "configuration",
@@ -498,9 +498,9 @@
                   "body": "At SoftMachine, we follow a structured, phased approach to ERP deployment. We configure Argus ERP based on your industry-specific needs, integrating modules such as Accounting, Inventory, Sales, and HR. This phased rollout minimizes operational disruption, reduces risk, and ensures a smooth digital transformation journey.",
                   "imageKey": "workcomputer",
                   "imageAlt": "Configuration and deployment",
-                  "anchorId": "configuration",
+                  "anchorId": "",
                   "primary": { "label": "Explore Modules", "icon": "play" },
-                  "secondary": { "label": "Implementation plan", "variant": "outline", "href": "#configuration" }
+                  "secondary": { "label": "Implementation plan", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "training",
@@ -509,9 +509,9 @@
                   "body": "We believe that successful ERP projects depend on user adoption. Our experts deliver personalized training sessions to equip your team with the skills needed to fully leverage Argus ERP. Through effective change management and hands-on guidance, we help your employees adapt quickly and confidently to the new system.",
                   "imageKey": "giphy",
                   "imageAlt": "User training",
-                  "anchorId": "training",
+                  "anchorId": "",
                   "primary": { "label": "Schedule Training", "icon": "sparkles" },
-                  "secondary": { "label": "Training overview", "variant": "outline", "href": "#training" }
+                  "secondary": { "label": "Training overview", "variant": "outline", "href": "" }
                 },
                 {
                   "key": "support",
@@ -520,105 +520,22 @@
                   "body": "After go-live, SoftMachine remains your trusted ERP partner. We provide continuous system monitoring, updates, and technical support to ensure Argus ERP evolves with your business. Our goal is to drive long-term success through scalability, efficiency, and continuous improvement of your digital operations.",
                   "imageKey": "path",
                   "imageAlt": "Ongoing support and optimization",
-                  "anchorId": "support",
+                  "anchorId": "",
                   "primary": { "label": "Contact Support", "icon": "play" },
-                  "secondary": { "label": "Success roadmap", "variant": "outline", "href": "#support" }
+                  "secondary": { "label": "Success roadmap", "variant": "outline", "href": "" }
                 }
               ]
     }, 
     "testimonials": {
 
                 "teaser": {
-                  "badgeLabel": "What clients say",
-                  "title": "Trusted by teams worldwide",
-                  "subtitle": "A few highlights from 89 testimonials.",
-                  "viewAllCta": "View all testimonials",
-                  "viewAllHref": "/testimonials",
+                  "badgeLabel": "Our Clients",
+                  "title": "Our Clients",
+                  "subtitle": "A quick peek at recent work across mobile, web, and product engineering.",
+                  "viewAllCta": "View all Projects",
+                  "viewAllHref": "/allProjects",
                   "teaserIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
-                },
-                "items": [
-                  {
-                    "id": "mansour",
-                    "name": "Sultan Bin Ghamiah",
-                    "company": "Mansour Group",
-                    "location": "Lebanon",
-                    "role": "CEO",
-                    "logoKey": "MGLogo",
-                    "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
-                  },
-                  {
-                    "id": "masagh",
-                    "name": "Badr Al Amiri",
-                    "company": "MASAGH",
-                    "location": "KSA",
-                    "role": "CEO",
-                    "logoKey": "MasagLogo",
-                    "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
-                  },
-                  {
-                    "id": "byc",
-                    "name": "Khursan Bin Yaala",
-                    "company": "Bin Yaala Exchange",
-                    "location": "KSA",
-                    "role": "CEO",
-                    "logoKey": "BYCLogo",
-                    "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
-                  },
-                  {
-                    "id": "neg",
-                    "name": "Tarek Tarouti",
-                    "company": "New Egypt Gold",
-                    "location": "Egypt",
-                    "role": "CEO",
-                    "logoKey": "NEGLogo",
-                    "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
-                  },
-                  {
-                    "id": "cil",
-                    "name": "Khalil Ghassani",
-                    "company": "CIL",
-                    "location": "Ivory Coast",
-                    "role": "CEO",
-                    "logoKey": "CILLogo",
-                    "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
-                  },
-                  {
-                    "id": "hyundai",
-                    "name": "Wissam Bazzoun",
-                    "company": "Hyundai",
-                    "location": "Lebanon",
-                    "role": "CIO",
-                    "logoKey": "HyundaiLogo",
-                    "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
-                  },
-                  {
-                    "id": "tamkeen",
-                    "name": "Yahya Tahan",
-                    "company": "Tamkeen",
-                    "location": "KSA",
-                    "role": "",
-                    "logoKey": "TamkeenLogo",
-                    "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
-                  },
-                  {
-                    "id": "korristar",
-                    "name": "Ali Korri",
-                    "company": "Korristar",
-                    "location": "Lebanon",
-                    "role": "CEO",
-                    "logoKey": "KorristarLogo",
-                    "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
-                  },
-                  {
-                    "id": "gdk",
-                    "name": "Elie Ferzli",
-                    "company": "GDK",
-                    "location": "Ivory Coast",
-                    "role": "CEO",
-                    "logoKey": "GDKLogo",
-                    "content": "Implementing Argus ERP was a game changer. Seamless integration and robust reporting improved compliance and transparency across operations."
-                  }
-                ]
+                }
     },
     "financials": {
     "hero": {
@@ -637,32 +554,32 @@
       {
         "title": "General Ledger & Journal Entries:",
         "desc": "Keep track of every transaction and maintain a clear audit trail.",
-        "iconKey": "fileText",
-        "preview": "typing"
+        "preview": "setting"
+
       },
       {
         "title": "Accounts Payable & Receivable:",
         "desc": "Manage supplier invoices, customer payments, and aging reports effortlessly.",
-        "iconKey": "wallet",
-        "preview": "inbox"
+        "preview": "criditCard"
+
       },
       {
         "title": "Multi-Currency & Multi-Company Accounting:",
         "desc": "Handle international operations with accurate currency conversions and consolidated reporting.",
-        "iconKey": "globe2",
-        "preview": "multicurrency"
+        "preview": "money"
+
       },
       {
         "title": "Budgeting & Forecasting:",
         "desc": "Plan and control expenses using dynamic budgets and predictive insights.",
-        "iconKey": "barChart3",
-        "preview": "analytics"
+        "preview": "money2"
+
       },
       {
         "title": "Tax Management:",
         "desc": "Ensure compliance with local tax laws through automated tax computation and reporting.",
-        "iconKey": "percent",
-        "preview": "donut"
+        "preview": "bill"
+
       }
     ],
     "impact": {
@@ -672,9 +589,7 @@
     },
     "cta": {
       "title": "Ready to modernize your financial operations?",
-      "body": "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.",
-      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+      "body": "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs."
     },
     "references": [
       {
@@ -700,12 +615,12 @@
             { "imageKey": "logo", "alt": "Brand identity" }
           ],
           "features": [
-            { "title": "Asset Register", "desc": "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.", "preview": "cards", "iconKey": "database" },
-            { "title": "Depreciation Management", "desc": "Automatically calculate depreciation using customizable methods and schedules.", "preview": "timeline", "iconKey": "calculator" },
-            { "title": "Asset Lifecycle Tracking", "desc": "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.", "preview": "bubbles", "iconKey": "layers" },
-            { "title": "Integration with Financials", "desc": "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.", "preview": "link", "iconKey": "link2" },
-            { "title": "Maintenance Scheduling", "desc": "Plan preventive maintenance to extend asset life and minimize downtime.", "preview": "gear", "iconKey": "wrench" },
-            { "title": "Reporting & Audit Support", "desc": "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.", "preview": "scroll", "iconKey": "fileText" }
+            { "title": "Asset Register", "desc": "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.","preview": "setting"          },
+            { "title": "Depreciation Management", "desc": "Automatically calculate depreciation using customizable methods and schedules.","preview": "setting"          },
+            { "title": "Asset Lifecycle Tracking", "desc": "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.","preview": "setting"          },
+            { "title": "Integration with Financials", "desc": "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.","preview": "setting"          },
+            { "title": "Maintenance Scheduling", "desc": "Plan preventive maintenance to extend asset life and minimize downtime.","preview": "setting"          },
+            { "title": "Reporting & Audit Support", "desc": "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.","preview": "setting"          }
           ],
           "why": {
             "title": "Why Argus Fixed Asset Management",
@@ -722,9 +637,7 @@
           },
           "cta": {
             "title": "Ready to simplify asset control & reporting?",
-            "body": "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.",
-            "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-            "secondary": { "label": "Contact Sales", "href": "/#contact" }
+            "body": "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs."
           }
     },
     "hr": {
@@ -743,27 +656,24 @@
             "features": [
               {
                 "title": "Centralized Employee Information:",
-                "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in one place, accessible anytime.",
-                "preview": "crm",
-                "iconKey": "database"
+                "desc": "Maintain accurate and up-to-date employee profiles, contracts, and records in bagWithX place, accessible anytime.",
+                "preview": "centralizedemployeeinfo"
+
               },
               {
                 "title": "Attendance & Time Tracking:",
                 "desc": "Monitor attendance using smart integrations like biometric devices or web check-ins, ensuring accurate payroll calculations.",
-                "preview": "timeline",
-                "iconKey": "clock"
+                "preview": "setting"
               },
               {
                 "title": "Leave Management System:",
                 "desc": "Simplify leave requests, approvals, and balance tracking with automated workflows and notifications.",
-                "preview": "inbox",
-                "iconKey": "calendar"
+                "preview": "inbox"
               },
               {
                 "title": "Payroll Automation:",
                 "desc": "Calculate salaries, deductions, taxes, and benefits effortlessly with Argus Payroll integration.",
-                "preview": "invoice",
-                "iconKey": "calculator"
+                "preview": "invoice"
               }
             ],
             "why": {
@@ -774,9 +684,7 @@
             },
             "cta": {
               "title": "Ready to empower your HR team?",
-              "body": "We can tailor Argus HR to your policies, approval chains, and payroll requirements.",
-              "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-              "secondary": { "label": "Contact Sales", "href": "/#contact" }
+              "body": "We can tailor Argus HR to your policies, approval chains, and payroll requirements."
             }
     },     
     "manufacturing": {
@@ -796,43 +704,43 @@
       {
         "title": "Bill of Materials (BOM):",
         "desc": "Define components, quantities, and production steps for every finished product.",
-        "preview": "tiles",
-        "iconKey": "database"
+        "preview": "setting"
+
       },
       {
         "title": "Production Orders:",
         "desc": "Create and manage work orders with live status updates and material availability checks.",
-        "preview": "pipeline",
-        "iconKey": "fileText"
+        "preview": "setting"
+
       },
       {
         "title": "Material Requirement Planning (MRP):",
         "desc": "Automate material demand calculations based on production forecasts and stock levels.",
-        "preview": "spark",
-        "iconKey": "layers"
+        "preview": "setting"
+
       },
       {
         "title": "Work Center Management:",
         "desc": "Monitor production performance, track downtime, and optimize capacity utilization.",
-        "preview": "gauge",
-        "iconKey": "wrench"
+        "preview": "setting"
+
       },
       {
         "title": "Costing & Analysis:",
         "desc": "Capture labor, overhead, and material costs for precise production cost reporting.",
-        "preview": "donut",
-        "iconKey": "calculator"
+        "preview": "setting"
+
       },
       {
         "title": "Integration with Inventory & Purchase:",
         "desc": "Ensure raw materials are always available through real-time links with stock and procurement data.",
-        "preview": "link",
-        "iconKey": "link2"
+        "preview": "setting"
+
       }
     ],
     "why": {
       "title": "Why Argus Manufacturing:",
-      "description": "Argus connects planning, production, and inventory into one unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency.",
+      "description": "Argus connects planning, production, and inventory into bagWithX unified workflow — reducing delays, minimizing waste, and boosting overall production efficiency.",
       "mediaItems": [
         { "imageKey": "heroImage", "alt": "Production planning" },
         { "imageKey": "hero",      "alt": "Shop floor tracking" }
@@ -845,11 +753,461 @@
     },
     "cta": {
       "title": "Ready to optimize production?",
-      "body": "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.",
-      "primary": { "label": "Schedule a Demo", "href": "/#demo" },
-      "secondary": { "label": "Contact Sales", "href": "/#contact" }
+      "body": "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements."
     }
+    },
+    "RepairAndServicepage": {
+      "hero": {
+        "title": "Repair Management",
+        "subtitle": "Streamline Repairs and Maximize Equipment Uptime",
+        "body": "Argus Repair Management helps businesses efficiently manage all repair and maintenance activities — whether for customer products, in-house equipment, or field service operations. It provides complete visibility over repair requests, work orders, spare parts, and service history, ensuring timely and cost-effective repairs.",
+        "primaryCta": { "label": "", "href": "" },
+        "secondaryCta": { "label": "", "href": "" }
+      },
+      "carousel": [
+        { "imageKey": "heroImage", "alt": "Repair Management" },
+        { "imageKey": "hero", "alt": "Streamline Repairs and Maximize Equipment Uptime" },
+        { "imageKey": "logo", "alt": "Argus Repair Management" }
+      ],
+      "features": [
+        {
+          "title": "Repair Requests & Ticketing:",
+          "desc": "Capture and track repair requests from customers or internal departments in a structured workflow.",
+          "preview": "setting"
+
+        },
+        {
+          "title": "Work Order Management:",
+          "desc": "Generate work orders automatically, assign technicians, and monitor progress in real time.",
+          "preview": "setting"
+
+        },
+        {
+          "title": "Spare Parts & Inventory Integration:",
+          "desc": "Track parts usage, manage stock availability, and automate reordering for seamless repairs.",
+          "preview": "setting"
+
+        },
+        {
+          "title": "Repair History & Analytics:",
+          "desc": "Maintain detailed records of all repair activities for each product or equipment, enabling trend analysis and preventive maintenance.",
+          "preview": "setting"
+
+        },
+        {
+          "title": "Cost Tracking & Billing:",
+          "desc": "Record labor and parts costs, generate invoices, and integrate with Argus Financials for accurate billing.",
+          "preview": "setting"
+
+        },
+        {
+          "title": "Service SLA Management:",
+          "desc": "Monitor repair timelines and ensure service level agreements are met for improved customer satisfaction.",
+          "preview": "setting"
+
+        }
+      ],
+      "impact": {
+        "title": "Why Argus Repair Management:",
+        "description": "By centralizing repair operations and integrating with inventory and finance, Argus helps businesses reduce downtime, optimize resource utilization, and deliver timely, high-quality service — keeping both equipment and customers satisfied.",
+        "mediaKey": "heroImage"
+      },
+      "cta": {
+        "title": "Ready to optimize your repair and service operations?",
+        "body": "We can tailor Argus Repair Management to your repair workflows, technician assignments, and service reporting needs."
+      },
+      "references": []
+    },
+    "delivery": {
+        "hero": {
+          "title": "Delivery Management",
+          "subtitle": "Ensure Accurate and On-Time Deliveries Every Time",
+          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Delivery Management" },
+          { "imageKey": "hero", "alt": "Ensure Accurate and On-Time Deliveries Every Time" },
+          { "imageKey": "logo", "alt": "Argus Delivery Management" }
+        ],
+        "features": [
+          {
+            "title": "Delivery Order Management:",
+            "desc": "Automatically generate delivery orders from confirmed sales or transfer requests.",
+            "preview": "bill"
+
+          },
+          {
+            "title": "Route & Driver Assignment:",
+            "desc": "Assign drivers, vehicles, and delivery routes for efficient transportation planning.",
+            "preview": "MovingTruck"
+
+          },
+          {
+            "title": "Proof of Delivery:",
+            "desc": "Record digital signatures and confirmations for verified deliveries.",
+            "preview": "Box"
+
+          },
+          {
+            "title": "Integration with Inventory:",
+            "desc": "Automatically update stock levels and item movement upon delivery completion.",
+            "preview": "cart"
+
+          },
+          {
+            "title": "Performance Reports:",
+            "desc": "Analyze delivery times, costs, and driver performance for continuous improvement.",
+            "preview": "accounting"
+
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Delivery Management:",
+          "description": "Argus ensures every order is delivered accurately, efficiently, and on time — strengthening customer trust and optimizing logistics performance.",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+          "title": "Ensure Accurate and On-Time Deliveries Every Time",
+          "body": "Argus Delivery Management streamlines outbound logistics by providing full visibility and control over the delivery process. From order preparation to shipment confirmation, it ensures accuracy, speed, and customer satisfaction."
+        },
+        "references": []
+    },
+   "inventory": {
+        "hero": {
+          "title": "Inventory Management",
+          "subtitle": "Gain Real-Time Visibility and Control Over Your Stock",
+          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Inventory Management" },
+          { "imageKey": "hero", "alt": "Gain Real-Time Visibility and Control Over Your Stock" },
+          { "imageKey": "logo", "alt": "Argus Inventory Management" }
+        ],
+        "features": [
+          {
+            "title": "Multi-Warehouse Management:",
+            "desc": "Manage stock across multiple locations, branches, or bins with full traceability.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Stock Movements & Adjustments:",
+            "desc": "Record receipts, internal transfers, and stock adjustments in real time.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Batch & Serial Number Tracking:",
+            "desc": "Monitor product traceability with batch numbers, expiry dates, and serial tracking.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Reorder Rules & Stock Alerts:",
+            "desc": "Automate reordering based on minimum stock levels or lead times.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Integration with Sales & Purchase:",
+            "desc": "Synchronize inventory with sales and procurement for accurate stock visibility.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Inventory Valuation & Reporting:",
+            "desc": "Get detailed insights into stock value, turnover, and aging to improve efficiency.",
+            "preview": "setting"
+
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Inventory Management:",
+          "description": "With Argus, businesses can eliminate stock discrepancies, reduce carrying costs, and achieve full control over their supply chain operations.",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+        "title": "Gain Real-Time Visibility and Control Over Your Stock",
+          "body": "Argus Inventory Management gives businesses the tools to track stock movements, optimize storage, and maintain accurate inventory records. Whether managing a single warehouse or multiple locations, Argus ensures you always have the right products in the right place."
+        },
+        "references": []
+    },
+   "PurhaseOcrderProcessing": {
+        "hero": {
+          "title": "Purhase Ocrder Processing",
+          "subtitle": "Simplify Procurement and Strengthen Supplier Relationships",
+          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors.",
+          "primaryCta": { "label": "", "href": "" },
+          "secondaryCta": { "label": "", "href": "" }
+        },
+        "carousel": [
+          { "imageKey": "heroImage", "alt": "Purchase Order Processing" },
+          { "imageKey": "hero", "alt": "Simplify Procurement and Strengthen Supplier Relationships" },
+          { "imageKey": "logo", "alt": "Argus Purchase" }
+        ],
+        "features": [
+          {
+            "title": "Purchase Requisitions & Approvals:",
+            "desc": "Automate internal purchase requests and multi-level approval workflows.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Supplier Management:",
+            "desc": "Maintain a complete database of approved suppliers with performance and pricing history.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "RFQs & Quotation Comparison:",
+            "desc": "Request, receive, and evaluate supplier quotations for informed decision-making.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Purchase Orders:",
+            "desc": "Generate and send purchase orders automatically based on stock levels or demand forecasts.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Integration with Inventory & Financials:",
+            "desc": "Automatically update stock quantities and create payable entries upon goods receipt.",
+            "preview": "setting"
+
+          },
+          {
+            "title": "Procurement Reporting:",
+            "desc": "Gain insights into spending patterns, supplier reliability, and cost optimization.",
+            "preview": "setting"
+
+          }
+        ],
+        "impact": {
+          "title": "Why Argus Purchase:",
+          "description": "By reducing manual effort and providing real-time visibility into procurement activities, Argus enables smarter purchasing decisions and stronger supplier collaboration",
+          "mediaKey": "heroImage"
+        },
+        "cta": {
+          "title": "Simplify Procurement and Strengthen Supplier Relationships",
+          "body": "Argus Purchase Order Processing automates the procurement cycle — from requisition to supplier invoicing. It helps businesses ensure timely purchasing, cost control, and transparent communication with vendors."
+        },
+        "references": []
+    },
+
+
+
+
+    "clients": {
+  "header": {
+    "title": "Our Clients",
+    "subtitle": "Real work across finance, manufacturing, automotive, and retail."
+  },
+  "sectorLabels": {
+    "finance": "Finance & Services",
+    "manufacturing": "Manufacturing & Industry",
+    "auto_retail": "Automotive & Retail"
+  },
+  "categories": [
+    { "key": "all", "label": "All" },
+    { "key": "branding", "label": "Branding Strategy" },
+    { "key": "digital", "label": "Digital Experiences" },
+    { "key": "ecom", "label": "Ecommerce" }
+  ],
+  "teasers": {
+    "viewAllCta": "View all Projects",
+    "viewAllHref": "/allProjects",
+    "projectsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"],
+    "testimonialsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
+  },
+  "items": [
+    {
+      "id": "mansour",
+      "company": "Mansour Group",
+      "sector": "auto_retail",
+      "logoKey": "MGLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Mansour Group",
+        "subtitle": "Multi-store automotive retail operations",
+        "href": "/work/mansour-group",
+        "categories": ["branding", "digital"],
+        "imgKey": "mansour"
+      },
+      "testimonial": {
+        "name": "Sultan Bin Ghamiah",
+        "role": "CEO · Mansour Group (Lebanon)",
+        "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
+      }
+    },
+    {
+      "id": "masagh",
+      "company": "MASAGH",
+      "sector": "finance",
+      "logoKey": "MasagLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "MASAGH",
+        "subtitle": "Services & solutions platform",
+        "href": "/work/masagh",
+        "categories": ["digital"],
+        "imgKey": "masagh"
+      },
+      "testimonial": {
+        "name": "Badr Al Amiri",
+        "role": "CEO · MASAGH (KSA)",
+        "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
+      }
+    },
+    {
+      "id": "byc",
+      "company": "Bin Yaala Exchange",
+      "sector": "finance",
+      "logoKey": "BYCLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "Bin Yaala Exchange",
+        "subtitle": "Remittance & FX platform",
+        "href": "/work/byc",
+        "categories": ["digital", "ecom"],
+        "imgKey": "byc"
+      },
+      "testimonial": {
+        "name": "Khursan Bin Yaala",
+        "role": "CEO · Bin Yaala Exchange (KSA)",
+        "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
+      }
+    },
+    {
+      "id": "neg",
+      "company": "New Egypt Gold",
+      "sector": "manufacturing",
+      "logoKey": "NEGLogo",
+      "locations": ["Egypt"],
+      "caseStudy": {
+        "title": "New Egypt Gold",
+        "subtitle": "Manufacturing & retail visibility",
+        "href": "/work/new-egypt-gold",
+        "categories": ["ecom", "branding"],
+        "imgKey": "neg"
+      },
+      "testimonial": {
+        "name": "Tarek Tarouti",
+        "role": "CEO · New Egypt Gold (Egypt)",
+        "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
+      }
+    },
+    {
+      "id": "cil",
+      "company": "CIL",
+      "sector": "finance",
+      "logoKey": "CILLogo",
+      "locations": ["Ivory Coast"],
+      "caseStudy": {
+        "title": "CIL",
+        "subtitle": "Financial services suite",
+        "href": "/work/cil",
+        "categories": ["digital"],
+        "imgKey": "cil"
+      },
+      "testimonial": {
+        "name": "Khalil Ghassani",
+        "role": "CEO · CIL (Ivory Coast)",
+        "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
+      }
+    },
+    {
+      "id": "hyundai",
+      "company": "Hyundai Lebanon",
+      "sector": "auto_retail",
+      "logoKey": "HyundaiLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Hyundai Lebanon",
+        "subtitle": "Automotive DMS integrations",
+        "href": "/work/hyundai-lebanon",
+        "categories": ["digital"],
+        "imgKey": "hyundai"
+      },
+      "testimonial": {
+        "name": "Wissam Bazzoun",
+        "role": "CIO · Hyundai (Lebanon)",
+        "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
+      }
+    },
+    {
+      "id": "tamkeen",
+      "company": "Tamkeen",
+      "sector": "manufacturing",
+      "logoKey": "TamkeenLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "Tamkeen",
+        "subtitle": "Production, inventory & logistics",
+        "href": "/work/tamkeen",
+        "categories": ["ecom", "digital"],
+        "imgKey": "tamkeen"
+      },
+      "testimonial": {
+        "name": "Yahya Tahan",
+        "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
+      }
+    },
+    {
+      "id": "korristar",
+      "company": "Korristar",
+      "sector": "auto_retail",
+      "logoKey": "KorristarLogo",
+      "locations": ["Lebanon"],
+      "caseStudy": {
+        "title": "Korristar",
+        "subtitle": "Retail & services operations",
+        "href": "/work/korristar",
+        "categories": ["branding"],
+        "imgKey": "korristar"
+      },
+      "testimonial": {
+        "name": "Ali Korri",
+        "role": "CEO · Korristar (Lebanon)",
+        "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
+      }
+    },
+    {
+      "id": "gdk",
+      "company": "GDK",
+      "sector": "finance",
+      "logoKey": "GDKLogo",
+      "locations": ["Ivory Coast"],
+      "caseStudy": {
+        "title": "GDK",
+        "subtitle": "ERP & reporting for compliance",
+        "href": "/work/gdk",
+        "categories": ["digital"],
+        "imgKey": "gdk"
+      },
+      "testimonial": {
+        "name": "Elie Ferzli",
+        "role": "CEO · GDK (Ivory Coast)",
+        "content": "Implementing Argus ERP was a game changer. Seamless integration and robust reporting improved compliance and transparency across operations."
+      }
     }
+  ]
+}
+
+    
+    
+  
+
+    
+    
+    
+
+
+    
       
       
     

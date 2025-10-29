@@ -6,21 +6,25 @@ import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
 import { ArrowRight, Database, FileText, Layers, Wrench, Calculator, Link2 } from "lucide-react";
 
-// Images kept in code
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
 
-// Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
-
 import siteData from "@/data.json";
+import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
 
 /* ----------------------------- Runtime maps ----------------------------- */
 const IMG: Record<string, string> = {
@@ -38,17 +42,11 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   link2: <Link2 className="h-5 w-5 text-slate-900" />,
 };
 
-/** Allowed previews your FeatureGrid supports */
-const PREVIEWS = ["tiles", "pipeline", "spark", "gauge", "donut", "link"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey =>
-  typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
-
 /* --------------------------------- Page --------------------------------- */
 export default function ManufacturingManagementPage() {
   const data = siteData.manufacturing;
 
-  // Hero copy
+  // Hero
   const heroTitle = data?.hero?.title ?? "Manufacturing Management";
   const heroSubtitle = data?.hero?.subtitle ?? "Optimize Production Efficiency and Resource Planning";
   const heroBody =
@@ -57,7 +55,7 @@ export default function ManufacturingManagementPage() {
   const heroPrimary = data?.hero?.primaryCta;
   const heroSecondary = data?.hero?.secondaryCta;
 
-  // Carousel from JSON → imported images
+  // Carousel
   const CAROUSEL = useMemo(
     () =>
       (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
@@ -67,7 +65,6 @@ export default function ManufacturingManagementPage() {
     [data?.carousel]
   );
 
-  // Cross-fade carousel (respect reduced motion)
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
@@ -76,15 +73,16 @@ export default function ManufacturingManagementPage() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features (JSON → FeatureGrid items)
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (no preview unions/guards; FeatureGrid validates/falls back)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-    return src.map((f) => {
-      const preview = isPreview(f.preview) ? f.preview : "tiles";
-      const icon = (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database;
-      return { title: f.title, desc: f.desc, preview, icon: icon as FeatureItem["icon"] };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview, // plain string
+      icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database,
+    }));
   }, [data?.features]);
 
   // Why section
@@ -105,8 +103,6 @@ export default function ManufacturingManagementPage() {
   const ctaTitle = data?.cta?.title ?? "Ready to optimize production?";
   const ctaBody =
     data?.cta?.body ?? "We can tailor Argus Manufacturing to your BOMs, routing, and costing requirements.";
-  const ctaPrimary = data?.cta?.primary ?? { label: "Schedule a Demo", href: "/#demo" };
-  const ctaSecondary = data?.cta?.secondary ?? { label: "Contact Sales", href: "/#contact" };
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -132,7 +128,9 @@ export default function ManufacturingManagementPage() {
           >
             {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
-              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">{heroTitle}</h1>
+              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
+                {heroTitle}
+              </h1>
               <p className="mt-4 text-lg text-slate-600">{heroSubtitle}</p>
               <p className="mt-3 text-slate-600 leading-relaxed">{heroBody}</p>
 
@@ -185,7 +183,9 @@ export default function ManufacturingManagementPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -200,20 +200,28 @@ export default function ManufacturingManagementPage() {
       {/* FEATURES */}
       <div id="features" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="space-y-10"
+          >
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
               Key Features:
             </motion.h2>
 
             <FeatureGrid
               items={featureItems}
-              ambient
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
               enableTilt
+              // optional per-page sizing tweaks:
+              // previewClassName="h-48 md:h-56"
+              // previewScale={1.06}
             />
           </motion.div>
         </div>
@@ -231,30 +239,7 @@ export default function ManufacturingManagementPage() {
       />
 
       {/* CONTACT / CTA */}
-      <div id="contact" className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-8 md:p-10">
-          <div className="grid md:grid-cols-2 items-center gap-8">
-            <div>
-              <h3 className="text-xl md:text-2xl font-semibold text-slate-900">{data?.cta?.title ?? ctaTitle}</h3>
-              <p className="mt-2 text-slate-600">{data?.cta?.body ?? ctaBody}</p>
-            </div>
-            <div className="flex md:justify-end gap-3">
-              <a
-                href={data?.cta?.primary?.href ?? ctaPrimary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
-              >
-                {data?.cta?.primary?.label ?? ctaPrimary.label}
-              </a>
-              <a
-                href={data?.cta?.secondary?.href ?? ctaSecondary.href}
-                className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
-              >
-                {data?.cta?.secondary?.label ?? ctaSecondary.label}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }
