@@ -17,8 +17,14 @@ import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
 
 /* ----------------------------- Runtime maps ----------------------------- */
 const IMG: Record<string, string> = {
@@ -64,14 +70,14 @@ export default function DeliveryManagement() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features (no Lottie typing/imports needed)
+  // Features (plain `preview` string; FeatureGrid resolves/falls back)
   type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
     return src.map((f) => ({
       title: f.title,
       desc: f.desc,
-      preview: f.preview, // plain string; validated inside FeatureGrid
+      preview: f.preview,
       icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText,
     }));
   }, [data?.features]);
@@ -88,35 +94,63 @@ export default function DeliveryManagement() {
   return (
     <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="mb-6"><GoBackButton fallbackTo="/" /></div>
+        <div className="mb-6">
+          <GoBackButton fallbackTo="/" />
+        </div>
       </div>
 
       {/* HERO */}
       <div className="relative overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,.15),transparent_60%)]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,.15),transparent_60%)]"
+        />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+          >
+            {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
-              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">{heroTitle}</h1>
+              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
+                {heroTitle}
+              </h1>
               <p className="mt-4 text-lg text-slate-600">{heroSubtitle}</p>
               <p className="mt-3 text-slate-600 leading-relaxed">{heroBody}</p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 {heroPrimary?.href && (
-                  <a href={heroPrimary.href} className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition" aria-label={heroPrimary.label}>
+                  <a
+                    href={heroPrimary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition"
+                    aria-label={heroPrimary.label}
+                  >
                     {heroPrimary.label} <ArrowRight className="ml-2 h-4 w-4" />
                   </a>
                 )}
                 {heroSecondary?.href && (
-                  <a href={heroSecondary.href} className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition" aria-label={heroSecondary.label}>
+                  <a
+                    href={heroSecondary.href}
+                    className="inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium ring-1 ring-slate-300 text-slate-700 hover:bg-slate-50 transition"
+                    aria-label={heroSecondary.label}
+                  >
                     {heroSecondary.label}
                   </a>
                 )}
               </div>
             </motion.div>
 
+            {/* Visual / Carousel */}
             <motion.div variants={fadeUp} className="relative">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur" role="region" aria-roledescription="carousel" aria-label="Delivery visuals">
+              <div
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Delivery visuals"
+              >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
                     key={`${img.src}-${i}`}
@@ -136,7 +170,9 @@ export default function DeliveryManagement() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -151,8 +187,16 @@ export default function DeliveryManagement() {
       {/* FEATURES */}
       <div id="features" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
-            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">Core Features:</motion.h2>
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="space-y-10"
+          >
+            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
+              Core Features:
+            </motion.h2>
 
             <FeatureGrid
               items={featureItems}
@@ -168,7 +212,14 @@ export default function DeliveryManagement() {
       </div>
 
       {/* IMPACT */}
-      <SectionSplit id="impact" navInk="light" tone="dark" title={impactTitle} description={impactDesc} media={impactMedia} />
+      <SectionSplit
+        id="impact"
+        navInk="light"
+        tone="dark"
+        title={impactTitle}
+        description={impactDesc}
+        media={impactMedia}
+      />
 
       <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>

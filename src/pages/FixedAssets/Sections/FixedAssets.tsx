@@ -2,17 +2,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import {
-  Calculator,
-  Database,
-  Wrench,
-  Layers,
-  Link2,
-  FileText,
-  type LucideIcon,
-} from "lucide-react";
+import { Calculator, Database, Wrench, Layers, Link2, FileText } from "lucide-react";
+
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
@@ -24,8 +17,14 @@ import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const fadeUp: Variants = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
 
 /* ----------------------------- Runtime maps ----------------------------- */
 const IMG: Record<string, string> = {
@@ -34,9 +33,6 @@ const IMG: Record<string, string> = {
   heroImage: heroImage as unknown as string,
 };
 
-// pick ONE style below that matches FeatureItem['icon'] in your FeatureGrid
-
-/** If FeatureItem.icon expects a ReactNode (most common) */
 const ICONS_NODE: Record<string, React.ReactNode> = {
   database: <Database className="h-5 w-5 text-slate-900" />,
   calculator: <Calculator className="h-5 w-5 text-slate-900" />,
@@ -46,29 +42,14 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   fileText: <FileText className="h-5 w-5 text-slate-900" />,
 };
 
-/** If FeatureItem.icon expects a component type (LucideIcon), use this instead and pass the component */
-// const ICONS_COMPONENT: Record<string, LucideIcon> = {
-//   database: Database,
-//   calculator: Calculator,
-//   layers: Layers,
-//   link2: Link2,
-//   wrench: Wrench,
-//   fileText: FileText,
-// };
-
-/** Allowed previews for FeatureGrid */
-const PREVIEWS = ["cards", "timeline", "bubbles", "link", "gear", "scroll"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey =>
-  typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
-
 /* --------------------------------- Page --------------------------------- */
 export default function FixedAssetsPage() {
   const data = siteData.fixedAssets;
 
   // Hero
   const heroTitle = data?.hero?.title ?? "Fixed Asset Management";
-  const heroSubtitle = data?.hero?.subtitle ?? "Track, Control, and Optimize Your Assets with Confidence";
+  const heroSubtitle =
+    data?.hero?.subtitle ?? "Track, Control, and Optimize Your Assets with Confidence";
   const heroBody =
     data?.hero?.body ??
     "Argus Fixed Asset Management enables businesses to maintain full visibility and control over their tangible assets.";
@@ -85,22 +66,24 @@ export default function FixedAssetsPage() {
     [data?.carousel]
   );
 
+  const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
-    if (CAROUSEL.length <= 1) return;
+    if (prefersReducedMotion || CAROUSEL.length <= 1) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % CAROUSEL.length), 3800);
     return () => clearInterval(id);
-  }, [CAROUSEL.length]);
+  }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (no preview unions/guards; FeatureGrid validates/falls back)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-    return src.map((f) => {
-      const preview = isPreview(f.preview) ? f.preview : "cards";
-      const icon = (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database;
-      return { title: f.title, desc: f.desc, preview, icon: icon as FeatureItem["icon"] };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview, // plain string; handled inside FeatureGrid
+      icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.database)) || ICONS_NODE.database,
+    }));
   }, [data?.features]);
 
   // Why section
@@ -109,7 +92,9 @@ export default function FixedAssetsPage() {
     data?.why?.description ??
     "Centralize asset data to save time, stay compliant, and make data-driven decisions.";
   const whyBullets: string[] = Array.isArray(data?.why?.bullets) ? data!.why!.bullets : [];
-  const whyCtas: { label: string; href: string }[] = Array.isArray(data?.why?.ctas) ? data!.why!.ctas : [];
+  const whyCtas: { label: string; href: string }[] = Array.isArray(data?.why?.ctas)
+    ? data!.why!.ctas
+    : [];
   const whyMedia = IMG[data?.why?.mediaKey ?? "heroImage"];
 
   // CTA
@@ -117,7 +102,6 @@ export default function FixedAssetsPage() {
   const ctaBody =
     data?.cta?.body ??
     "We can tailor Argus Fixed Asset Management to your workflows, chart of accounts, and reporting needs.";
- 
 
   return (
     <section className="relative overflow-hidden z-0">
@@ -143,7 +127,9 @@ export default function FixedAssetsPage() {
           >
             {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
-              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">{heroTitle}</h1>
+              <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
+                {heroTitle}
+              </h1>
               <p className="mt-4 text-lg text-slate-600">{heroSubtitle}</p>
               <p className="mt-3 text-slate-600 leading-relaxed">{heroBody}</p>
 
@@ -171,17 +157,24 @@ export default function FixedAssetsPage() {
 
             {/* Visual / Carousel */}
             <motion.div variants={fadeUp} className="relative">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur">
+              <div
+                className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/60 shadow-xl backdrop-blur"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Fixed Assets visuals"
+              >
                 {CAROUSEL.map((img, i) => (
                   <motion.img
                     key={`${img.src}-${i}`}
                     src={img.src}
-                    alt={img.alt}
+                    alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: index === i ? 1 : 0, scale: index === i ? 1 : 1.02 }}
                     transition={{ duration: 0.8, ease: EASE }}
                     style={{ willChange: "opacity, transform" }}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    aria-hidden={index !== i}
                   />
                 ))}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
@@ -189,8 +182,11 @@ export default function FixedAssetsPage() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
+                      aria-current={i === index}
                     />
                   ))}
                 </div>
@@ -203,8 +199,16 @@ export default function FixedAssetsPage() {
       {/* FEATURES */}
       <div id="features" className="relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="space-y-10">
-            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">Key Features</motion.h2>
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="space-y-10"
+          >
+            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
+              Key Features
+            </motion.h2>
 
             <FeatureGrid
               items={featureItems}
@@ -213,6 +217,7 @@ export default function FixedAssetsPage() {
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
+              // enableTilt
             />
           </motion.div>
         </div>
@@ -231,10 +236,7 @@ export default function FixedAssetsPage() {
       />
 
       {/* CONTACT / CTA */}
-      <ContactCTA
-             title={data?.cta?.title ?? ctaTitle}
-             body={data?.cta?.body ?? ctaBody}
-          />  
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent, type LucideIcon } from "lucide-react";
+import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent } from "lucide-react";
 
 // Images kept in code
 import logo from "@/assets/logo.png";
@@ -20,12 +20,10 @@ import { ContactCTA } from "@/components/ContactUs/ContactCTA";
 
 /* ---------------------------------- FX ---------------------------------- */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
 const container: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
 };
-
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 14 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
@@ -38,15 +36,6 @@ const IMG: Record<string, string> = {
   heroImage: heroImage as unknown as string,
 };
 
-/** If FeatureItem.icon is a component type */
-const ICONS_COMPONENT: Record<string, LucideIcon> = {
-  fileText: FileText,
-  wallet: Wallet,
-  globe2: Globe2,
-  barChart3: BarChart3,
-  percent: Percent,
-};
-/** If FeatureItem.icon is a ReactNode (common) */
 const ICONS_NODE: Record<string, React.ReactNode> = {
   fileText: <FileText className="h-5 w-5 text-slate-900" />,
   wallet: <Wallet className="h-5 w-5 text-slate-900" />,
@@ -54,11 +43,6 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   barChart3: <BarChart3 className="h-5 w-5 text-slate-900" />,
   percent: <Percent className="h-5 w-5 text-slate-900" />,
 };
-
-/** Allowed previews (narrow unknown JSON to the union expected by FeatureItem.preview) */
-const PREVIEWS = ["typing", "inbox", "multicurrency", "analytics", "donut"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey => typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
 
 /* --------------------------------- Page --------------------------------- */
 export default function PurhaseOcrderProcessing() {
@@ -83,7 +67,7 @@ export default function PurhaseOcrderProcessing() {
     [data?.carousel]
   );
 
-  // Simple cross-fade carousel (respects reduced motion)
+  // Cross-fade carousel (respects reduced motion)
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
@@ -92,27 +76,16 @@ export default function PurhaseOcrderProcessing() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features (JSON → FeatureGrid items) — robust typing
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (plain `preview` string; FeatureGrid resolves/falls back)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-
-    return src.map((f) => {
-      // 1) narrow preview to the expected union (fallback to 'typing')
-      const preview = isPreview(f.preview) ? f.preview : "typing";
-
-      // 2) build icon in a way that satisfies either FeatureItem.icon = ReactNode OR component
-      //    We cast to FeatureItem['icon'] once to satisfy TS regardless of which it is.
-      const iconCandidate =
-        (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
-
-      return {
-        title: f.title,
-        desc: f.desc,
-        preview,
-        icon: iconCandidate as FeatureItem["icon"],
-      };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview,
+      icon: (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText,
+    }));
   }, [data?.features]);
 
   // Impact section
@@ -127,11 +100,10 @@ export default function PurhaseOcrderProcessing() {
   const ctaBody =
     data?.cta?.body ??
     "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.";
- 
+
   return (
     <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Back */}
         <div className="mb-6">
           <GoBackButton fallbackTo="/" />
         </div>
@@ -208,7 +180,9 @@ export default function PurhaseOcrderProcessing() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -236,7 +210,6 @@ export default function PurhaseOcrderProcessing() {
 
             <FeatureGrid
               items={featureItems}
-
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
@@ -259,10 +232,7 @@ export default function PurhaseOcrderProcessing() {
       />
 
       {/* CONTACT / CTA */}
-        <ContactCTA
-               title={data?.cta?.title ?? ctaTitle}
-               body={data?.cta?.body ?? ctaBody}
-            />  
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }

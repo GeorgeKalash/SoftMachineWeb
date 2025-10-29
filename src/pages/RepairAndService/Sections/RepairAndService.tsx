@@ -4,14 +4,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { GoBackButton } from "@/sharedComponent/GoBackButton";
-import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent, type LucideIcon } from "lucide-react";
+import { ArrowRight, FileText, Wallet, Globe2, BarChart3, Percent } from "lucide-react";
 
-// Images kept in code
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero.png";
 import heroImage from "@/assets/hero-image.jpg";
 
-// Reusable components
 import SectionSplit from "@/sharedComponent/SectionSplit";
 import { FeatureGrid, type FeatureItem } from "@/sharedComponent/FeatureCards";
 
@@ -38,15 +36,6 @@ const IMG: Record<string, string> = {
   heroImage: heroImage as unknown as string,
 };
 
-/** If FeatureItem.icon is a component type */
-const ICONS_COMPONENT: Record<string, LucideIcon> = {
-  fileText: FileText,
-  wallet: Wallet,
-  globe2: Globe2,
-  barChart3: BarChart3,
-  percent: Percent,
-};
-/** If FeatureItem.icon is a ReactNode (common) */
 const ICONS_NODE: Record<string, React.ReactNode> = {
   fileText: <FileText className="h-5 w-5 text-slate-900" />,
   wallet: <Wallet className="h-5 w-5 text-slate-900" />,
@@ -55,25 +44,21 @@ const ICONS_NODE: Record<string, React.ReactNode> = {
   percent: <Percent className="h-5 w-5 text-slate-900" />,
 };
 
-/** Allowed previews (narrow unknown JSON to the union expected by FeatureItem.preview) */
-const PREVIEWS = ["typing", "inbox", "multicurrency", "analytics", "donut"] as const;
-type PreviewKey = (typeof PREVIEWS)[number];
-const isPreview = (x: unknown): x is PreviewKey => typeof x === "string" && (PREVIEWS as readonly string[]).includes(x);
-
 /* --------------------------------- Page --------------------------------- */
 export default function RepairAndService() {
   const data = siteData.RepairAndServicepage;
 
   // Hero
   const heroTitle = data?.hero?.title ?? "Financials (Accounting & Finance Management)";
-  const heroSubtitle = data?.hero?.subtitle ?? "Simplify Accounting and Strengthen Financial Decision-Making";
+  const heroSubtitle =
+    data?.hero?.subtitle ?? "Simplify Accounting and Strengthen Financial Decision-Making";
   const heroBody =
     data?.hero?.body ??
     "Argus Financials provides a unified, accurate, and compliant accounting solution that helps businesses maintain financial clarity and control.";
   const heroPrimary = data?.hero?.primaryCta;
   const heroSecondary = data?.hero?.secondaryCta;
 
-  // Carousel (from JSON keys → imported images)
+  // Carousel
   const CAROUSEL = useMemo(
     () =>
       (data?.carousel ?? []).map((c: { imageKey?: string; alt?: string }) => ({
@@ -83,7 +68,7 @@ export default function RepairAndService() {
     [data?.carousel]
   );
 
-  // Simple cross-fade carousel (respects reduced motion)
+  // Cross-fade carousel (respects reduced motion)
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   useEffect(() => {
@@ -92,27 +77,18 @@ export default function RepairAndService() {
     return () => clearInterval(id);
   }, [prefersReducedMotion, CAROUSEL.length]);
 
-  // Features (JSON → FeatureGrid items) — robust typing
-  type JSONFeature = { title: string; desc: string; preview?: unknown; iconKey?: string };
+  // Features (no preview enums/guards; FeatureGrid validates/falls back)
+  type JSONFeature = { title: string; desc: string; preview?: string; iconKey?: string };
   const featureItems = useMemo<FeatureItem[]>(() => {
     const src = (data?.features ?? []) as JSONFeature[];
-
-    return src.map((f) => {
-      // 1) narrow preview to the expected union (fallback to 'typing')
-      const preview = isPreview(f.preview) ? f.preview : "typing";
-
-      // 2) build icon in a way that satisfies either FeatureItem.icon = ReactNode OR component
-      //    We cast to FeatureItem['icon'] once to satisfy TS regardless of which it is.
-      const iconCandidate =
-        (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) || ICONS_NODE.fileText;
-
-      return {
-        title: f.title,
-        desc: f.desc,
-        preview,
-        icon: iconCandidate as FeatureItem["icon"],
-      };
-    });
+    return src.map((f) => ({
+      title: f.title,
+      desc: f.desc,
+      preview: f.preview, // plain string; handled inside FeatureGrid
+      icon:
+        (f.iconKey && (ICONS_NODE[f.iconKey] ?? ICONS_NODE.fileText)) ||
+        ICONS_NODE.fileText,
+    }));
   }, [data?.features]);
 
   // Impact section
@@ -122,16 +98,15 @@ export default function RepairAndService() {
     "Argus Financials allows management to make informed decisions based on live financial data, helping businesses improve cash flow, reduce risks, and maintain financial stability.";
   const impactMedia = IMG[data?.impact?.mediaKey ?? "heroImage"];
 
-  // CTA block
+  // CTA
   const ctaTitle = data?.cta?.title ?? "Ready to modernize your financial operations?";
   const ctaBody =
     data?.cta?.body ??
     "We can tailor Argus Financials to your chart of accounts, approval flows, and reporting needs.";
- 
+
   return (
     <section className="relative overflow-hidden z-0">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Back */}
         <div className="mb-6">
           <GoBackButton fallbackTo="/" />
         </div>
@@ -151,7 +126,7 @@ export default function RepairAndService() {
             viewport={{ once: true, amount: 0.2 }}
             className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
           >
-            {/* Copy from JSON */}
+            {/* Copy */}
             <motion.div variants={fadeUp} className="relative">
               <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight text-slate-900">
                 {heroTitle}
@@ -196,7 +171,10 @@ export default function RepairAndService() {
                     alt={index === i ? img.alt : ""}
                     className="absolute inset-0 h-full w-full object-cover"
                     initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: index === i ? 1 : 0, scale: index === i ? 1 : 1.02 }}
+                    animate={{
+                      opacity: index === i ? 1 : 0,
+                      scale: index === i ? 1 : 1.02,
+                    }}
                     transition={{ duration: 0.8, ease: EASE }}
                     style={{ willChange: "opacity, transform" }}
                     loading={i === 0 ? "eager" : "lazy"}
@@ -208,7 +186,9 @@ export default function RepairAndService() {
                     <button
                       key={i}
                       onClick={() => setIndex(i)}
-                      className={`h-2 w-2 rounded-full transition ${i === index ? "bg-slate-900" : "bg-slate-300"}`}
+                      className={`h-2 w-2 rounded-full transition ${
+                        i === index ? "bg-slate-900" : "bg-slate-300"
+                      }`}
                       aria-label={`Slide ${i + 1}`}
                       aria-current={i === index}
                     />
@@ -230,19 +210,24 @@ export default function RepairAndService() {
             viewport={{ once: true, amount: 0.2 }}
             className="space-y-10"
           >
-            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-semibold text-slate-900">
+            <motion.h2
+              variants={fadeUp}
+              className="text-2xl md:text-3xl font-semibold text-slate-900"
+            >
               Core Features:
             </motion.h2>
 
             <FeatureGrid
               items={featureItems}
-
               ease={EASE}
               containerVariants={container}
               childVariants={fadeUp}
               inViewOnce
               inViewAmount={0.2}
               enableTilt
+              // optional per-page sizing:
+              // previewClassName="h-48 md:h-56"
+              // previewScale={1.06}
             />
           </motion.div>
         </div>
@@ -259,10 +244,7 @@ export default function RepairAndService() {
       />
 
       {/* CONTACT / CTA */}
-        <ContactCTA
-               title={data?.cta?.title ?? ctaTitle}
-               body={data?.cta?.body ?? ctaBody}
-            />  
+      <ContactCTA title={data?.cta?.title ?? ctaTitle} body={data?.cta?.body ?? ctaBody} />
     </section>
   );
 }

@@ -92,44 +92,44 @@
           {
             "title": "Quotation & Order Management",
             "desc": "Create professional quotations in seconds, manage approvals, and convert them directly into sales orders without duplication.",
-            "preview": "quote2order",
-            "iconKey": "fileText"
+            "preview": "setting"
+
           },
           {
             "title": "Price Lists & Discount Rules",
             "desc": "Set up flexible pricing strategies, volume discounts, and customer-specific rates to stay competitive.",
-            "preview": "pricing",
-            "iconKey": "calculator"
+            "preview": "setting"
+
           },
           {
             "title": "Sales Workflow Automation",
             "desc": "Standardize your sales cycle with predefined steps, approval limits, and document generation to minimize manual errors.",
-            "preview": "pipeline",
-            "iconKey": "layers"
+            "preview": "setting"
+
           },
           {
             "title": "Customer Database",
             "desc": "Maintain detailed customer profiles, including contact details, payment terms, and transaction history — all in bagWithX place.",
-            "preview": "crm",
-            "iconKey": "database"
+            "preview": "setting"
+
           },
           {
             "title": "Invoice Integration",
             "desc": "Automatically generate invoices from confirmed sales orders, ensuring accurate billing and faster payments.",
-            "preview": "invoice",
-            "iconKey": "link2"
+            "preview": "setting"
+
           },
           {
             "title": "Reporting & Analytics",
             "desc": "Access real-time sales data, product performance insights, and profitability reports to support data-driven decision-making.",
-            "preview": "analytics",
-            "iconKey": "fileText"
+            "preview": "setting"
+
           },
           {
             "title": "Multi-Currency & Multi-Branch Support",
             "desc": "Manage sales operations across branches or countries with unified control and accurate reporting.",
-            "preview": "multicurrency",
-            "iconKey": "layers"
+            "preview": "setting"
+
           }
         ],
         "why": {
@@ -615,12 +615,12 @@
             { "imageKey": "logo", "alt": "Brand identity" }
           ],
           "features": [
-            { "title": "Asset Register", "desc": "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.", "preview": "cards", "iconKey": "database" },
-            { "title": "Depreciation Management", "desc": "Automatically calculate depreciation using customizable methods and schedules.", "preview": "timeline", "iconKey": "calculator" },
-            { "title": "Asset Lifecycle Tracking", "desc": "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.", "preview": "bubbles", "iconKey": "layers" },
-            { "title": "Integration with Financials", "desc": "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.", "preview": "link", "iconKey": "link2" },
-            { "title": "Maintenance Scheduling", "desc": "Plan preventive maintenance to extend asset life and minimize downtime.", "preview": "gear", "iconKey": "wrench" },
-            { "title": "Reporting & Audit Support", "desc": "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.", "preview": "scroll", "iconKey": "fileText" }
+            { "title": "Asset Register", "desc": "Maintain a complete database of all company assets with purchase details, serial numbers, and assigned locations.","preview": "setting"          },
+            { "title": "Depreciation Management", "desc": "Automatically calculate depreciation using customizable methods and schedules.","preview": "setting"          },
+            { "title": "Asset Lifecycle Tracking", "desc": "Track each asset’s journey — from acquisition, maintenance, and transfer to final disposal.","preview": "setting"          },
+            { "title": "Integration with Financials", "desc": "Seamlessly link with Argus Financials for automatic journal entries, ensuring accounting accuracy.","preview": "setting"          },
+            { "title": "Maintenance Scheduling", "desc": "Plan preventive maintenance to extend asset life and minimize downtime.","preview": "setting"          },
+            { "title": "Reporting & Audit Support", "desc": "Generate detailed asset valuation and depreciation reports to simplify audits and compliance.","preview": "setting"          }
           ],
           "why": {
             "title": "Why Argus Fixed Asset Management",
@@ -704,38 +704,38 @@
       {
         "title": "Bill of Materials (BOM):",
         "desc": "Define components, quantities, and production steps for every finished product.",
-        "preview": "tiles",
-        "iconKey": "database"
+        "preview": "setting"
+
       },
       {
         "title": "Production Orders:",
         "desc": "Create and manage work orders with live status updates and material availability checks.",
-        "preview": "pipeline",
-        "iconKey": "fileText"
+        "preview": "setting"
+
       },
       {
         "title": "Material Requirement Planning (MRP):",
         "desc": "Automate material demand calculations based on production forecasts and stock levels.",
-        "preview": "spark",
-        "iconKey": "layers"
+        "preview": "setting"
+
       },
       {
         "title": "Work Center Management:",
         "desc": "Monitor production performance, track downtime, and optimize capacity utilization.",
-        "preview": "gauge",
-        "iconKey": "wrench"
+        "preview": "setting"
+
       },
       {
         "title": "Costing & Analysis:",
         "desc": "Capture labor, overhead, and material costs for precise production cost reporting.",
-        "preview": "donut",
-        "iconKey": "calculator"
+        "preview": "setting"
+
       },
       {
         "title": "Integration with Inventory & Purchase:",
         "desc": "Ensure raw materials are always available through real-time links with stock and procurement data.",
-        "preview": "link",
-        "iconKey": "link2"
+        "preview": "setting"
+
       }
     ],
     "why": {
@@ -773,38 +773,38 @@
         {
           "title": "Repair Requests & Ticketing:",
           "desc": "Capture and track repair requests from customers or internal departments in a structured workflow.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         },
         {
           "title": "Work Order Management:",
           "desc": "Generate work orders automatically, assign technicians, and monitor progress in real time.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         },
         {
           "title": "Spare Parts & Inventory Integration:",
           "desc": "Track parts usage, manage stock availability, and automate reordering for seamless repairs.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         },
         {
           "title": "Repair History & Analytics:",
           "desc": "Maintain detailed records of all repair activities for each product or equipment, enabling trend analysis and preventive maintenance.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         },
         {
           "title": "Cost Tracking & Billing:",
           "desc": "Record labor and parts costs, generate invoices, and integrate with Argus Financials for accurate billing.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         },
         {
           "title": "Service SLA Management:",
           "desc": "Monitor repair timelines and ensure service level agreements are met for improved customer satisfaction.",
-          "iconKey": "",
-          "preview": ""
+          "preview": "setting"
+
         }
       ],
       "impact": {
@@ -891,38 +891,38 @@
           {
             "title": "Multi-Warehouse Management:",
             "desc": "Manage stock across multiple locations, branches, or bins with full traceability.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Stock Movements & Adjustments:",
             "desc": "Record receipts, internal transfers, and stock adjustments in real time.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Batch & Serial Number Tracking:",
             "desc": "Monitor product traceability with batch numbers, expiry dates, and serial tracking.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Reorder Rules & Stock Alerts:",
             "desc": "Automate reordering based on minimum stock levels or lead times.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Integration with Sales & Purchase:",
             "desc": "Synchronize inventory with sales and procurement for accurate stock visibility.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Inventory Valuation & Reporting:",
             "desc": "Get detailed insights into stock value, turnover, and aging to improve efficiency.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           }
         ],
         "impact": {
@@ -953,38 +953,38 @@
           {
             "title": "Purchase Requisitions & Approvals:",
             "desc": "Automate internal purchase requests and multi-level approval workflows.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Supplier Management:",
             "desc": "Maintain a complete database of approved suppliers with performance and pricing history.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "RFQs & Quotation Comparison:",
             "desc": "Request, receive, and evaluate supplier quotations for informed decision-making.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Purchase Orders:",
             "desc": "Generate and send purchase orders automatically based on stock levels or demand forecasts.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Integration with Inventory & Financials:",
             "desc": "Automatically update stock quantities and create payable entries upon goods receipt.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           },
           {
             "title": "Procurement Reporting:",
             "desc": "Gain insights into spending patterns, supplier reliability, and cost optimization.",
-            "iconKey": "",
-            "preview": ""
+            "preview": "setting"
+
           }
         ],
         "impact": {
