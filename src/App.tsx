@@ -12,6 +12,7 @@ import {
   useNavigationType,
 } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ScrollToTopButton } from "./sharedComponent/ScrollUp";
 
 /* --------------------------------- Pages --------------------------------- */
 /** Convert to lazy so Suspense fallback (red loader) shows between routes */
@@ -218,6 +219,8 @@ const App = () => (
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
+    <ScrollToTopButton />
+
   </QueryClientProvider>
 );
 
