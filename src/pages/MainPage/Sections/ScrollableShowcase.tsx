@@ -144,7 +144,6 @@ export default function ScrollableShowcase({
 
           const sections = sectionRefs.current.filter(Boolean);
 
-          // ensure the viewport equals (100vh - topOffsetPx)
           const setViewportHeight = () => {
             const h = Math.max(320, window.innerHeight - topOffsetPx);
             mediaViewportRef.current!.style.minHeight = `${h}px`;
@@ -158,7 +157,6 @@ export default function ScrollableShowcase({
             return "+=" + Math.max(0, leftH - viewH);
           };
 
-          // Pin with spacing so no layout jump at the end.
           ScrollTrigger.create({
             trigger: leftColRef.current,
             start: () => `top+=${topOffsetPx} top`,
@@ -170,7 +168,6 @@ export default function ScrollableShowcase({
             invalidateOnRefresh: true,
           });
 
-          // Snap through the same region
           ScrollTrigger.create({
             trigger: leftColRef.current,
             start: "top top",
@@ -187,7 +184,6 @@ export default function ScrollableShowcase({
             invalidateOnRefresh: true,
           });
 
-          // Always keep the media card perfectly centered while pinned
           const setY = gsap.quickSetter(mediaCardRef.current, "y", "px");
           const recalcAndCenter = () => {
             const viewH  = mediaViewportRef.current!.offsetHeight;
@@ -205,7 +201,6 @@ export default function ScrollableShowcase({
             invalidateOnRefresh: true,
           });
 
-          // Active index based on center
           sections.forEach((sec, i) => {
             ScrollTrigger.create({
               trigger: sec,
@@ -216,7 +211,6 @@ export default function ScrollableShowcase({
             });
           });
 
-          // Polished finish: fade/mini-scale while passing the last section
           const lastSection = sections[sections.length - 1];
           if (lastSection) {
             gsap.set(mediaCardRef.current, { transformOrigin: "50% 50%" });
@@ -226,10 +220,10 @@ export default function ScrollableShowcase({
               end: "bottom center",
               scrub: true,
               onUpdate: (self) => {
-                const p = self.progress; // 0→1 across the last section
+                const p = self.progress;
                 gsap.to(mediaCardRef.current, {
-                  opacity: 1 - p * 0.9,  // to ~10%
-                  scale: 1 - p * 0.03,   // slight scale down
+                  opacity: 1 - p * 0.9,
+                  scale: 1 - p * 0.03,
                   overwrite: "auto",
                   duration: 0.1,
                 });
@@ -404,62 +398,80 @@ function StepBlock({
       aria-current={isActive ? "true" : undefined}
       aria-label={item.title}
     >
-      <div className="lg:hidden mb-4">
-        <div className="overflow-hidden rounded-xl bg-card/50">
-          <img
-            src={toSrc(item.image)}
-            alt={item.imageAlt ?? item.title}
-            loading="lazy"
-            decoding="async"
-            className="block w-full h-56 object-cover"
-            draggable={false}
-          />
-        </div>
+      {/* spacer to respect sticky header */}
+      <div className="h-px w-full" aria-hidden />
+
+      {/* vertical rail + active dot (desktop only) */}
+      <div className={cn("absolute -left-3 top-0 hidden h-full lg:block")} aria-hidden>
+        <div className="mx-auto h-full w-px bg-border/60" />
+        <div
+          className={cn(
+            "absolute -left-[5px] top-3 h-2.5 w-2.5 rounded-full border bg-background transition-all duration-300",
+            isActive ? "border-primary ring-4 ring-primary/15" : "border-border"
+          )}
+        />
       </div>
 
-      {item.tag ? (
-        <div className="mb-2.5">
-          <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">{item.tag}</div>
+      {/* content with padding to clear the rail */}
+      <div className={cn("max-w-[68ch] pl-0 lg:pl-6")}>
+        {/* mobile image */}
+        <div className="lg:hidden mb-4">
+          <div className="overflow-hidden rounded-xl bg-card/50">
+            <img
+              src={toSrc(item.image)}
+              alt={item.imageAlt ?? item.title}
+              loading="lazy"
+              decoding="async"
+              className="block w-full h-56 object-cover"
+              draggable={false}
+            />
+          </div>
         </div>
-      ) : null}
 
-      <h2 className="text-2xl md:text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.15] text-foreground">
-        {item.title}
-      </h2>
-
-      <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">{item.body}</p>
-
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        {item.primary ? (
-          <Button onClick={onPrimary} variant={item.primary.variant ?? "default"} className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm">
-            {item.primary.icon}
-            <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
-          </Button>
+        {item.tag ? (
+          <div className="mb-2.5">
+            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">{item.tag}</div>
+          </div>
         ) : null}
 
-        {item.secondary ? (
-          item.secondary.href ? (
-            <Button
-              variant={item.secondary.variant ?? "outline"}
-              asChild
-              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
-              onClick={(e) => onSecondary(e)}
-            >
-              <a href={item.secondary.href}>{item.secondary.label}</a>
+        <h2 className="text-2xl md:text-4xl xl:text-5xl font-semibold tracking-tight leading-[1.15] text-foreground">
+          {item.title}
+        </h2>
+
+        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">{item.body}</p>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          {item.primary ? (
+            <Button onClick={onPrimary} variant={item.primary.variant ?? "default"} className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm">
+              {item.primary.icon}
+              <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
             </Button>
-          ) : (
-            <Button
-              variant={item.secondary.variant ?? "outline"}
-              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
-              onClick={() => smoothScrollToCenter(item.anchorId)}
-            >
-              {item.secondary.label}
-            </Button>
-          )
-        ) : null}
+          ) : null}
+
+          {item.secondary ? (
+            item.secondary.href ? (
+              <Button
+                variant={item.secondary.variant ?? "outline"}
+                asChild
+                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
+                onClick={(e) => onSecondary(e)}
+              >
+                <a href={item.secondary.href}>{item.secondary.label}</a>
+              </Button>
+            ) : (
+              <Button
+                variant={item.secondary.variant ?? "outline"}
+                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
+                onClick={() => smoothScrollToCenter(item.anchorId)}
+              >
+                {item.secondary.label}
+              </Button>
+            )
+          ) : null}
+        </div>
+
+        {!isLast && <div className="mt-8 md:mt-10 h-px w-full bg-border/70" />}
       </div>
-
-      {!isLast && <div className="mt-8 md:mt-10 h-px w-full bg-border/70" />}
     </article>
   );
 }
