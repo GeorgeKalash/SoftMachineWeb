@@ -29,6 +29,7 @@ type ShowcaseAction = {
   variant?: "default" | "secondary" | "outline" | "ghost";
   icon?: React.ReactNode;
 };
+
 type ShowcaseItem = {
   key: string;
   title: string;
@@ -40,6 +41,7 @@ type ShowcaseItem = {
   tag?: string;
   anchorId: string;
 };
+
 type ScrollableShowcaseProps = {
   id?: string;
   className?: string;
@@ -60,6 +62,7 @@ const smoothScrollToCenter = (id: string) => {
   const target = window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
   gsap.to(window, { scrollTo: target, duration: 0.5, ease: "power1.inOut" });
 };
+
 const fireContactEvent = (phase: string, intent: string) => {
   window.dispatchEvent(new CustomEvent("open-contact", { detail: { phase, intent } }));
 };
@@ -145,7 +148,7 @@ export default function ScrollableShowcase({
           const sections = sectionRefs.current.filter(Boolean);
 
           const setViewportHeight = () => {
-            const h = Math.max(320, window.innerHeight - topOffsetPx);
+            const h = Math.max(320, window.innerHeight);
             mediaViewportRef.current!.style.minHeight = `${h}px`;
             mediaViewportRef.current!.style.height = `${h}px`;
           };
@@ -184,23 +187,6 @@ export default function ScrollableShowcase({
             invalidateOnRefresh: true,
           });
 
-          const setY = gsap.quickSetter(mediaCardRef.current, "y", "px");
-          const recalcAndCenter = () => {
-            const viewH  = mediaViewportRef.current!.offsetHeight;
-            const cardH  = mediaCardRef.current!.offsetHeight;
-            const center = Math.max(0, (viewH - cardH) / 2);
-            setY(center);
-          };
-          recalcAndCenter();
-
-          const keepCentered = ScrollTrigger.create({
-            trigger: leftColRef.current,
-            start: () => `top+=${topOffsetPx} top`,
-            end: pinEnd,
-            onUpdate: () => recalcAndCenter(),
-            invalidateOnRefresh: true,
-          });
-
           sections.forEach((sec, i) => {
             ScrollTrigger.create({
               trigger: sec,
@@ -233,7 +219,6 @@ export default function ScrollableShowcase({
 
           const onR = () => {
             setViewportHeight();
-            recalcAndCenter();
             ScrollTrigger.refresh();
           };
           window.addEventListener("resize", onR);
@@ -242,7 +227,6 @@ export default function ScrollableShowcase({
           return () => {
             window.removeEventListener("resize", onR);
             window.removeEventListener("load", onR);
-            keepCentered.kill();
           };
         },
 
@@ -305,7 +289,9 @@ export default function ScrollableShowcase({
                   {items.map((item, idx) => (
                     <StepBlock
                       key={item.key}
-                      refArticle={(el) => { if (el) sectionRefs.current[idx] = el; }}
+                      refArticle={(el) => {
+                        if (el) sectionRefs.current[idx] = el;
+                      }}
                       item={item}
                       isActive={idx === active}
                       topOffsetPx={topOffsetPx}
@@ -323,10 +309,11 @@ export default function ScrollableShowcase({
               {/* viewport-sized area (center media here) */}
               <div
                 ref={mediaViewportRef}
-                className="relative flex items-start justify-center"
-                // height is set in JS to: 100vh - topOffsetPx
+                className="relative flex items-center justify-center"
+                style={{ paddingTop: topOffsetPx }}
+                // height is set in JS to: 100vh
               >
-                {/* the card we center (no docking) */}
+                {/* the card we center */}
                 <div ref={mediaCardRef} className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
                   <div className="group relative overflow-hidden rounded-2xl bg-card text-card-foreground shadow-lg">
                     <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
@@ -354,7 +341,7 @@ export default function ScrollableShowcase({
                   </div>
                 </div>
               </div>
-              {/* NOTE: removed the old 1px spacer; pinSpacing handles layout now */}
+              {/* pinSpacing handles layout */}
             </div>
           </div>
         </div>
@@ -430,7 +417,9 @@ function StepBlock({
 
         {item.tag ? (
           <div className="mb-2.5">
-            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">{item.tag}</div>
+            <div className="mb-4 inline-block rounded-full text-sm font-semibold tracking-wide text-primary">
+              {item.tag}
+            </div>
           </div>
         ) : null}
 
@@ -438,11 +427,17 @@ function StepBlock({
           {item.title}
         </h2>
 
-        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">{item.body}</p>
+        <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">
+          {item.body}
+        </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           {item.primary ? (
-            <Button onClick={onPrimary} variant={item.primary.variant ?? "default"} className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm">
+            <Button
+              onClick={onPrimary}
+              variant={item.primary.variant ?? "default"}
+              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm"
+            >
               {item.primary.icon}
               <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
             </Button>

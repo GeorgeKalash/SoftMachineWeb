@@ -138,8 +138,8 @@ export function FeatureGrid({
   reducedMotionAware = true,
   enableTilt = false,
   tiltMaxDeg = 6,
-  previewClassName = "h-44 md:h-52",
-  previewScale = 1,
+  previewClassName = "h-32 md:h-40",
+  previewScale = 0.65,
 }: FeatureGridProps) {
   const [hoverCount, setHoverCount] = useState(0);
   const featuresActive = hoverCount > 0;
@@ -155,8 +155,8 @@ export function FeatureGrid({
         initial="hidden"
         whileInView="visible"
         viewport={{ once: inViewOnce, amount: inViewAmount }}
-        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-      >
+        className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+        >
         {items.map((item, i) => (
           <FeatureCard
             key={`${item.title}-${i}`}

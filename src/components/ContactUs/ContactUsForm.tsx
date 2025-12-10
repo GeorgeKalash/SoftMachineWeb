@@ -8,7 +8,6 @@ import emailjs from "@emailjs/browser";
 import { FormField } from "@/sharedComponent/FormField";
 import { toast } from "@/hooks/use-toast";
 
-/* ---------------- schema ---------------- */
 const leadSchema = z.object({
   name: z.string().min(2, "Please enter your full name"),
   phone: z.string().min(6, "Enter a valid phone number"),
@@ -121,7 +120,7 @@ export const ContactUsForm: React.FC<ContactUsFormProps> = ({
 
       <FormField
         name="phone"
-        type="tel"
+        type="number"
         label="Phone"
         placeholder="+961 70 123 456"
         register={register}

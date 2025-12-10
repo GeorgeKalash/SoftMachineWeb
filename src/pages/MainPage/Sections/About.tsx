@@ -158,6 +158,7 @@ const About: React.FC<AboutProps> = ({
         avoidCenter={{ xPct: 50, yPct: 40, radiusPct: 22 }}
       />
 
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         {/* Stats */}
         <div ref={statsRef} className="grid md:grid-cols-3 gap-8 mb-20">
@@ -166,6 +167,11 @@ const About: React.FC<AboutProps> = ({
           ))}
         </div>
 
+        <div className="mx-auto max-w-2xl text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            About Us
+          </h2>
+        </div>
         {/* Section 1 */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div
@@ -206,7 +212,7 @@ const About: React.FC<AboutProps> = ({
             </div>
           </div>
         </div>
-
+       
         {/* Section 2 */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div

@@ -1,7 +1,6 @@
-// src/sections/TestimonialsTeaserCarousel.tsx
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -9,6 +8,7 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useNavigate } from "react-router-dom";
 import SharedButton from "@/sharedComponent/Button";
 import siteData from "@/SiteData/SiteData.json";
+import useEmblaCarousel from "embla-carousel-react";
 
 /* ---- logos kept in code; JSON uses logoKey ---- */
 import MGLogo from "@/assets/Clients/MGLogo.jpeg";
@@ -21,7 +21,13 @@ import TamkeenLogo from "@/assets/Clients/TamkeenLogo.png";
 import KorristarLogo from "@/assets/Clients/KorristarLogo.jpeg";
 import GDKLogo from "@/assets/Clients/GDKLogo.jpeg";
 
-const LOGOS: Record<string, string> = {
+/* ------------------------------------------------------------------ */
+/*                             LOGO MAP                               */
+/* ------------------------------------------------------------------ */
+
+type LogoAsset = string | { src: string };
+
+const LOGOS: Record<string, LogoAsset> = {
   MGLogo,
   MasagLogo,
   BYCLogo,
@@ -33,19 +39,16 @@ const LOGOS: Record<string, string> = {
   GDKLogo,
 };
 
-/* ---------------- carousel utils ---------------- */
-function useCarousel() {
-  const ref = React.useRef<HTMLDivElement | null>(null);
-  const scrollBy = (dir: "prev" | "next") => {
-    const el = ref.current;
-    if (!el) return;
-    const child = el.querySelector<HTMLElement>("[data-slide]");
-    const gap = parseFloat(getComputedStyle(el).columnGap || getComputedStyle(el).gap || "24");
-    const step = child ? child.offsetWidth + gap : el.clientWidth * 0.9;
-    el.scrollBy({ left: dir === "next" ? step : -step, behavior: "smooth" });
-  };
-  return { ref, scrollBy };
-}
+const resolveLogoSrc = (key?: string): string | undefined => {
+  if (!key) return undefined;
+  const value = LOGOS[key];
+  if (!value) return undefined;
+  return typeof value === "string" ? value : value.src;
+};
+
+/* ------------------------------------------------------------------ */
+/*                         CAROUSEL (SLIDER)                          */
+/* ------------------------------------------------------------------ */
 
 function Carousel<T>({
   items,
@@ -54,30 +57,50 @@ function Carousel<T>({
   items: T[];
   renderItem: (t: T, idx: number) => React.ReactNode;
 }) {
-  const { ref, scrollBy } = useCarousel();
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    loop: false,
+    dragFree: false,
+    skipSnaps: false,
+  });
+
+  const scrollPrev = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollNext();
+  }, [emblaApi]);
+
   return (
     <div className="relative">
-      <div
-        ref={ref}
-        className={cn("flex snap-x snap-mandatory overflow-x-auto pb-2", "gap-6 scroll-pl-4 pr-4 pl-4", "no-scrollbar")}
-        onWheel={(e) => {
-          const el = ref.current;
-          if (!el) return;
-          if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-          el.scrollLeft += e.deltaY;
-        }}
-      >
-        {items.map((t, i) => (
-          <div key={i} data-slide className={cn("snap-start shrink-0", "w-[88%] sm:w-[60%] md:w-[48%] lg:w-[32%]")}>
-            {renderItem(t, i)}
-          </div>
-        ))}
+      {/* viewport */}
+      <div className="overflow-hidden" ref={emblaRef}>
+        {/* track */}
+        <div className="flex gap-6">
+          {items.map((t, i) => (
+            <div
+              key={i}
+              className={cn(
+                "shrink-0 grow-0",
+                // responsive “slides per view”
+                "basis-[88%] sm:basis-[60%] md:basis-[48%] lg:basis-[32%]"
+              )}
+              data-slide
+            >
+              {renderItem(t, i)}
+            </div>
+          ))}
+        </div>
       </div>
 
+      {/* arrows */}
       <button
         type="button"
         aria-label="Previous"
-        onClick={() => scrollBy("prev")}
+        onClick={scrollPrev}
         className={cn(
           "absolute left-2 top-1/2 -translate-y-1/2 z-10",
           "inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 backdrop-blur",
@@ -86,10 +109,11 @@ function Carousel<T>({
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
+
       <button
         type="button"
         aria-label="Next"
-        onClick={() => scrollBy("next")}
+        onClick={scrollNext}
         className={cn(
           "absolute right-2 top-1/2 -translate-y-1/2 z-10",
           "inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 backdrop-blur",
@@ -98,16 +122,14 @@ function Carousel<T>({
       >
         <ChevronRight className="h-5 w-5" />
       </button>
-
-      <style>{`
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-      `}</style>
     </div>
   );
 }
 
-/* ---------------- card ---------------- */
+/* ------------------------------------------------------------------ */
+/*                        TESTIMONIAL CARD                            */
+/* ------------------------------------------------------------------ */
+
 function TestimonialCard({
   quote,
   name,
@@ -124,6 +146,7 @@ function TestimonialCard({
   index: number;
 }) {
   const { ref, isVisible } = useScrollAnimation();
+
   return (
     <Card
       ref={ref}
@@ -137,12 +160,19 @@ function TestimonialCard({
         transitionDelay: `${Math.min(index, 6) * 40}ms`,
       }}
     >
-      <p className="mb-8 text-base leading-relaxed text-foreground/90">“{quote}”</p>
+      <p className="mb-8 text-base leading-relaxed text-foreground/90">
+        “{quote}”
+      </p>
 
       <div className="mt-auto flex items-center gap-4 border-t border-border/70 pt-6">
         <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full bg-white ring-2 ring-border/60 grid place-items-center">
           {logoSrc ? (
-            <img src={logoSrc} alt={company || name} className="h-16 w-16 sm:h-20 sm:w-20 object-contain" loading="lazy" />
+            <img
+              src={logoSrc}
+              alt={company || name}
+              className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
+              loading="lazy"
+            />
           ) : (
             <div className="text-xs text-muted-foreground">Logo</div>
           )}
@@ -150,7 +180,8 @@ function TestimonialCard({
         <div>
           <div className="font-semibold tracking-tight">{name}</div>
           <div className="text-sm text-muted-foreground">
-            {role ? `${role} · ` : ""}{company}
+            {role ? `${role} · ` : ""}
+            {company}
           </div>
         </div>
       </div>
@@ -158,7 +189,10 @@ function TestimonialCard({
   );
 }
 
-/* ---------------- page/section ---------------- */
+/* ------------------------------------------------------------------ */
+/*                           DATA TYPES                               */
+/* ------------------------------------------------------------------ */
+
 type ClientsItem = {
   id: string;
   company: string;
@@ -179,6 +213,14 @@ type ClientsData = {
   items?: ClientsItem[];
 };
 
+type SelectedTestimonial = {
+  quote: string;
+  name: string;
+  role?: string;
+  company?: string;
+  logoSrc?: string;
+};
+
 /** Fisher–Yates shuffle + take N */
 function pickRandom<T>(arr: T[], n: number): T[] {
   const copy = arr.slice();
@@ -189,28 +231,33 @@ function pickRandom<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
+/* ------------------------------------------------------------------ */
+/*                        MAIN SECTION COMPONENT                      */
+/* ------------------------------------------------------------------ */
+
 const TestimonialsTeaserCarousel: React.FC = () => {
   const navigate = useNavigate();
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation();
 
   // Prefer new unified clients data; fallback to legacy testimonials if needed
   const cData = siteData.clients as ClientsData | undefined;
-  const legacyT = siteData.testimonials;
+  const legacyT = siteData.testimonials as ClientsData | undefined;
 
   const items = cData?.items ?? [];
   const teaser = cData?.teaser ?? legacyT?.teaser;
 
-  // --- RANDOM 5 each visit/mount ---
-  const selected = useMemo(() => {
+  const selected: SelectedTestimonial[] = useMemo(() => {
     if (!items.length) return [];
 
     const byId = (id: string) => items.find((x) => x.id === id);
-    const ids: string[] = Array.isArray(teaser?.teaserIds) ? (teaser?.teaserIds as string[]) : [];
+    const ids: string[] = Array.isArray(teaser?.teaserIds)
+      ? (teaser?.teaserIds as string[])
+      : [];
 
-    const pool = (ids.length ? ids.map(byId).filter(Boolean) : items)
-      .filter((t): t is ClientsItem => !!t && !!t.testimonial);
+    const pool = (ids.length ? ids.map(byId).filter(Boolean) : items).filter(
+      (t): t is ClientsItem => !!t && !!t.testimonial
+    );
 
-    // pick 5 random from pool on each mount (stable until deps change)
     const chosen = pickRandom(pool, 5);
 
     return chosen.map((t) => ({
@@ -218,7 +265,7 @@ const TestimonialsTeaserCarousel: React.FC = () => {
       name: t.testimonial!.name,
       role: t.testimonial!.role,
       company: [t.company, t.locations?.[0]].filter(Boolean).join(" — "),
-      logoSrc: (t.logoKey && LOGOS[t.logoKey]) || undefined,
+      logoSrc: resolveLogoSrc(t.logoKey),
     }));
   }, [items, teaser]);
 
@@ -236,7 +283,9 @@ const TestimonialsTeaserCarousel: React.FC = () => {
           ref={headerRef}
           className={cn(
             "mb-12 text-center transition-all duration-700",
-            headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            headerVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
           )}
         >
           {badge && (
@@ -244,8 +293,14 @@ const TestimonialsTeaserCarousel: React.FC = () => {
               {badge}
             </div>
           )}
-          {title && <h2 className="text-4xl font-bold lg:text-5xl">{title}</h2>}
-          {subtitle && <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">{subtitle}</p>}
+          {title && (
+            <h2 className="text-4xl font-bold lg:text-5xl">{title}</h2>
+          )}
+          {subtitle && (
+            <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* carousel */}
@@ -253,7 +308,6 @@ const TestimonialsTeaserCarousel: React.FC = () => {
           items={selected}
           renderItem={(p, i) => (
             <TestimonialCard
-              key={`${p.name}-${i}`}
               quote={p.quote}
               name={p.name}
               role={p.role}
@@ -267,7 +321,11 @@ const TestimonialsTeaserCarousel: React.FC = () => {
         {/* view all */}
         {viewAllCta && (
           <div className="mt-10 text-center">
-            <SharedButton title={viewAllCta} onClick={() => navigate(viewAllHref)} color="primary" />
+            <SharedButton
+              title={viewAllCta}
+              onClick={() => navigate(viewAllHref)}
+              color="primary"
+            />
           </div>
         )}
       </div>
