@@ -61,8 +61,11 @@ export type FixedCarouselProps = {
   className?: string;
 };
 
-const toSrc = (img?: ImageLike) => (typeof img === "string" ? img : img?.src ?? undefined);
-const cx = (...cls: Array<string | undefined | false | null>) => cls.filter(Boolean).join(" ");
+const toSrc = (img?: ImageLike) =>
+  typeof img === "string" ? img : img?.src ?? undefined;
+
+const cx = (...cls: Array<string | undefined | false | null>) =>
+  cls.filter(Boolean).join(" ");
 
 const usePrefersReducedMotion = () => {
   const [reduced, set] = useState(false);
@@ -113,20 +116,26 @@ const CLIENTS_JSON = (SD.clients ?? {}) as ClientsJson;
 const ASSETS = SD.assets ?? {};
 
 /* ---------- resolve logo: prefer code imports via logoKey, then fallbacks ---------- */
-const resolveLogo = (it: NonNullable<ClientsJson["items"]>[number]): string | undefined => {
+const resolveLogo = (
+  it: NonNullable<ClientsJson["items"]>[number]
+): string | undefined => {
   if (!it) return undefined;
 
   // explicit URL/src wins
   const direct =
-    (typeof it.logo === "string" ? it.logo : it.logo && "src" in it.logo ? it.logo.src : undefined) ??
-    it.logoSrc;
+    (typeof it.logo === "string"
+      ? it.logo
+      : it.logo && "src" in it.logo
+      ? it.logo.src
+      : undefined) ?? it.logoSrc;
   if (direct) return direct;
 
   // prefer imported assets (same keys as TestimonialsTeaserCarousel)
   if (it.logoKey && LOGOS[it.logoKey]) return LOGOS[it.logoKey];
 
   // final fallback to assets mapping in data.json, if present
-  if (it.logoKey && typeof ASSETS[it.logoKey] === "string") return ASSETS[it.logoKey];
+  if (it.logoKey && typeof ASSETS[it.logoKey] === "string")
+    return ASSETS[it.logoKey];
 
   return undefined;
 };
@@ -152,7 +161,9 @@ const Card: React.FC<{
   const aspect = item.mediaAspect ?? 16 / 9;
 
   const hasImage = Boolean(item.image);
-  const hasText = Boolean(item.quote || item.metrics?.length || item.person || item.role);
+  const hasText = Boolean(
+    item.quote || item.metrics?.length || item.person || item.role
+  );
   const hasBody = hasImage || hasText;
 
   const imageBoxW = Math.min(112, Math.max(84, Math.round(cardWidthPx * 0.34)));
@@ -218,14 +229,18 @@ const Card: React.FC<{
           {hasText && (
             <div className="min-w-0">
               {item.quote && (
-                <p className="text-[13px]/6 text-zinc-700 dark:text-zinc-300">“{item.quote}”</p>
+                <p className="text-[13px]/6 text-zinc-700 dark:text-zinc-300">
+                  “{item.quote}”
+                </p>
               )}
 
               {!!item.metrics?.length && (
                 <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
                   {item.metrics.map((m, i) => (
                     <div key={i}>
-                      <dt className="text-[10px] text-zinc-500 dark:text-zinc-400">{m.label}</dt>
+                      <dt className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                        {m.label}
+                      </dt>
                       <dd className="text-sm font-semibold leading-6 tracking-tight text-zinc-900 dark:text-zinc-100">
                         {m.value}
                       </dd>
@@ -237,7 +252,9 @@ const Card: React.FC<{
               {(item.person || item.role) && (
                 <div className="mt-2 text-[11px] text-zinc-600 dark:text-zinc-400">
                   {item.person && (
-                    <div className="truncate text-zinc-900 dark:text-zinc-100">{item.person}</div>
+                    <div className="truncate text-zinc-900 dark:text-zinc-100">
+                      {item.person}
+                    </div>
                   )}
                   {item.role && <div className="truncate">{item.role}</div>}
                 </div>
@@ -261,7 +278,9 @@ const PairColumn: React.FC<{
   return (
     <div className="flex shrink-0 select-none flex-col" style={{ gap: pairGap }}>
       <Card item={top} cardWidthPx={cardWidthPx} widthStyle={widthStyle} />
-      {bottom && <Card item={bottom} cardWidthPx={cardWidthPx} widthStyle={widthStyle} />}
+      {bottom && (
+        <Card item={bottom} cardWidthPx={cardWidthPx} widthStyle={widthStyle} />
+      )}
     </div>
   );
 };
@@ -295,7 +314,10 @@ const Lane: React.FC<{
   const columns = useMemo(() => chunkPairs(items), [items]);
 
   const baseCols = useMemo(
-    () => (columns.length < 4 ? [...columns, ...columns, ...columns] : columns),
+    () =>
+      columns.length < 4
+        ? [...columns, ...columns, ...columns]
+        : columns,
     [columns]
   );
 
@@ -311,13 +333,28 @@ const Lane: React.FC<{
   const offsetRef = useRef(0);
   const lastTsRef = useRef<number | null>(null);
 
+  // --- drag state for swipe ---
+  const dragState = useRef<{
+    pointerId: number | null;
+    isDragging: boolean;
+    lastX: number;
+  }>({
+    pointerId: null,
+    isDragging: false,
+    lastX: 0,
+  });
+
   useEffect(() => {
-    if (!autoPauseOffscreen || typeof IntersectionObserver === "undefined") return;
+    if (!autoPauseOffscreen || typeof IntersectionObserver === "undefined")
+      return;
     const node = rootRef.current;
     if (!node) return;
-    const io = new IntersectionObserver(([entry]) => setOnscreen(entry.isIntersecting), {
-      rootMargin: "200px",
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => setOnscreen(entry.isIntersecting),
+      {
+        rootMargin: "200px",
+      }
+    );
     io.observe(node);
     return () => io.disconnect();
   }, [autoPauseOffscreen]);
@@ -334,6 +371,15 @@ const Lane: React.FC<{
     return () => ro.disconnect();
   }, [baseCols.length, gap, cardWidthPx, pairGap]);
 
+  const updateTransform = () => {
+    if (!trackRef.current || !copyWidth) return;
+    let off = offsetRef.current % copyWidth;
+    if (off < 0) off += copyWidth;
+    offsetRef.current = off;
+    const x = direction === "rtl" ? off : -off;
+    trackRef.current.style.transform = `translate3d(${x}px,0,0)`;
+  };
+
   useAnimationFrame((ts) => {
     if (!ready || reduced || !copyWidth || paused || focused || !onscreen) {
       lastTsRef.current = ts;
@@ -346,25 +392,66 @@ const Lane: React.FC<{
     const dt = (ts - (lastTsRef.current ?? ts)) / 1000;
     lastTsRef.current = ts;
 
-    const dir = direction === "rtl" ? -1 : 1;
-    offsetRef.current += dir * speed * dt;
+    const dirSign = direction === "rtl" ? -1 : 1;
+    offsetRef.current += dirSign * speed * dt;
 
-    let off = offsetRef.current % copyWidth;
-    if (off < 0) off += copyWidth;
-    offsetRef.current = off;
-
-    if (trackRef.current) {
-      const x = direction === "rtl" ? off : -off;
-      trackRef.current.style.transform = `translate3d(${x}px,0,0)`;
-    }
+    updateTransform();
   });
 
   const onEnter = () => pauseOnHover && setPaused(true);
   const onLeave = () => pauseOnHover && setPaused(false);
 
+  /* -------------------- DRAG / SWIPE HANDLERS -------------------- */
+
+  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+
+    dragState.current.pointerId = e.pointerId;
+    dragState.current.isDragging = true;
+    dragState.current.lastX = e.clientX;
+
+    // Pause auto-scroll while dragging
+    setPaused(true);
+
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    const drag = dragState.current;
+    if (!drag.isDragging || drag.pointerId !== e.pointerId) return;
+    if (!copyWidth) return;
+
+    const dx = e.clientX - drag.lastX;
+    drag.lastX = e.clientX;
+
+    // Move in same direction as finger/mouse
+    const sign = direction === "rtl" ? 1 : -1;
+    offsetRef.current += sign * dx;
+
+    updateTransform();
+  };
+
+  const handlePointerEnd: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    const drag = dragState.current;
+    if (!drag.isDragging || drag.pointerId !== e.pointerId) return;
+
+    drag.isDragging = false;
+    drag.pointerId = null;
+
+    // Resume auto-scroll
+    setPaused(false);
+
+    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+  };
+
+  /* -------------------- REDUCED MOTION (no auto) -------------------- */
+
   if (reduced) {
     return (
-      <div className="relative overflow-x-auto overflow-y-hidden" ref={rootRef}>
+      <div
+        className="relative overflow-x-auto overflow-y-hidden"
+        ref={rootRef}
+      >
         <div className="flex w-max items-stretch" style={{ gap }}>
           {baseCols.map(([a, b], idx) => (
             <PairColumn
@@ -390,13 +477,23 @@ const Lane: React.FC<{
       } as React.CSSProperties
     : undefined;
 
+  const rootStyle: React.CSSProperties = {
+    ...(maskCSS ?? {}),
+    touchAction: "pan-y", // allow vertical scroll while we handle horizontal drag
+  };
+
   return (
     <div
       ref={rootRef}
       className="relative overflow-hidden"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      style={maskCSS}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      onPointerLeave={handlePointerEnd}
+      style={rootStyle}
     >
       {!ready && (
         <div className="pointer-events-none absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-zinc-200/40 to-transparent dark:via-zinc-700/30" />
@@ -431,7 +528,11 @@ const Lane: React.FC<{
           ))}
         </div>
 
-        <div className="pointer-events-none flex w-max select-none items-stretch" style={{ gap }} aria-hidden>
+        <div
+          className="pointer-events-none flex w-max select-none items-stretch"
+          style={{ gap }}
+          aria-hidden
+        >
           {baseCols.map(([a, b], idx) => (
             <PairColumn
               key={`b-${a.id}-${b?.id ?? "x"}-${idx}`}
@@ -476,7 +577,10 @@ export const CaseStudyCarousel: React.FC<FixedCarouselProps> = ({
   // Distribute strictly from data.json items
   const sourceItems = ITEMS_FROM_JSON;
   const distributed = useMemo(() => {
-    const arr: CaseItem[][] = Array.from({ length: laneCount }, () => []);
+    const arr: CaseItem[][] = Array.from(
+      { length: laneCount },
+      () => []
+    );
     sourceItems.forEach((it, i) => arr[i % laneCount].push(it));
     return arr;
   }, [laneCount, sourceItems]);
@@ -493,7 +597,10 @@ export const CaseStudyCarousel: React.FC<FixedCarouselProps> = ({
     CLIENTS_JSON.header?.subtitle ?? CLIENTS_JSON.teaser?.subtitle ?? undefined;
 
   return (
-    <section className={["not-prose w-full", className ?? ""].join(" ")} aria-label="Customer stories carousel">
+    <section
+      className={["not-prose w-full", className ?? ""].join(" ")}
+      aria-label="Customer stories carousel"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
@@ -501,7 +608,9 @@ export const CaseStudyCarousel: React.FC<FixedCarouselProps> = ({
               {headerTitle}
             </h2>
             {headerSubtitle && (
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{headerSubtitle}</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                {headerSubtitle}
+              </p>
             )}
           </div>
         </div>
