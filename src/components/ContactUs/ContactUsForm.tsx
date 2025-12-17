@@ -8,6 +8,7 @@ import emailjs from "@emailjs/browser";
 import { FormField } from "@/sharedComponent/FormField";
 import { toast } from "@/hooks/use-toast";
 
+/* ---------------- Schema ---------------- */
 const leadSchema = z.object({
   name: z.string().min(2, "Please enter your full name"),
   phone: z.string().min(6, "Enter a valid phone number"),
@@ -17,23 +18,34 @@ const leadSchema = z.object({
 });
 export type LeadForm = z.infer<typeof leadSchema>;
 
-type SubmitType = "demo" | "partner"| "support";
+type SubmitType = "demo" | "partner" | "support";
 
 interface ContactUsFormProps {
   formId?: string;
   type: SubmitType;
   onSuccess?: (result: unknown) => void;
   onSubmittingChange?: (submitting: boolean) => void;
-  showSubmitButton?: boolean; // external modal button support
+  showSubmitButton?: boolean;
   submitLabel?: string;
 }
 
-/* ---------------- EmailJS config (hardcoded) ---------------- */
-const SERVICE_ID = "service_f2p8z6e";
-const TEMPLATE_ID_PARTNER = "template_04sbrw7"; // Become a partner
-const TEMPLATE_ID_DEMO    = "template_ca4py7g"; // Schedule a demo
-const TEMPLATE_ID_SUPPORT = "template_support";// Contact SUPPORT 
-const PUBLIC_KEY          = "mxnMw5kD9r_8dLGMD"; // your EmailJS public key
+/* ---------------- EmailJS config ---------------- */
+const SERVICE_ID = "gmailService";
+const TEMPLATE_ID_SHARED = "template_50bhfuh"; 
+const PUBLIC_KEY = "qxG8BN4BBGtSYpX3g";
+
+/* ---------------- Recipient per type ---------------- */
+const TO_EMAIL_BY_TYPE: Record<SubmitType, string> = {
+  demo: "info@softmachine.co",
+  partner: "info@softmachine.co",
+  support: "info@softmachine.co",
+};
+/* ---------------- Recipients (many) per type  ---------------- */
+// const TO_EMAIL_BY_TYPE: Record<SubmitType, string> = {
+//   demo: "info@softmachine.co",
+//   partner: "info@softmachine.co,info@softmachine.co,info@softmachine.co",
+//   support: "info@softmachine.co",
+// };
 
 export const ContactUsForm: React.FC<ContactUsFormProps> = ({
   formId,
@@ -57,8 +69,10 @@ export const ContactUsForm: React.FC<ContactUsFormProps> = ({
   });
 
   const [sending, setSending] = useState(false);
+
   const watchName = watch("name");
   const watchEmail = watch("email");
+  const toEmail = TO_EMAIL_BY_TYPE[type];
 
   const setSubmittingBoth = (v: boolean) => {
     setSending(v);
@@ -72,14 +86,9 @@ export const ContactUsForm: React.FC<ContactUsFormProps> = ({
       setSubmittingBoth(true);
       emailjs.init(PUBLIC_KEY);
 
-      const TEMPLATE_ID =
-      type === "partner" ? TEMPLATE_ID_PARTNER
-      : type === "support" ? TEMPLATE_ID_SUPPORT
-      : TEMPLATE_ID_DEMO;
-
       const res = await emailjs.sendForm(
         SERVICE_ID,
-        TEMPLATE_ID,
+        TEMPLATE_ID_SHARED,
         formRef.current,
         PUBLIC_KEY
       );
@@ -87,16 +96,17 @@ export const ContactUsForm: React.FC<ContactUsFormProps> = ({
       if (res.text === "OK") {
         onSuccess?.({ ok: true, type });
         reset();
-      } else {
-        throw new Error("Failed to send email");
+        return;
       }
+
+      throw new Error("Failed to send email");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Submission failed";
-      console.error(msg);
+      console.error(e);
       toast({
         title: "Could not send",
         description: msg,
-        variant: "destructive", // red error toast
+        variant: "destructive",
       });
     } finally {
       setSubmittingBoth(false);
@@ -154,10 +164,11 @@ export const ContactUsForm: React.FC<ContactUsFormProps> = ({
         error={errors.message?.message}
       />
 
-      {/* Hidden mirrors for template variables */}
-      <input type="hidden" name="from_name"  value={watchName  || ""} readOnly />
+      <input type="hidden" name="from_name" value={watchName || ""} readOnly />
       <input type="hidden" name="from_email" value={watchEmail || ""} readOnly />
-      <input type="hidden" name="lead_type"  value={type}           readOnly />
+      <input type="hidden" name="lead_type" value={type} readOnly />
+
+      <input type="hidden" name="to_email" value={toEmail} readOnly />
 
       {showSubmitButton && (
         <button type="submit" className="hidden" disabled={sending || isSubmitting}>

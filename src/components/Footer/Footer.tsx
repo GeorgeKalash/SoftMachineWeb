@@ -11,7 +11,7 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/soft-machine/", label: "LinkedIn" },
   { icon: Instagram, href: "https://www.instagram.com/_softmachine_/", label: "Instagram" },
 ];
 
