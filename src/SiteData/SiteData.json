@@ -229,8 +229,8 @@
     },
     "about": {
       "stats": [
-        { "value": "40+", "label": "Projects delivered" },
-        { "value": "10+", "label": "Years building" },
+        { "value": "100+", "label": "Projects delivered" },
+        { "value": "30+", "label": "Years building" },
         { "value": "12+", "label": "Industries served" }
       ],
       "benefits": [
@@ -281,7 +281,7 @@
       "a": "Argus is offered on a subscription-based model. There is no option for a bagWithX-time or perpetual license. This ensures you always have access to the latest updates and support."
     },
     {
-      "q": "How long does implementation take?",
+      "q": "How long does the implementation take?",
       "a": "The implementation duration varies depending on your business size, complexity, and the modules you choose. We work closely with each client to provide a tailored timeline that ensures a smooth and effective deployment."
     },
     {
@@ -1002,15 +1002,14 @@
 
 
 
-    "clients": {
+  "clients": {
   "header": {
     "title": "Our Clients",
-    "subtitle": "Real work across finance, manufacturing, automotive, and retail."
+    "subtitle": "Real work across manufacturing and retail."
   },
   "sectorLabels": {
-    "finance": "Finance & Services",
-    "manufacturing": "Manufacturing & Industry",
-    "auto_retail": "Automotive & Retail"
+    "manufacturing": "Manufacturing",
+    "auto_retail": "Retail"
   },
   "categories": [
     { "key": "all", "label": "All" },
@@ -1021,8 +1020,8 @@
   "teasers": {
     "viewAllCta": "View all Projects",
     "viewAllHref": "/allProjects",
-    "projectsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"],
-    "testimonialsIds": ["mansour", "masagh", "byc", "neg", "cil", "hyundai", "tamkeen", "korristar", "gdk"]
+    "projectsIds": ["mansour", "masagh", "seel", "neg", "tamkeen", "cil", "hyundai", "korristar", "gdk"],
+    "testimonialsIds": ["mansour", "masagh", "seel", "neg", "tamkeen", "cil", "hyundai", "korristar", "gdk"]
   },
   "items": [
     {
@@ -1044,10 +1043,12 @@
         "content": "Argus ERP has revolutionized the way we manage our 40 stores. From inventory tracking to sales management, the software has streamlined operations, giving us better control and insights across all locations."
       }
     },
+
     {
       "id": "masagh",
       "company": "MASAGH",
-      "sector": "finance",
+      "sector": "manufacturing",
+      "tabs": ["manufacturing"],
       "logoKey": "MasagLogo",
       "locations": ["KSA"],
       "caseStudy": {
@@ -1063,25 +1064,28 @@
         "content": "Without SoftMachine, our company would not be the same! Save yourself a headache and go with a company that has your back!"
       }
     },
+
     {
-      "id": "byc",
-      "company": "Bin Yaala Exchange",
-      "sector": "finance",
-      "logoKey": "BYCLogo",
+      "id": "seel",
+      "company": "SEEL",
+      "tabs": ["manufacturing"],
+      "sector": "manufacturing",
+      "logoKey": "SeelLogo",
       "locations": ["KSA"],
       "caseStudy": {
-        "title": "Bin Yaala Exchange",
-        "subtitle": "Remittance & FX platform",
-        "href": "/work/byc",
-        "categories": ["digital", "ecom"],
-        "imgKey": "byc"
+        "title": "SEEL",
+        "subtitle": "Manufacturing operations platform",
+        "href": "/work/seel",
+        "categories": ["digital"],
+        "imgKey": "seel"
       },
       "testimonial": {
-        "name": "Khursan Bin Yaala",
-        "role": "CEO · Bin Yaala Exchange (KSA)",
-        "content": "Argus ERP has significantly streamlined our remittance processes, allowing us to manage transactions with greater accuracy and efficiency. The customizable features have transformed our day-to-day operations."
+        "name": "SEEL Team",
+        "role": "Operations",
+        "content": "SoftMachine helped us unify production visibility, inventory, and reporting into one streamlined workflow."
       }
     },
+
     {
       "id": "neg",
       "company": "New Egypt Gold",
@@ -1101,10 +1105,30 @@
         "content": "Words cannot adequately express how grateful we are for what SoftMachine has done for our company and how it has helped and is still helping! Definitely recommended!"
       }
     },
+
+    {
+      "id": "tamkeen",
+      "company": "Tamkeen",
+      "sector": "manufacturing",
+      "logoKey": "TamkeenLogo",
+      "locations": ["KSA"],
+      "caseStudy": {
+        "title": "Tamkeen",
+        "subtitle": "Production, inventory & logistics",
+        "href": "/work/tamkeen",
+        "categories": ["ecom", "digital"],
+        "imgKey": "tamkeen"
+      },
+      "testimonial": {
+        "name": "Yahya Tahan",
+        "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
+      }
+    },
+
     {
       "id": "cil",
       "company": "CIL",
-      "sector": "finance",
+      "sector": "auto_retail",
       "logoKey": "CILLogo",
       "locations": ["Ivory Coast"],
       "caseStudy": {
@@ -1120,6 +1144,7 @@
         "content": "SoftMachine has been assisting our company for quite some time. They are reliable, thorough, intelligent, approachable, excellent communicators, and extremely pleasant!"
       }
     },
+
     {
       "id": "hyundai",
       "company": "Hyundai Lebanon",
@@ -1139,24 +1164,7 @@
         "content": "SoftMachine has always come through when we've needed them—not only with their product but also with incredibly precise services that perfectly match our business needs."
       }
     },
-    {
-      "id": "tamkeen",
-      "company": "Tamkeen",
-      "sector": "manufacturing",
-      "logoKey": "TamkeenLogo",
-      "locations": ["KSA"],
-      "caseStudy": {
-        "title": "Tamkeen",
-        "subtitle": "Production, inventory & logistics",
-        "href": "/work/tamkeen",
-        "categories": ["ecom", "digital"],
-        "imgKey": "tamkeen"
-      },
-      "testimonial": {
-        "name": "Yahya Tahan",
-        "content": "Argus ERP is a game changer for our pipes manufacturing business. Real-time insights in production, inventory, and logistics helped us optimize processes and meet demand more effectively."
-      }
-    },
+
     {
       "id": "korristar",
       "company": "Korristar",
@@ -1176,11 +1184,13 @@
         "content": "SoftMachine and its team exceeded my expectations in every way—products, services, and ongoing support!"
       }
     },
+
     {
       "id": "gdk",
       "company": "GDK",
-      "sector": "finance",
+      "sector": "auto_retail",
       "logoKey": "GDKLogo",
+      "tabs": ["auto_retail"],
       "locations": ["Ivory Coast"],
       "caseStudy": {
         "title": "GDK",
@@ -1197,6 +1207,7 @@
     }
   ]
 }
+
 
     
     

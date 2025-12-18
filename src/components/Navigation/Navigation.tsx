@@ -1,6 +1,7 @@
+// src/sharedComponent/Navigation/Navigation.tsx
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageModal } from "@/sharedComponent/PageModal";
@@ -8,7 +9,6 @@ import { ContactUsForm } from "../ContactUs/ContactUsForm";
 import { SolutionsMenu } from "./NavigationDropdowns/SolutionsMenu";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../src/assets/softMachineLogo.png";
-
 
 /* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
@@ -44,8 +44,7 @@ const Navigation = () => {
     if (modalType === "partner") {
       return {
         title: "Become a partner",
-        description:
-          "Share your details and we'll reach out about partnership options.",
+        description: "Share your details and we'll reach out about partnership options.",
         submitLabel: "Request partnership",
       };
     }
@@ -59,32 +58,64 @@ const Navigation = () => {
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
+
     const navHeight = navRef.current?.getBoundingClientRect().height ?? 70;
     const y = el.getBoundingClientRect().top + window.scrollY - navHeight;
+
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     window.scrollTo({ top: y, behavior: prefersReduced ? "auto" : "smooth" });
   };
 
+  // ✅ NEW: if we navigate to "/#section", auto-scroll after the page renders
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const id = (location.hash || "").replace("#", "");
+    if (!id) return;
+
+    let tries = 0;
+    const maxTries = 40;
+
+    const tryScroll = () => {
+      tries += 1;
+
+      const el = document.getElementById(id);
+      if (el) {
+        scrollToId(id);
+        return;
+      }
+
+      if (tries < maxTries) requestAnimationFrame(tryScroll);
+    };
+
+    requestAnimationFrame(tryScroll);
+  }, [location.pathname, location.hash]);
+
   const handleNav = (id: string) => {
+    setIsOpen(false);
+
+    // already on home -> scroll immediately
     if (location.pathname === "/") {
       scrollToId(id);
-      setIsOpen(false);
       return;
     }
+
+    // not on home -> navigate with hash, effect above will scroll
     navigate({ pathname: "/", hash: `#${id}` });
-    setIsOpen(false);
   };
 
   const handleModalSend = () => {
     const form = document.getElementById(FORM_ID) as HTMLFormElement | null;
     if (!form) return;
+
     if (typeof form.requestSubmit === "function") form.requestSubmit();
     else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
   };
 
-  const handleFormSuccess = (_result: unknown) => {
+  const handleFormSuccess = () => {
     setModalType(null);
   };
 
@@ -93,7 +124,7 @@ const Navigation = () => {
       ref={navRef}
       className={`
         fixed top-0 w-full z-50 transition-colors
-        ${isOpen ? "bg-white shadow-sm" : "backdrop-blur-md"}   /* mobile → white when open */
+        ${isOpen ? "bg-white shadow-sm" : "backdrop-blur-md"}
         md:bg-transparent
         supports-[backdrop-filter]:md:backdrop-blur-md
       `}
@@ -101,13 +132,12 @@ const Navigation = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* header */}
         <div className="flex items-center justify-between h-16">
-          {/* Logo (≤995px small, ≥996px large) */}
+          {/* Logo */}
           <button
             onClick={() => handleNav("home")}
             className="flex items-center gap-2"
             aria-label="Go to Home"
           >
-            {/* small logo up to 995px */}
             <img
               src={logo}
               alt="SoftMachine"
@@ -117,7 +147,6 @@ const Navigation = () => {
               width={120}
               height={32}
             />
-            {/* desktop logo from 996px and up */}
             <img
               src={logo}
               alt="SoftMachine"
@@ -146,14 +175,14 @@ const Navigation = () => {
           {/* desktop CTAs */}
           <div className="hidden md:flex items-center gap-3 nav-dfg">
             <Button
-              variant="ghost"
               size="sm"
               className="border border-transparent hover:bg-white/0"
               onClick={() => setModalType("demo")}
             >
               Schedule a demo
             </Button>
-            <Button size="sm" onClick={() => setModalType("partner")}>
+
+            <Button size="sm" variant="ghost" onClick={() => setModalType("partner")}>
               Become a partner
             </Button>
           </div>
@@ -174,13 +203,11 @@ const Navigation = () => {
       {/* mobile scrim + panel */}
       {isOpen && (
         <>
-          {/* scrim behind the panel */}
           <div
             className="md:hidden fixed inset-0 top-16 bg-black/20 z-40"
             onClick={() => setIsOpen(false)}
             aria-hidden
           />
-          {/* white panel */}
           <div
             id="mobile-nav"
             className="md:hidden fixed left-0 right-0 top-16 z-50 bg-white border-t shadow-sm py-4 space-y-3 animate-in slide-in-from-top"
@@ -201,30 +228,28 @@ const Navigation = () => {
               </div>
 
               <div className="flex gap-3 px-4 pt-3">
-  <Button
-    variant="ghost"
-    className="flex-1"
-    onClick={() => {
-      setIsOpen(false);
-      setModalType("demo");
-    }}
-  >
-    Schedule a demo
-  </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setModalType("demo");
+                  }}
+                >
+                  Schedule a demo
+                </Button>
 
-  {/* was variant="ghost" before */}
-  <Button
-    variant="default"
-    className="flex-1"
-    onClick={() => {
-      setIsOpen(false);
-      setModalType("partner");
-    }}
-  >
-    Become a partner
-  </Button>
-</div>
-
+                <Button
+                  variant="default"
+                  className="flex-1"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setModalType("partner");
+                  }}
+                >
+                  Become a partner
+                </Button>
+              </div>
             </div>
           </div>
         </>

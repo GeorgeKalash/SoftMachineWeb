@@ -1,9 +1,8 @@
 // src/sharedComponent/ScrollableShowcase.tsx
 "use client";
 
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Sparkles, PlayCircle } from "lucide-react";
 import siteData from "@/SiteData/SiteData.json";
 
@@ -47,6 +46,12 @@ type ScrollableShowcaseProps = {
   className?: string;
   topOffsetPx?: number;
   enableSmooth?: boolean;
+
+  /** If you have modal state, pass it here (recommended). */
+  paused?: boolean;
+
+  /** Auto-pause when body/html are scroll-locked (Radix/shadcn etc.). */
+  pauseWhenScrollLocked?: boolean;
 };
 
 const IMAGE_MAP: Record<string, string> = { cat, giphy, workcomputer, path };
@@ -59,7 +64,8 @@ const smoothScrollToCenter = (id: string) => {
   const el = document.getElementById(id);
   if (!el) return;
   const rect = el.getBoundingClientRect();
-  const target = window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+  const target =
+    window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
   gsap.to(window, { scrollTo: target, duration: 0.5, ease: "power1.inOut" });
 };
 
@@ -72,6 +78,8 @@ export default function ScrollableShowcase({
   className,
   topOffsetPx = 96,
   enableSmooth = true,
+  paused,
+  pauseWhenScrollLocked = true,
 }: ScrollableShowcaseProps) {
   const showcase = siteData.showcase;
   const rawItems = (showcase?.items ?? []) as Array<{
@@ -112,31 +120,67 @@ export default function ScrollableShowcase({
     [siteData]
   );
 
-  const containerRef     = useRef<HTMLDivElement | null>(null);
-  const leftColRef       = useRef<HTMLDivElement | null>(null);
-  const mediaPinRef      = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const leftColRef = useRef<HTMLDivElement | null>(null);
+  const mediaPinRef = useRef<HTMLDivElement | null>(null);
   const mediaViewportRef = useRef<HTMLDivElement | null>(null);
-  const mediaCardRef     = useRef<HTMLDivElement | null>(null);
-  const sectionRefs      = useRef<HTMLElement[]>([]);
+  const mediaCardRef = useRef<HTMLDivElement | null>(null);
+  const sectionRefs = useRef<HTMLElement[]>([]);
   const [active, setActive] = useState(0);
 
-  /* optional smooth scroll */
-  useLayoutEffect(() => {
-    if (!enableSmooth) return;
-    const lenis = new Lenis({ smoothWheel: true });
-    let rafId = requestAnimationFrame(function raf(t) {
-      lenis.raf(t);
-      rafId = requestAnimationFrame(raf);
-    });
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, [enableSmooth]);
+  // ---- Auto-detect scroll lock (Radix/shadcn commonly sets this)
+  const [scrollLocked, setScrollLocked] = useState(false);
+  useEffect(() => {
+    if (!pauseWhenScrollLocked) return;
 
-  /* pin + snap + stable right card */
+    const body = document.body;
+    const html = document.documentElement;
+
+    const check = () => {
+      const locked =
+        body.hasAttribute("data-scroll-locked") ||
+        html.hasAttribute("data-scroll-locked") ||
+        body.classList.contains("overflow-hidden") ||
+        html.classList.contains("overflow-hidden") ||
+        body.style.overflow === "hidden" ||
+        html.style.overflow === "hidden";
+      setScrollLocked(locked);
+    };
+
+    check();
+
+    const obs = new MutationObserver(check);
+    obs.observe(body, { attributes: true, attributeFilter: ["style", "class", "data-scroll-locked"] });
+    obs.observe(html, { attributes: true, attributeFilter: ["style", "class", "data-scroll-locked"] });
+
+    return () => obs.disconnect();
+  }, [pauseWhenScrollLocked]);
+
+  const isPaused = !!paused || (pauseWhenScrollLocked && scrollLocked);
+
+  // ---- Init Lenis + ScrollTriggers ONLY when not paused.
   useLayoutEffect(() => {
     if (!containerRef.current) return;
+
+    // when paused, we intentionally do nothing (previous run cleanup already happened)
+    if (isPaused) return;
+
+    let lenis: Lenis | null = null;
+    let rafId: number | null = null;
+
+    if (enableSmooth) {
+      lenis = new Lenis({
+        smoothWheel: true,
+        // IMPORTANT: smoother touch can also hijack modal scroll; keep it false unless you really need it
+        // smoothTouch: false,
+      });
+
+      const raf = (t: number) => {
+        lenis?.raf(t);
+        rafId = requestAnimationFrame(raf);
+      };
+      rafId = requestAnimationFrame(raf);
+    }
 
     const ctx = gsap.context(() => {
       const mm = ScrollTrigger.matchMedia;
@@ -246,8 +290,12 @@ export default function ScrollableShowcase({
       });
     }, containerRef);
 
-    return () => ctx.revert();
-  }, [topOffsetPx, items.length]);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      lenis?.destroy();
+      ctx.revert();
+    };
+  }, [enableSmooth, isPaused, topOffsetPx, items.length]);
 
   if (!items.length) return null;
   const activeItem = items[active];
@@ -306,14 +354,11 @@ export default function ScrollableShowcase({
           {/* RIGHT (pinned, centered) */}
           <div className="hidden lg:block">
             <div ref={mediaPinRef}>
-              {/* viewport-sized area (center media here) */}
               <div
                 ref={mediaViewportRef}
                 className="relative flex items-center justify-center"
                 style={{ paddingTop: topOffsetPx }}
-                // height is set in JS to: 100vh
               >
-                {/* the card we center */}
                 <div ref={mediaCardRef} className="w-full lg:max-w-md xl:max-w-lg 2xl:max-w-xl">
                   <div className="group relative overflow-hidden rounded-2xl bg-card text-card-foreground shadow-lg">
                     <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/10" />
@@ -331,7 +376,6 @@ export default function ScrollableShowcase({
                         />
                       </div>
                     </div>
-                    {/* progress bar */}
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10">
                       <div
                         className="h-1 bg-primary/70 transition-all duration-500 ease-out"
@@ -363,7 +407,6 @@ function StepBlock({
   topOffsetPx: number;
   isLast?: boolean;
 }) {
-  const onPrimary = () => fireContactEvent(item.key, "cta");
   const onSecondary = (e?: React.MouseEvent) => {
     if (item.anchorId) {
       e?.preventDefault();
@@ -385,10 +428,8 @@ function StepBlock({
       aria-current={isActive ? "true" : undefined}
       aria-label={item.title}
     >
-      {/* spacer to respect sticky header */}
       <div className="h-px w-full" aria-hidden />
 
-      {/* vertical rail + active dot (desktop only) */}
       <div className={cn("absolute -left-3 top-0 hidden h-full lg:block")} aria-hidden>
         <div className="mx-auto h-full w-px bg-border/60" />
         <div
@@ -399,9 +440,7 @@ function StepBlock({
         />
       </div>
 
-      {/* content with padding to clear the rail */}
       <div className={cn("max-w-[68ch] pl-0 lg:pl-6")}>
-        {/* mobile image */}
         <div className="lg:hidden mb-4">
           <div className="overflow-hidden rounded-xl bg-card/50">
             <img
@@ -430,40 +469,6 @@ function StepBlock({
         <p className="mt-3 md:mt-4 text-[15px] md:text-lg leading-7 md:leading-8 text-muted-foreground/90">
           {item.body}
         </p>
-
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          {item.primary ? (
-            <Button
-              onClick={onPrimary}
-              variant={item.primary.variant ?? "default"}
-              className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base shadow-sm"
-            >
-              {item.primary.icon}
-              <span className={cn(item.primary.icon && "ml-2")}>{item.primary.label}</span>
-            </Button>
-          ) : null}
-
-          {item.secondary ? (
-            item.secondary.href ? (
-              <Button
-                variant={item.secondary.variant ?? "outline"}
-                asChild
-                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
-                onClick={(e) => onSecondary(e)}
-              >
-                <a href={item.secondary.href}>{item.secondary.label}</a>
-              </Button>
-            ) : (
-              <Button
-                variant={item.secondary.variant ?? "outline"}
-                className="h-10 md:h-11 rounded-xl px-5 md:px-6 text-sm md:text-base"
-                onClick={() => smoothScrollToCenter(item.anchorId)}
-              >
-                {item.secondary.label}
-              </Button>
-            )
-          ) : null}
-        </div>
 
         {!isLast && <div className="mt-8 md:mt-10 h-px w-full bg-border/70" />}
       </div>
